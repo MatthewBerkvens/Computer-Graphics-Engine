@@ -40,7 +40,7 @@ img::EasyImage wireframe::generate_Wireframe(const ini::Configuration &conf, boo
 
 		newFigure.color = colorFromNormalizedDoubleTuple(conf[figureName]["color"].as_double_tuple_or_die());
 
-		std::vector<double> center(conf[figureName]["center"].as_double_tuple_or_die());
+		std::vector<double> center = conf[figureName]["center"].as_double_tuple_or_die();
 
 		Matrix combinedMatrix =
 			lib3d::rotateXMatrix(degreesToRad(conf[figureName]["rotateX"].as_double_or_die()))
@@ -396,10 +396,10 @@ void wireframe::createTorus(lib3d::Figure& figure, const double r, const double 
 
 	for (unsigned int i = 0; i < n; i++)
 	{
-		u = 2 * MY_PI * i / n;
+		u = 2.0 * MY_PI * (double)i / (double)n;
 		for (unsigned int j = 0; j < m; j++)
 		{
-			v = 2 * MY_PI * j / m;
+			v = 2.0 * MY_PI * (double)j / (double)m;
 			points.push_back(Vector3D().point(
 				(R + (r * std::cos(v))) * std::cos(u),
 				(R + (r * std::cos(v))) * std::sin(u),

@@ -283,7 +283,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 		unsigned int pixel = pixelcount;
 		for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
 		{
-			double newz = ((pixel / pixelcount) / z0) + ((1 - (pixel / pixelcount)) / z1);
+			double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 			if (newz < zbuffer[x0][i])
 			{
@@ -300,7 +300,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 		unsigned int pixel = pixelcount;
 		for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
 		{
-			double newz = ((pixel / pixelcount) / z0) + ((1 - (pixel / pixelcount)) / z1);
+			double newz = (((double)pixel / (double)pixelcount) / z0) + ((1.0 - ((double)pixel / (double)pixelcount)) / z1);
 
 			if (newz < zbuffer[i][y0])
 			{
@@ -327,7 +327,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			unsigned int pixel = pixelcount;
 			for (unsigned int i = 0; i <= (x1 - x0); i++)
 			{
-				double newz = ((pixel / pixelcount) / z0) + ((1 - (pixel / pixelcount)) / z1);
+				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[x0 + i][(unsigned int)round(y0 + m * i)])
 				{
@@ -344,7 +344,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			unsigned int pixel = pixelcount;
 			for (unsigned int i = 0; i <= (y1 - y0); i++)
 			{
-				double newz = ((pixel / pixelcount) / z0) + ((1 - (pixel / pixelcount)) / z1);
+				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[(unsigned int)round(x0 + (i / m))][y0 + i])
 				{
@@ -361,7 +361,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			unsigned int pixel = pixelcount;
 			for (unsigned int i = 0; i <= (y0 - y1); i++)
 			{
-				double newz = ((pixel / pixelcount) / z0) + ((1 - (pixel / pixelcount)) / z1);
+				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[(unsigned int)round(x0 - (i / m))][y0 - i])
 				{

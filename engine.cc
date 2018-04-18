@@ -20,6 +20,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
 	if (type == "2DLSystem")  return lib_lsystem::generate_2DLSystem(configuration);
 	else if (type == "Wireframe" || type == "ZBufferedWireframe") return wireframe::generate_Wireframe(configuration, type == "ZBufferedWireframe");
+	else if (type == "ZBuffering") return wireframe::generate_Wireframe(configuration, type == "ZBufferedWireframe");
 	else return img::EasyImage();
 }
 
@@ -34,6 +35,7 @@ int main(int argc, char const* argv[])
 			try
 			{
 				ifstream fin(argv[i]);
+				if (!fin) continue;
 				fin >> conf;
 				fin.close();
 			}

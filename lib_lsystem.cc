@@ -132,14 +132,6 @@ namespace lib_lsystem
 		}
 	}
 
-
-
-
-
-
-
-
-
 	img::EasyImage generate_2DLSystem(const ini::Configuration &conf)
 	{
 		string inputfile = conf["2DLSystem"]["inputfile"].as_string_or_die();

@@ -4,6 +4,7 @@
 #include "lib_lsystem.h"
 #include "lib3d.h"
 #include "wireframe.h"
+#include "colored_bodies.h"
 
 #include <fstream>
 #include <iostream>
@@ -20,7 +21,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
 	if (type == "2DLSystem")  return lib_lsystem::generate_2DLSystem(configuration);
 	else if (type == "Wireframe" || type == "ZBufferedWireframe") return wireframe::generate_Wireframe(configuration, type == "ZBufferedWireframe");
-	else if (type == "ZBuffering") return wireframe::generate_Wireframe(configuration, type == "ZBufferedWireframe");
+	else if (type == "ZBuffering") return colored_bodies::generate_ColoredBodies(configuration);
 	else return img::EasyImage();
 }
 

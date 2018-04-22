@@ -40,14 +40,14 @@ public:
 	~Line2D();
 };
 
-inline int roundToInt(double d)
-{
-	return static_cast<int>(round(d));
-};
-
 inline double degreesToRad(double angle)
 {
-    return angle * MY_PI / 180;
+	return angle * MY_PI / 180.0;
+};
+
+inline int roundToInt(double d)
+{
+	return static_cast<int>(std::round(d));
 };
 
 img::EasyImage imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& colorBackground, bool UseZBuffering);

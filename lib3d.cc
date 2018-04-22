@@ -153,7 +153,7 @@ namespace lib3d
 		}
 	}
 
-	Point2D projectPoint(Vector3D& point, const double d)
+	Point2D projectPoint(const Vector3D& point, const double d)
 	{
 		return Point2D(d*(point.x / -point.z), d*(point.y / -point.z));
 	}

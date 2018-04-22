@@ -15,6 +15,7 @@ namespace lib3d
     {
     public:
         std::vector<unsigned int> point_indexes;
+		img::Color color;
 		Face(std::vector<unsigned int> point_indexes);
         Face();
     };
@@ -47,7 +48,7 @@ namespace lib3d
 
 	std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<Figure>& figures, const double d);
 
-	Point2D projectPoint(Vector3D& point, const double d);
+	Point2D projectPoint(const Vector3D& point, const double d);
 }
 
 #endif //ENGINE_LIB3D_H

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "easy_image.h"
+#include "mylibrary.h"
+#include "lib3d.h"
 #include <algorithm>
 #include <assert.h>
 #include <math.h>
@@ -29,47 +31,47 @@ namespace
 	//structs borrowed from wikipedia's article on the BMP file format
 	struct bmpfile_magic
 	{
-			uint8_t magic[2];
+		uint8_t magic[2];
 	};
 
 	struct bmpfile_header
 	{
-			uint32_t file_size;
-			uint16_t reserved_1;
-			uint16_t reserved_2;
-			uint32_t bmp_offset;
+		uint32_t file_size;
+		uint16_t reserved_1;
+		uint16_t reserved_2;
+		uint32_t bmp_offset;
 	};
 	struct bmp_header
 	{
-			uint32_t header_size;
-			int32_t width;
-			int32_t height;
-			uint16_t nplanes;
-			uint16_t bits_per_pixel;
-			uint32_t compress_type;
-			uint32_t pixel_size;
-			int32_t hres;
-			int32_t vres;
-			uint32_t ncolors;
-			uint32_t nimpcolors;
+		uint32_t header_size;
+		int32_t width;
+		int32_t height;
+		uint16_t nplanes;
+		uint16_t bits_per_pixel;
+		uint32_t compress_type;
+		uint32_t pixel_size;
+		int32_t hres;
+		int32_t vres;
+		uint32_t ncolors;
+		uint32_t nimpcolors;
 	};
 	//copy-pasted from lparser.cc to allow these classes to be used independently from each other
 	class enable_exceptions
 	{
-		private:
-			std::ios& ios;
-			std::ios::iostate state;
-		public:
-			enable_exceptions(std::ios& an_ios, std::ios::iostate exceptions) :
-				ios(an_ios)
-			{
-				state = ios.exceptions();
-				ios.exceptions(exceptions);
-			}
-			~enable_exceptions()
-			{
-				ios.exceptions(state);
-			}
+	private:
+		std::ios& ios;
+		std::ios::iostate state;
+	public:
+		enable_exceptions(std::ios& an_ios, std::ios::iostate exceptions) :
+			ios(an_ios)
+		{
+			state = ios.exceptions();
+			ios.exceptions(exceptions);
+		}
+		~enable_exceptions()
+		{
+			ios.exceptions(state);
+		}
 	};
 	//helper function to convert a number (char, int, ...) to little endian
 	//regardless of the endiannes of the system
@@ -79,8 +81,8 @@ namespace
 		//yes, unions must be used with caution, but this is a case in which a union is needed
 		union
 		{
-				T t;
-				uint8_t bytes[sizeof(T)];
+			T t;
+			uint8_t bytes[sizeof(T)];
 		} temp_storage;
 
 		for (uint8_t i = 0; i < sizeof(T); i++)
@@ -96,8 +98,8 @@ namespace
 		//yes, unions must be used with caution, but this is a case in which a union is needed
 		union
 		{
-				T t;
-				uint8_t bytes[sizeof(T)];
+			T t;
+			uint8_t bytes[sizeof(T)];
 		} temp_storage;
 		temp_storage.t = value;
 		T retVal = 0;
@@ -128,8 +130,8 @@ img::UnsupportedFileTypeException::UnsupportedFileTypeException(std::string cons
 {
 }
 img::UnsupportedFileTypeException::UnsupportedFileTypeException(const UnsupportedFileTypeException &original)
-: std::exception(original)
-, message(original.message)
+	: std::exception(original)
+	, message(original.message)
 {
 }
 img::UnsupportedFileTypeException::~UnsupportedFileTypeException() throw ()
@@ -169,7 +171,7 @@ img::EasyImage& img::EasyImage::operator=(img::EasyImage const& img)
 {
 	width = img.width;
 	height = img.height;
-	bitmap.assign(img.bitmap.begin(),img.bitmap.end());
+	bitmap.assign(img.bitmap.begin(), img.bitmap.end());
 	return (*this);
 }
 
@@ -233,26 +235,26 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
 			std::swap(x0, x1);
 			std::swap(y0, y1);
 		}
-		double m = ((double) y1 - (double) y0) / ((double) x1 - (double) x0);
+		double m = ((double)y1 - (double)y0) / ((double)x1 - (double)x0);
 		if (-1.0 <= m && m <= 1.0)
 		{
 			for (unsigned int i = 0; i <= (x1 - x0); i++)
 			{
-				(*this)(x0 + i, (unsigned int) round(y0 + m * i)) = color;
+				(*this)(x0 + i, (unsigned int)roundToInt(y0 + m * i)) = color;
 			}
 		}
 		else if (m > 1.0)
 		{
 			for (unsigned int i = 0; i <= (y1 - y0); i++)
 			{
-				(*this)((unsigned int) round(x0 + (i / m)), y0 + i) = color;
+				(*this)((unsigned int)roundToInt(x0 + (i / m)), y0 + i) = color;
 			}
 		}
 		else if (m < -1.0)
 		{
 			for (unsigned int i = 0; i <= (y0 - y1); i++)
 			{
-				(*this)((unsigned int) round(x0 - (i / m)), y0 - i) = color;
+				(*this)((unsigned int)roundToInt(x0 - (i / m)), y0 - i) = color;
 			}
 		}
 	}
@@ -273,10 +275,67 @@ img::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
 }
 
 //added by Matthew
+void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, const Color& color)
+{
+	assert(zbuffer.size() == this->width);
+	assert(zbuffer[0].size() == this->height);
+	Point2D projected_A = Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
+	Point2D projected_B = Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
+	Point2D projected_C = Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+
+	unsigned int y_min = roundToInt(std::min(projected_A.y, std::min(projected_B.y, projected_C.y)) + 0.5);
+	unsigned int y_max = roundToInt(std::max(projected_A.y, std::max(projected_B.y, projected_C.y)) - 0.5);
+
+	for (unsigned int y_cur = y_min; y_cur < y_max; y_cur++)
+	{
+		double x_min = std::numeric_limits<double>::infinity();
+		double x_max = -std::numeric_limits<double>::infinity();
+
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			const Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
+			const Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
+
+			if (P.y == Q.y || ((y_cur - P.y) * (y_cur - Q.y)) > 0) continue;
+
+			x_min = std::min(x_min, Q.x + ((P.x - Q.x) * ((y_cur - Q.y) / (P.y - Q.y))));
+			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * ((y_cur - Q.y) / (P.y - Q.y))));
+		}
+
+		for (unsigned int x_cur = (unsigned int)roundToInt(x_min + 0.5); x_cur <= (unsigned int)roundToInt(x_max - 0.5); x_cur++)
+		{
+			double w1 = ((B.y - A.y) * (C.z - A.z)) - ((B.z - A.z) * (C.y - A.y));
+
+			double w2 = ((B.z - A.z) * (C.x - A.x)) - ((B.x - A.x) * (C.z - A.z));
+
+			double w3 = ((B.x - A.x) * (C.y - A.y)) - ((B.y - A.y) * (C.x - A.x));
+
+			double k = w1 * A.x + w2 * A.y + w3 * A.z;
+
+			double dzdx = w1 / (-d * k);
+			double dzdy = w2 / (-d * k);
+
+			double z_inv =
+				(1.0001 * (1 / (3 * A.z) + 1 / (3 * B.z) + 1 / (3 * C.z))) + // 1/zg
+				((x_cur - ((projected_A.x + projected_B.x + projected_C.x) / 3)) * dzdx) + // (x - xg) * dzdx
+				((y_cur - ((projected_A.y + projected_B.y + projected_C.y) / 3)) * dzdy); // (x - xg) * dzdy
+			
+			if (z_inv < zbuffer[x_cur][y_cur])
+			{
+				(*this)(x_cur, y_cur) = color;
+				zbuffer[x_cur][y_cur] = z_inv;
+			}
+		}
+	}
+}
+
+//added by Matthew
 void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, const Color& color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
+	assert(zbuffer.size() == this->width);
+	assert(zbuffer[0].size() == this->height);
 	if (x0 == x1)
 	{
 		unsigned int pixelcount = std::max(y0, y1) - std::min(y0, y1) + 1;
@@ -329,10 +388,10 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			{
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
-				if (newz < zbuffer[x0 + i][(unsigned int)round(y0 + m * i)])
+				if (newz < zbuffer[x0 + i][(unsigned int)roundToInt(y0 + m * i)])
 				{
-					zbuffer[x0 + i][(unsigned int)round(y0 + m * i)] = newz;
-					(*this)(x0 + i, (unsigned int)round(y0 + m * i)) = color;
+					zbuffer[x0 + i][(unsigned int)roundToInt(y0 + m * i)] = newz;
+					(*this)(x0 + i, (unsigned int)roundToInt(y0 + m * i)) = color;
 				}
 				pixel--;
 			}
@@ -346,10 +405,10 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			{
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
-				if (newz < zbuffer[(unsigned int)round(x0 + (i / m))][y0 + i])
+				if (newz < zbuffer[(unsigned int)roundToInt(x0 + (i / m))][y0 + i])
 				{
-					zbuffer[(unsigned int)round(x0 + (i / m))][y0 + i] = newz;
-					(*this)((unsigned int)round(x0 + (i / m)), y0 + i) = color;
+					zbuffer[(unsigned int)roundToInt(x0 + (i / m))][y0 + i] = newz;
+					(*this)((unsigned int)roundToInt(x0 + (i / m)), y0 + i) = color;
 				}
 				pixel--;
 			}
@@ -363,10 +422,10 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 			{
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
-				if (newz < zbuffer[(unsigned int)round(x0 - (i / m))][y0 - i])
+				if (newz < zbuffer[(unsigned int)roundToInt(x0 - (i / m))][y0 - i])
 				{
-					zbuffer[(unsigned int)round(x0 - (i / m))][y0 - i] = newz;
-					(*this)((unsigned int)round(x0 - (i / m)), y0 - i) = color;
+					zbuffer[(unsigned int)roundToInt(x0 - (i / m))][y0 - i] = newz;
+					(*this)((unsigned int)roundToInt(x0 - (i / m)), y0 - i) = color;
 				}
 				pixel--;
 			}
@@ -418,9 +477,9 @@ std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 	header.nimpcolors = 0;//no important colors
 
 	//okay that should be all the header stuff: let's write it to the stream
-	out.write((char*) &magic, sizeof(magic));
-	out.write((char*) &file_header, sizeof(file_header));
-	out.write((char*) &header, sizeof(header));
+	out.write((char*)&magic, sizeof(magic));
+	out.write((char*)&file_header, sizeof(file_header));
+	out.write((char*)&header, sizeof(header));
 
 	//okay let's write the pixels themselves:
 	//they are arranged left->right, bottom->top, b,g,r
@@ -432,10 +491,10 @@ std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 			//loop over all pixels in a line
 			//we cast &color to char*. since the color fields are ordered blue,green,red they should be written automatically
 			//in the right order
-			out.write((char*) &image(j, i), 3 * sizeof(uint8_t));
+			out.write((char*)&image(j, i), 3 * sizeof(uint8_t));
 		}
 		if (line_padding > 0)
-			out.write((char*) padding, line_padding);
+			out.write((char*)padding, line_padding);
 	}
 	//okay we should be done
 	return out;
@@ -452,11 +511,11 @@ std::istream& img::operator>>(std::istream& in, EasyImage & image)
 	{ 0, 0, 0, 0 };
 
 	//read the headers && do some sanity checks
-	in.read((char*) &magic, sizeof(magic));
+	in.read((char*)&magic, sizeof(magic));
 	if (magic.magic[0] != 'B' || magic.magic[1] != 'M')
 		throw UnsupportedFileTypeException("Could not parse BMP File: invalid magic header");
-	in.read((char*) &file_header, sizeof(file_header));
-	in.read((char*) &header, sizeof(header));
+	in.read((char*)&file_header, sizeof(file_header));
+	in.read((char*)&header, sizeof(header));
 	if (le32toh(header.pixel_size) + le32toh(file_header.bmp_offset) != le32toh(file_header.file_size))
 		throw UnsupportedFileTypeException("Could not parse BMP File: file size mismatch");
 	if (le32toh(header.header_size) != sizeof(header))
@@ -487,17 +546,17 @@ std::istream& img::operator>>(std::istream& in, EasyImage & image)
 			if (invertedLines)
 			{
 				//store top-to-bottom
-				in.read((char*) &image(j, image.height - 1 - i), 3 * sizeof(uint8_t));
+				in.read((char*)&image(j, image.height - 1 - i), 3 * sizeof(uint8_t));
 			}
 			else
 			{
 				//store bottom-to-top
-				in.read((char*) &image(j, i), 3 * sizeof(uint8_t));
+				in.read((char*)&image(j, i), 3 * sizeof(uint8_t));
 			}
 		}
 		if (line_padding > 0)
 		{
-			in.read((char*) padding, line_padding);
+			in.read((char*)padding, line_padding);
 		}
 	}
 	//okay we're done

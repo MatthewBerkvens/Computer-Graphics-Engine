@@ -47,33 +47,30 @@ void fractals::recursiveMengerSponge(lib3d::Figure& figure, std::vector<lib3d::F
 		return;
 	}
 
-    double x_0of3 = figure.points[0].x;
-    double x_1of3 = figure.points[0].x + ((figure.points[5].x - figure.points[0].x) / 3);
-    double x_2of3 = figure.points[0].x + ((figure.points[5].x - figure.points[0].x) *  2 / 3);
+    double x = (figure.points[0] - figure.points[5]).length();
 
-    double y_0of3 = figure.points[0].y;
-    double y_1of3 = figure.points[0].y + ((figure.points[4].y - figure.points[0].y) / 3);
-    double y_2of3 = figure.points[0].y + ((figure.points[4].y - figure.points[0].y) *  2 / 3);
+    double y = (figure.points[0] - figure.points[4]).length();
 
-    double z_0of3 = figure.points[0].z;
-    double z_1of3 = figure.points[0].z + ((figure.points[6].z - figure.points[0].z) / 3);
-    double z_2of3 = figure.points[0].z + ((figure.points[6].z - figure.points[0].z) *  2 / 3);
+    double z = (figure.points[0] - figure.points[6]).length();
 
-    for (int x = 0; x < 3; x++) {
-        for (int y = 0; y < 3; y++) {
-            for (int z = 0; z < 3; z++) {
+    for (int x = 0; x < 3; x++)
+    {
+        for (int y = 0; y < 3; y++)
+        {
+            for (int z = 0; z < 3; z++)
+            {
                 if ((x == 1 && y == 1) || (x == 1 && z == 1) || (y == 1 && z == 1)) continue;
 
                 lib3d::Figure newFigure = lib3d::Figure(figure);
                 lib3d::transformFigure(newFigure, scaleMatrix);
 
-                double vector_x = x < 2 ? (x < 1 ? x_0of3 : x_1of3) : x_2of3;
-                double vector_y = y < 2 ? (y < 1 ? y_0of3 : y_1of3) : y_2of3;
-                double vector_z = z < 2 ? (z < 1 ? z_0of3 : z_1of3) : z_2of3;
+                double pt_x = x < 2 ? (x < 1 ? x/3.0 : 0) : -x/3.0;
+                double pt_y = y < 2 ? (y < 1 ? y/3.0 : 0) : -y/3.0;
+                double pt_z = z < 2 ? (z < 1 ? z/3.0 : 0) : -z/3.0;
 
-                Vector3D vector_combined = Vector3D().vector(vector_x, vector_y, vector_z);
+                std::cout << pt_x << " " << pt_y << " " << pt_z << std::endl;
 
-                lib3d::transformFigure(newFigure, lib3d::translateMatrix(Vector3D().vector(newFigure.points[0]) - vector_combined));
+                lib3d::transformFigure(newFigure, lib3d::translateMatrix(Vector3D().vector(pt_x, pt_y, pt_z)));
                 fractals::recursiveMengerSponge(newFigure, fractal, scaleMatrix, iter + 1, max_iter);
             }
         }

@@ -3,6 +3,7 @@
 //
 
 #include "bodies.h"
+#include <assert.h>
 
 void bodies::createCube(lib3d::Figure& figure)
 {
@@ -312,6 +313,35 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 				((i + 1) % n)*m + j
 				}));
 		}
+	}
+
+	figure.points = points;
+	figure.faces = faces;
+}
+
+void bodies::createBuckyBall(lib3d::Figure& figure)
+{
+	createIcosahedron(figure);
+
+	std::vector<Vector3D> points;
+	std::vector<lib3d::Face> faces;
+
+	for (std::vector<lib3d::Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
+	{
+		assert(it->point_indexes.size() == 3);
+
+		lib3d::Face six;
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			six.point_indexes.push_back(points.size() + 1);
+			six.point_indexes.push_back(points.size());
+
+			points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 1) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+			points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 2) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+		}
+
+		faces.push_back(six);
 	}
 
 	figure.points = points;

@@ -302,7 +302,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * ((y_cur - Q.y) / (P.y - Q.y))));
 		}
 
-		for (unsigned int x_cur = (unsigned int)roundToInt(x_min + 0.5); x_cur <= (unsigned int)roundToInt(x_max - 0.5); x_cur++)
+		for (int x_cur = roundToInt(x_min + 0.5); x_cur <= roundToInt(x_max - 0.5); x_cur++)
 		{
 			double w1 = ((B.y - A.y) * (C.z - A.z)) - ((B.z - A.z) * (C.y - A.y));
 

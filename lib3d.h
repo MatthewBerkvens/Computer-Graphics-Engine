@@ -15,7 +15,6 @@ namespace lib3d
     {
     public:
         std::vector<unsigned int> point_indexes;
-		img::Color color;
 		Face(std::vector<unsigned int> point_indexes);
         Face();
     };

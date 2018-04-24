@@ -25,5 +25,9 @@ namespace bodies {
 	void createSphere(lib3d::Figure& figure, const unsigned int n);
 
 	void createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m);
+
+	void createBuckyBall(lib3d::Figure& figure);
+
+	void createMengerSponge(lib3d::Figure& figure, const unsigned int nr_iterations);
 }
 #endif

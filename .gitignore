@@ -1,2 +1,4 @@
 Debug
 Engine.vcxproj*
+*.o
+*.d

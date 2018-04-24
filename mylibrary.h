@@ -29,10 +29,11 @@ public:
 class Line2D {
 public:
 	Point2D a;
-	Point2D b;
-
 	double z_a;
+
+	Point2D b;
 	double z_b;
+
 	img::Color color;
 
 	Line2D(Point2D& a, Point2D& b, img::Color& color);

@@ -12,7 +12,7 @@ namespace fractals {
 
 	void recursiveFractal(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
 
-	void createMengerSponge(std::vector<lib3d::Figure>& fractal, const unsigned int nr_iterations);
+	void createMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const unsigned int nr_iterations);
 
 	void recursiveMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
 }

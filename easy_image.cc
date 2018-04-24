@@ -286,7 +286,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 	unsigned int y_min = roundToInt(std::min(projected_A.y, std::min(projected_B.y, projected_C.y)) + 0.5);
 	unsigned int y_max = roundToInt(std::max(projected_A.y, std::max(projected_B.y, projected_C.y)) - 0.5);
 
-	for (unsigned int y_cur = y_min; y_cur < y_max; y_cur++)
+	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
 	{
 		double x_min = std::numeric_limits<double>::infinity();
 		double x_max = -std::numeric_limits<double>::infinity();

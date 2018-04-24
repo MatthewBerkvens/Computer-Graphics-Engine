@@ -42,6 +42,7 @@ img::EasyImage colored_bodies::generate_ColoredBodies(const ini::Configuration &
 		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
 		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die());
 		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
+		else if (type == "BuckyBall") bodies::createBuckyBall(newFigure);
 		else
 		{
 			std::vector<lib3d::Figure> newFigures;
@@ -50,37 +51,43 @@ img::EasyImage colored_bodies::generate_ColoredBodies(const ini::Configuration &
 			{
 				bodies::createCube(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalDodecahedron")
 			{
 				bodies::createDodecahedron(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalIcosahedron")
 			{
 				bodies::createIcosahedron(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalOctahedron")
 			{
 				bodies::createOctahedron(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalTetrahedron")
 			{
 				bodies::createTetrahedron(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalBuckyBall")
 			{
 				bodies::createBuckyBall(newFigure);
 
-				fractals::generateFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+			}
+			else if (type == "MengerSponge")
+			{
+				bodies::createCube(newFigure);
+
+				fractals::createMengerSponge(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die());
 			}
 			else continue;
 

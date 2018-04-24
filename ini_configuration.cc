@@ -949,8 +949,8 @@ namespace ini
 
                         switch(chr)
                         {
-                                case '-': sign = -1;
-                                case '+': chr = input_stream.get();
+                                case '-': sign = -1; [[gnu::fallthrough]];
+                                case '+': chr = input_stream.get(); [[gnu::fallthrough]];
                         }
 
                         int int_val = 0;

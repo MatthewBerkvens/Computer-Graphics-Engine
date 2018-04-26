@@ -48,6 +48,8 @@ namespace lib3d
 	std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<Figure>& figures, const double d);
 
 	Point2D projectPoint(const Vector3D& point, const double d);
+
+	Figure combineFigures(std::vector<lib3d::Figure>& figures);
 }
 
 #endif //ENGINE_LIB3D_H

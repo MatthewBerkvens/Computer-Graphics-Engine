@@ -10,14 +10,14 @@
 
 namespace lib3d
 {
-    Matrix scaleMatrix(const double scale)
-    {
-        Matrix matrix;
-        matrix(1, 1) = scale;
-        matrix(2, 2) = scale;
-        matrix(3, 3) = scale;
-        return matrix;
-    }
+	Matrix scaleMatrix(const double scale)
+	{
+		Matrix matrix;
+		matrix(1, 1) = scale;
+		matrix(2, 2) = scale;
+		matrix(3, 3) = scale;
+		return matrix;
+	}
 
 	Matrix rotateXMatrix(const double angle)
 	{
@@ -88,7 +88,7 @@ namespace lib3d
 		this->point_indexes = point_indexes;
 	}
 
-    Face::Face(){};
+	Face::Face() {};
 
 	std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<Figure>& figures, const double d)
 	{
@@ -156,5 +156,31 @@ namespace lib3d
 	Point2D projectPoint(const Vector3D& point, const double d)
 	{
 		return Point2D(d*(point.x / -point.z), d*(point.y / -point.z));
+	}
+
+	Figure combineFigures(std::vector<lib3d::Figure>& figures)
+	{
+		assert(figures.size() > 0);
+		Figure newFigure;
+		newFigure.color = figures[0].color;
+
+		for (std::vector<Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
+		{
+			unsigned int offset = newFigure.points.size();
+
+			for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); it_face++)
+			{
+				Face newFace;
+				for (std::vector<unsigned int>::iterator it_face_index = it_face->point_indexes.begin(); it_face_index != it_face->point_indexes.end(); it_face_index++)
+				{
+					newFace.point_indexes.push_back(*it_face_index + offset);
+				}
+				newFigure.faces.push_back(newFace);
+			}
+
+			newFigure.points.insert(newFigure.points.end(), it_figure->points.begin(), it_figure->points.end());
+		}
+
+		return newFigure;
 	}
 }

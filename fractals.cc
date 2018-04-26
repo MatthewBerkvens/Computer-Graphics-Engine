@@ -36,6 +36,15 @@ void fractals::createMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figu
 	Matrix scaleMatrix = lib3d::scaleMatrix(1.0 / 3.0);
 
 	recursiveMengerSponge(figure, fractal, scaleMatrix, 0, nr_iterations);
+
+	/*for (size_t i = 0; i < fractal.size(); i++)
+	{
+		for (size_t x = 0; x < fractal[i].points.size(); x++)
+		{
+			if (fractal[i].points[x].x == -1)
+				continue;
+		}
+	}*/
 }
 
 
@@ -47,32 +56,27 @@ void fractals::recursiveMengerSponge(lib3d::Figure& figure, std::vector<lib3d::F
 		return;
 	}
 
-    double x = (figure.points[0] - figure.points[5]).length();
+	std::vector<lib3d::Figure> newFigures;
 
-    double y = (figure.points[0] - figure.points[4]).length();
+	for (int x = -1; x < 2; x++)
+	{
+		for (int y = -1; y < 2; y++)
+		{
+			for (int z = -1; z < 2; z++)
+			{
+				if ((x == 0 && y == 0) || (x == 0 && z == 0) || (y == 0 && z == 0)) continue;
 
-    double z = (figure.points[0] - figure.points[6]).length();
+				lib3d::Figure newFigure = lib3d::Figure(figure);
+				lib3d::transformFigure(newFigure, scaleMatrix);
 
-    for (int x = 0; x < 3; x++)
-    {
-        for (int y = 0; y < 3; y++)
-        {
-            for (int z = 0; z < 3; z++)
-            {
-                if ((x == 1 && y == 1) || (x == 1 && z == 1) || (y == 1 && z == 1)) continue;
+				lib3d::transformFigure(newFigure, lib3d::translateMatrix(Vector3D().vector(x * (2.0 / 3.0), y * (2.0 / 3.0), z * (2.0 / 3.0))));
 
-                lib3d::Figure newFigure = lib3d::Figure(figure);
-                lib3d::transformFigure(newFigure, scaleMatrix);
+				newFigures.push_back(newFigure);
+			}
+		}
+	}
 
-                double pt_x = x < 2 ? (x < 1 ? x/3.0 : 0) : -x/3.0;
-                double pt_y = y < 2 ? (y < 1 ? y/3.0 : 0) : -y/3.0;
-                double pt_z = z < 2 ? (z < 1 ? z/3.0 : 0) : -z/3.0;
+	lib3d::Figure combinedFigure = lib3d::combineFigures(newFigures);
 
-                std::cout << pt_x << " " << pt_y << " " << pt_z << std::endl;
-
-                lib3d::transformFigure(newFigure, lib3d::translateMatrix(Vector3D().vector(pt_x, pt_y, pt_z)));
-                fractals::recursiveMengerSponge(newFigure, fractal, scaleMatrix, iter + 1, max_iter);
-            }
-        }
-    }
+	fractals::recursiveMengerSponge(combinedFigure, fractal, scaleMatrix, iter + 1, max_iter);
 }

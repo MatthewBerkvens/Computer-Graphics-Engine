@@ -3,9 +3,10 @@
 //
 
 #include "bodies.h"
+#include <algorithm>
 #include <assert.h>
 
-void bodies::createCube(lib3d::Figure& figure)
+void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -28,7 +29,7 @@ void bodies::createCube(lib3d::Figure& figure)
 	};
 }
 
-void bodies::createTetrahedron(lib3d::Figure& figure)
+void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -45,7 +46,7 @@ void bodies::createTetrahedron(lib3d::Figure& figure)
 	};
 }
 
-void bodies::createOctahedron(lib3d::Figure& figure)
+void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1,  0,  0),
@@ -323,27 +324,116 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 {
 	createIcosahedron(figure);
 
-	std::vector<Vector3D> points;
-	std::vector<lib3d::Face> faces;
+	lib3d::Figure hexagons;
+	//hexagons.color = img::Color(255, 0, 0);
+	hexagons.color = figure.color;
+
+	lib3d::Figure triangles;
+	//triangles.color = img::Color(0, 0, 255);
+	triangles.color = figure.color;
+
+	lib3d::Figure pentagons;
+	//pentagons.color = img::Color(0, 255, 0);
+	pentagons.color = figure.color;
 
 	for (std::vector<lib3d::Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
 	{
 		assert(it->point_indexes.size() == 3);
 
-		lib3d::Face six;
+		lib3d::Face newHexagon;
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			six.point_indexes.push_back(points.size() + 1);
-			six.point_indexes.push_back(points.size());
+			lib3d::Face newTriangle;
+			newTriangle.point_indexes.push_back(triangles.points.size());
+			newTriangle.point_indexes.push_back(triangles.points.size() + 1);
+			newTriangle.point_indexes.push_back(triangles.points.size() + 2);
 
-			points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 1) % 3]] - figure.points[it->point_indexes[i]]) / 3));
-			points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 2) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+			triangles.points.push_back(figure.points[it->point_indexes[i]]);
+			triangles.points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 1) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+			triangles.points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 2) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+
+			triangles.faces.push_back(newTriangle);
+
+			newHexagon.point_indexes.push_back(hexagons.points.size() + 1);
+			newHexagon.point_indexes.push_back(hexagons.points.size());
+
+			hexagons.points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 1) % 3]] - figure.points[it->point_indexes[i]]) / 3));
+			hexagons.points.push_back(figure.points[it->point_indexes[i]] + ((figure.points[it->point_indexes[(i + 2) % 3]] - figure.points[it->point_indexes[i]]) / 3));
 		}
 
-		faces.push_back(six);
+		hexagons.faces.push_back(newHexagon);
 	}
 
-	figure.points = points;
-	figure.faces = faces;
+	for (std::vector<lib3d::Face>::iterator it_triangle_face = triangles.faces.begin(); it_triangle_face != triangles.faces.end(); it_triangle_face++)
+	{
+		assert(it_triangle_face->point_indexes.size() == 3);
+
+		auto pentagon_face = std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const lib3d::Face face)
+		{
+			return pentagons.points[face.point_indexes[0]] == triangles.points[it_triangle_face->point_indexes[0]];
+		}); //try to find a pentagon face where triangle_point[current_triangle_face_point_index[0]] equals to pentagons_points[the_pentagon_face_we_seek_point_index[0]] 
+
+		if (pentagon_face == pentagons.faces.end()) //if face was not found we need to make a new face with the current points, including point 0 as reference
+		{
+			pentagons.faces.push_back(lib3d::Face({ pentagons.points.size(), pentagons.points.size() + 1, pentagons.points.size() + 2 }));
+
+			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[0]]);
+			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
+			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[2]]);
+		}
+		else
+		{
+			auto pt1 = std::find_if(pentagon_face->point_indexes.begin(), pentagon_face->point_indexes.end(), [&](const unsigned int pt)
+			{
+				return pentagons.points[pt] == triangles.points[it_triangle_face->point_indexes[1]];
+			}); //try to find pt 1 of current triangle face
+
+			auto pt2 = std::find_if(pentagon_face->point_indexes.begin(), pentagon_face->point_indexes.end(), [&](const unsigned int pt)
+			{
+				return pentagons.points[pt] == triangles.points[it_triangle_face->point_indexes[2]];
+			}); //try to find pt 2 of current triangle face
+
+
+
+			if (pt1 == pentagon_face->point_indexes.end() && pt2 != pentagon_face->point_indexes.end()) //pt1 not found in the found pentagon face, so only push triangle_pt2
+			{
+				pentagon_face->point_indexes.insert(pt2, pentagons.points.size()); //insert triangle_pt1 before p2
+				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
+			}
+			else if (pt1 != pentagon_face->point_indexes.end() && pt2 == pentagon_face->point_indexes.end()) //pt2 not found in the found pentagon face, so only push triangle_pt1
+			{
+				pentagon_face->point_indexes.insert(std::next(pt1), pentagons.points.size()); //insert triangle_pt2 after p1
+				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[2]]);
+			}
+			else if (pt1 == pentagon_face->point_indexes.end() && pt2 == pentagon_face->point_indexes.end()) //both not found in the found pentagon face, push both.
+			{
+				pentagon_face->point_indexes.push_back(pentagons.points.size());
+				pentagon_face->point_indexes.push_back(pentagons.points.size() + 1);
+				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
+				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[2]]);
+			}
+
+			assert(pentagon_face->point_indexes.size() <= 6);
+		}
+	}
+
+	std::vector<lib3d::Face> newFaces; //remove point 0 from the faces we just generated
+	for (std::vector<lib3d::Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
+	{
+
+		lib3d::Face newFace;
+		for (std::vector<unsigned int>::iterator it_pt = std::next(it_pentagon_face->point_indexes.begin()); it_pt != it_pentagon_face->point_indexes.end(); it_pt++)
+		{
+			newFace.point_indexes.push_back(*it_pt);
+		}
+		//assert(newFace.point_indexes.size() == 5);
+		newFaces.push_back(newFace);
+	}
+	pentagons.faces = newFaces;
+
+	std::vector<lib3d::Figure> combined;
+	combined.push_back(pentagons);
+	combined.push_back(hexagons);
+	figure = lib3d::combineFigures(combined);
 }

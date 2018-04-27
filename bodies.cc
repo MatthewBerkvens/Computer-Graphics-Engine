@@ -376,7 +376,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 
 		if (pentagon_face == pentagons.faces.end()) //if face was not found we need to make a new face with the current points, including point 0 as reference
 		{
-			pentagons.faces.push_back(lib3d::Face({ pentagons.points.size(), pentagons.points.size() + 1, pentagons.points.size() + 2 }));
+			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }));
 
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[0]]);
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);

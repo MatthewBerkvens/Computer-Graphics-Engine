@@ -571,6 +571,7 @@ Vector3D operator*(Vector3D      lhs,
 std::ostream &operator<<(std::ostream   &output_stream,
                          const Vector3D &vector);
 
-
+//Added by Matthew
+bool operator==(const Vector3D& lhs, const Vector3D& rhs);
 
 #endif // VECTOR_INCLUDED

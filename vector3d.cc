@@ -545,3 +545,9 @@ std::ostream &operator<<(std::ostream   &output_stream,
         vector.print(output_stream);
         return output_stream;
 }
+
+bool operator==(const Vector3D& lhs, const Vector3D& rhs)
+{
+	return (std::abs(lhs.x - rhs.x) < 1.0E-8 && std::abs(lhs.y - rhs.y) < 1.0E-8 && std::abs(lhs.z - rhs.z) < 1.0E-8);
+
+}

@@ -3,6 +3,7 @@
 #include "l_parser.h"
 #include "lib_lsystem.h"
 #include "mylibrary.h"
+#include "img_generator.h"
 #include "lib3d.h"
 #include <assert.h>
 
@@ -15,7 +16,7 @@
 
 namespace lib_lsystem
 {
-	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename)
+	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename, img::Color& color)
 	{
 		string inputfile = EXTRA_PATH_IF_WINDOWS + conf[figurename]["inputfile"].as_string_or_die();
 
@@ -39,20 +40,20 @@ namespace lib_lsystem
 
 		for (unsigned int x = 0; x < initiator.length(); x++)
 		{
-			LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, initiator[x], 0);
+			LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, initiator[x], color, 0);
 		}
 
 		return figure;
 	}
 
-	void LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_system, vector<tuple<Vector3D, Vector3D, Vector3D, Vector3D>>& stack, Vector3D& pos, Vector3D& H, Vector3D& L, Vector3D& U, double& angleInRad, char& chr, unsigned int iter)
+	void LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_system, vector<tuple<Vector3D, Vector3D, Vector3D, Vector3D>>& stack, Vector3D& pos, Vector3D& H, Vector3D& L, Vector3D& U, double& angleInRad, char& chr, img::Color& color, unsigned int iter)
 	{
 		if (iter < l_system.get_nr_iterations() && l_system.get_alphabet().count(chr))
 		{
 			string repl = l_system.get_replacement(chr);
 			for (unsigned int i = 0; i < repl.length(); i++)
 			{
-				LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, repl[i], iter + 1);
+				LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, repl[i], color, iter + 1);
 			}
 		}
 		else
@@ -126,7 +127,7 @@ namespace lib_lsystem
 
 				if (l_system.draw(chr))
 				{
-					figure.faces.push_back(lib3d::Face({ size, size + 1 }));
+					figure.faces.push_back(lib3d::Face({ size, size + 1 }, color));
 				}
 			}
 		}
@@ -162,7 +163,7 @@ namespace lib_lsystem
 			LSystem2DIterate(lines, points, l_system, stack, current_x, current_y, angle, colorLine, initiator[x], 0);
 		}
 
-		return imgFrom2DLines(lines, points, size, colorBackground, false);
+		return img_generator::imgFrom2DLines(lines, points, size, colorBackground);
 	}
 
 	void LSystem2DIterate(vector<Line2D>& lines, vector<Point2D>& points, LParser::LSystem2D& l_system, vector<tuple<double, double, double>>& stack, double& current_x, double& current_y, double& angle, img::Color& color, char& chr, unsigned int iter)

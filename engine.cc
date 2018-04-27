@@ -3,8 +3,8 @@
 #include "l_parser.h"
 #include "lib_lsystem.h"
 #include "lib3d.h"
-#include "wireframe.h"
-#include "colored_bodies.h"
+#include "config_parser.h"
+#include "img_generator.h"
 
 #include <fstream>
 #include <iostream>
@@ -17,11 +17,37 @@ using namespace std;
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
 	string type = configuration["General"]["type"].as_string_or_die();
-	//cout << configuration;
+	if (type == "2DLSystem") return lib_lsystem::generate_2DLSystem(configuration);
 
-	if (type == "2DLSystem")  return lib_lsystem::generate_2DLSystem(configuration);
-	else if (type == "Wireframe" || type == "ZBufferedWireframe") return wireframe::generate_Wireframe(configuration, type == "ZBufferedWireframe");
-	else if (type == "ZBuffering") return colored_bodies::generate_ColoredBodies(configuration);
+
+	std::vector<lib3d::Figure> figures;
+	config_parser::generateFiguresFromConfig(figures, configuration);
+
+	double size = configuration["General"]["size"].as_double_or_die();
+	img::Color backgroundColor = colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
+
+	if (type == "Wireframe")
+	{
+		std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+
+		return img_generator::imgFrom2DLines(pair.second, pair.first, size, backgroundColor);
+	}
+	else if (type == "ZBufferedWireframe")
+	{
+		std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+
+		return img_generator::imgFromZBuffered2DLines(pair.second, pair.first, size, backgroundColor);
+	}
+	else if (type == "ZBuffering")
+	{
+		for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
+		{
+			it->triangulateFigure();
+		}
+
+		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor);
+	}
+
 	else return img::EasyImage();
 }
 

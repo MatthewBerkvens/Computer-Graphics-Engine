@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <assert.h>
 
-void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCube(lib3d::Figure& figure, img::Color& color) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -20,16 +20,16 @@ void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 4, 2, 6 }),
-		lib3d::Face({ 4, 1, 7, 2 }),
-		lib3d::Face({ 1, 5, 3, 7 }),
-		lib3d::Face({ 5, 0, 6, 3 }),
-		lib3d::Face({ 6, 2, 7, 3 }),
-		lib3d::Face({ 0, 5, 1, 4 })
+		lib3d::Face({ 0, 4, 2, 6 }, color),
+		lib3d::Face({ 4, 1, 7, 2 }, color),
+		lib3d::Face({ 1, 5, 3, 7 }, color),
+		lib3d::Face({ 5, 0, 6, 3 }, color),
+		lib3d::Face({ 6, 2, 7, 3 }, color),
+		lib3d::Face({ 0, 5, 1, 4 }, color)
 	};
 }
 
-void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createTetrahedron(lib3d::Figure& figure, img::Color& color) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -39,14 +39,14 @@ void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }),
-		lib3d::Face({ 1, 3, 2 }),
-		lib3d::Face({ 0, 3, 1 }),
-		lib3d::Face({ 0, 2, 3 })
+		lib3d::Face({ 0, 1, 2 }, color),
+		lib3d::Face({ 1, 3, 2 }, color),
+		lib3d::Face({ 0, 3, 1 }, color),
+		lib3d::Face({ 0, 2, 3 }, color)
 	};
 }
 
-void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createOctahedron(lib3d::Figure& figure, img::Color& color) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1,  0,  0),
@@ -58,18 +58,18 @@ void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 5 }),
-		lib3d::Face({ 1, 2, 5 }),
-		lib3d::Face({ 2, 3, 5 }),
-		lib3d::Face({ 3, 0, 5 }),
-		lib3d::Face({ 1, 0, 4 }),
-		lib3d::Face({ 2, 1, 4 }),
-		lib3d::Face({ 3, 2, 4 }),
-		lib3d::Face({ 0, 3, 4 })
+		lib3d::Face({ 0, 1, 5 }, color),
+		lib3d::Face({ 1, 2, 5 }, color),
+		lib3d::Face({ 2, 3, 5 }, color),
+		lib3d::Face({ 3, 0, 5 }, color),
+		lib3d::Face({ 1, 0, 4 }, color),
+		lib3d::Face({ 2, 1, 4 }, color),
+		lib3d::Face({ 3, 2, 4 }, color),
+		lib3d::Face({ 0, 3, 4 }, color)
 	};
 }
 
-void bodies::createIcosahedron(lib3d::Figure& figure)
+void bodies::createIcosahedron(lib3d::Figure& figure, img::Color& color)
 {
 	std::vector<Vector3D> points;
 
@@ -94,32 +94,32 @@ void bodies::createIcosahedron(lib3d::Figure& figure)
 	figure.points = points;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }),
-		lib3d::Face({ 0, 2, 3 }),
-		lib3d::Face({ 0, 3, 4 }),
-		lib3d::Face({ 0, 4, 5 }),
-		lib3d::Face({ 0, 5, 1 }),
-		lib3d::Face({ 1, 6, 2 }),
-		lib3d::Face({ 2, 6, 7 }),
-		lib3d::Face({ 2, 7, 3 }),
-		lib3d::Face({ 3, 7, 8 }),
-		lib3d::Face({ 3, 8, 4 }),
-		lib3d::Face({ 4, 8, 9 }),
-		lib3d::Face({ 4, 9, 5 }),
-		lib3d::Face({ 5, 9, 10 }),
-		lib3d::Face({ 5, 10, 1 }),
-		lib3d::Face({ 1, 10, 6 }),
-		lib3d::Face({ 11, 7, 6 }),
-		lib3d::Face({ 11, 8, 7 }),
-		lib3d::Face({ 11, 9, 8 }),
-		lib3d::Face({ 11, 10, 9 }),
-		lib3d::Face({ 11, 6, 10 })
+		lib3d::Face({ 0, 1, 2 }, color),
+		lib3d::Face({ 0, 2, 3 }, color),
+		lib3d::Face({ 0, 3, 4 }, color),
+		lib3d::Face({ 0, 4, 5 }, color),
+		lib3d::Face({ 0, 5, 1 }, color),
+		lib3d::Face({ 1, 6, 2 }, color),
+		lib3d::Face({ 2, 6, 7 }, color),
+		lib3d::Face({ 2, 7, 3 }, color),
+		lib3d::Face({ 3, 7, 8 }, color),
+		lib3d::Face({ 3, 8, 4 }, color),
+		lib3d::Face({ 4, 8, 9 }, color),
+		lib3d::Face({ 4, 9, 5 }, color),
+		lib3d::Face({ 5, 9, 10 }, color),
+		lib3d::Face({ 5, 10, 1 }, color),
+		lib3d::Face({ 1, 10, 6 }, color),
+		lib3d::Face({ 11, 7, 6 }, color),
+		lib3d::Face({ 11, 8, 7 }, color),
+		lib3d::Face({ 11, 9, 8 }, color),
+		lib3d::Face({ 11, 10, 9 }, color),
+		lib3d::Face({ 11, 6, 10 }, color)
 	};
 }
 
-void bodies::createDodecahedron(lib3d::Figure& figure)
+void bodies::createDodecahedron(lib3d::Figure& figure, img::Color& color)
 {
-	createIcosahedron(figure);
+	createIcosahedron(figure, color);
 
 	std::vector<Vector3D> newPoints;
 
@@ -139,26 +139,26 @@ void bodies::createDodecahedron(lib3d::Figure& figure)
 	figure.points = newPoints;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2, 3, 4 }),
-		lib3d::Face({ 0, 5, 6, 7, 1 }),
-		lib3d::Face({ 1, 7, 8, 9, 2 }),
-		lib3d::Face({ 2, 9, 10, 11, 3 }),
-		lib3d::Face({ 3, 11, 12, 13, 4 }),
-		lib3d::Face({ 4, 13, 14, 5, 0 }),
-		lib3d::Face({ 19, 18, 17, 16, 15 }),
-		lib3d::Face({ 19, 14, 13, 12, 18 }),
-		lib3d::Face({ 18, 12, 11, 10, 17 }),
-		lib3d::Face({ 17, 10, 9, 8, 16 }),
-		lib3d::Face({ 16, 8, 7, 6, 15 }),
-		lib3d::Face({ 15, 6, 5, 14, 19 }),
+		lib3d::Face({ 0, 1, 2, 3, 4 }, color),
+		lib3d::Face({ 0, 5, 6, 7, 1 }, color),
+		lib3d::Face({ 1, 7, 8, 9, 2 }, color),
+		lib3d::Face({ 2, 9, 10, 11, 3 }, color),
+		lib3d::Face({ 3, 11, 12, 13, 4 }, color),
+		lib3d::Face({ 4, 13, 14, 5, 0 }, color),
+		lib3d::Face({ 19, 18, 17, 16, 15 }, color),
+		lib3d::Face({ 19, 14, 13, 12, 18 }, color),
+		lib3d::Face({ 18, 12, 11, 10, 17 }, color),
+		lib3d::Face({ 17, 10, 9, 8, 16 }, color),
+		lib3d::Face({ 16, 8, 7, 6, 15 }, color),
+		lib3d::Face({ 15, 6, 5, 14, 19 }, color),
 	};
 }
 
-void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const double h)
+void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const double h, img::Color& color)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
-	lib3d::Face groundFace;
+	lib3d::Face groundFace(color);
 
 	points.push_back(Vector3D().point(0, 0, h));
 
@@ -173,7 +173,7 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 
 	for (unsigned i = 1; i < n; i++)
 	{
-		faces.push_back(lib3d::Face({ (i + 1) % (n + 1), i, 0 }));
+		faces.push_back(lib3d::Face({ (i + 1) % (n + 1), i, 0 }, color));
 	}
 
 	for (unsigned int i = n; i > 0; i--)
@@ -187,13 +187,13 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 	figure.points = points;
 }
 
-void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h)
+void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, img::Color& color)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
 
-	lib3d::Face groundFace;
-	lib3d::Face ceilingFace;
+	lib3d::Face groundFace(color);
+	lib3d::Face ceilingFace(color);
 
 	for (unsigned int i = 0; i < n; i++)
 	{
@@ -217,11 +217,11 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	{
 		if (i == n)
 		{
-			faces.push_back(lib3d::Face({ n, 0, n - 1, (2 * n) - 1 }));
+			faces.push_back(lib3d::Face({ n, 0, n - 1, (2 * n) - 1 }, color));
 		}
 		else
 		{
-			faces.push_back(lib3d::Face({ n + i, i, i - 1, n + i - 1 }));
+			faces.push_back(lib3d::Face({ n + i, i, i - 1, n + i - 1 }, color));
 		}
 
 		groundFace.point_indexes.push_back(i - 1);
@@ -235,9 +235,9 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	figure.points = points;
 }
 
-void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
+void bodies::createSphere(lib3d::Figure& figure, const unsigned int n, img::Color& color)
 {
-	createIcosahedron(figure);
+	createIcosahedron(figure, color);
 
 	for (unsigned int i = 0; i < n; i++)
 	{
@@ -268,13 +268,13 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
 			newPoints.push_back(F); //size + 5
 
 
-			newFaces.push_back(lib3d::Face({ size + 0, size + 4, size + 3 })); //A - E - D
+			newFaces.push_back(lib3d::Face({ size + 0, size + 4, size + 3 }, color)); //A - E - D
 
-			newFaces.push_back(lib3d::Face({ size + 1, size + 3, size + 5 })); //B - D - F
+			newFaces.push_back(lib3d::Face({ size + 1, size + 3, size + 5 }, color)); //B - D - F
 
-			newFaces.push_back(lib3d::Face({ size + 2, size + 5, size + 4 })); //C - F - E
+			newFaces.push_back(lib3d::Face({ size + 2, size + 5, size + 4 }, color)); //C - F - E
 
-			newFaces.push_back(lib3d::Face({ size + 3, size + 4, size + 5 })); //D - E - F
+			newFaces.push_back(lib3d::Face({ size + 3, size + 4, size + 5 }, color)); //D - E - F
 		}
 
 		figure.points = newPoints;
@@ -287,7 +287,7 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
 	}
 }
 
-void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m)
+void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m, img::Color& color)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
@@ -312,7 +312,7 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 				i*m + ((j + 1) % m),
 				((i + 1) % n)*m + ((j + 1) % m),
 				((i + 1) % n)*m + j
-				}));
+				}, color));
 		}
 	}
 
@@ -320,31 +320,23 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 	figure.faces = faces;
 }
 
-void bodies::createBuckyBall(lib3d::Figure& figure)
+void bodies::createBuckyBall(lib3d::Figure& figure, img::Color& color)
 {
-	createIcosahedron(figure);
+	createIcosahedron(figure, color);
 
 	lib3d::Figure hexagons;
-	//hexagons.color = img::Color(255, 0, 0);
-	hexagons.color = figure.color;
-
 	lib3d::Figure triangles;
-	//triangles.color = img::Color(0, 0, 255);
-	triangles.color = figure.color;
-
 	lib3d::Figure pentagons;
-	//pentagons.color = img::Color(0, 255, 0);
-	pentagons.color = figure.color;
 
 	for (std::vector<lib3d::Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
 	{
 		assert(it->point_indexes.size() == 3);
 
-		lib3d::Face newHexagon;
+		lib3d::Face newHexagon(color);
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			lib3d::Face newTriangle;
+			lib3d::Face newTriangle(color);
 			newTriangle.point_indexes.push_back(triangles.points.size());
 			newTriangle.point_indexes.push_back(triangles.points.size() + 1);
 			newTriangle.point_indexes.push_back(triangles.points.size() + 2);
@@ -376,7 +368,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 
 		if (pentagon_face == pentagons.faces.end()) //if face was not found we need to make a new face with the current points, including point 0 as reference
 		{
-			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }));
+			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }, color));
 
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[0]]);
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
@@ -398,12 +390,12 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 
 			if (pt1 == pentagon_face->point_indexes.end() && pt2 != pentagon_face->point_indexes.end()) //pt1 not found in the found pentagon face, so only push triangle_pt2
 			{
-				pentagon_face->point_indexes.insert(pt2, pentagons.points.size()); //insert triangle_pt1 before p2
+				pentagon_face->point_indexes.insert(pt2, pentagons.points.size()); //insert triangle_pt1 before pt2
 				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
 			}
 			else if (pt1 != pentagon_face->point_indexes.end() && pt2 == pentagon_face->point_indexes.end()) //pt2 not found in the found pentagon face, so only push triangle_pt1
 			{
-				pentagon_face->point_indexes.insert(std::next(pt1), pentagons.points.size()); //insert triangle_pt2 after p1
+				pentagon_face->point_indexes.insert(std::next(pt1), pentagons.points.size()); //insert triangle_pt2 after pt1
 				pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[2]]);
 			}
 			else if (pt1 == pentagon_face->point_indexes.end() && pt2 == pentagon_face->point_indexes.end()) //both not found in the found pentagon face, push both.
@@ -422,12 +414,12 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 	for (std::vector<lib3d::Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
 	{
 
-		lib3d::Face newFace;
+		lib3d::Face newFace(color);
 		for (std::vector<unsigned int>::iterator it_pt = std::next(it_pentagon_face->point_indexes.begin()); it_pt != it_pentagon_face->point_indexes.end(); it_pt++)
 		{
 			newFace.point_indexes.push_back(*it_pt);
 		}
-		//assert(newFace.point_indexes.size() == 5);
+		assert(newFace.point_indexes.size() == 5);
 		newFaces.push_back(newFace);
 	}
 	pentagons.faces = newFaces;
@@ -435,5 +427,5 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 	std::vector<lib3d::Figure> combined;
 	combined.push_back(pentagons);
 	combined.push_back(hexagons);
-	figure = lib3d::combineFigures(combined);
+	lib3d::combineFigures(figure, combined);
 }

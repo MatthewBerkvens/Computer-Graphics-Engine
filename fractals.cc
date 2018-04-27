@@ -36,15 +36,6 @@ void fractals::createMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figu
 	Matrix scaleMatrix = lib3d::scaleMatrix(1.0 / 3.0);
 
 	recursiveMengerSponge(figure, fractal, scaleMatrix, 0, nr_iterations);
-
-	/*for (size_t i = 0; i < fractal.size(); i++)
-	{
-		for (size_t x = 0; x < fractal[i].points.size(); x++)
-		{
-			if (fractal[i].points[x].x == -1)
-				continue;
-		}
-	}*/
 }
 
 
@@ -76,7 +67,9 @@ void fractals::recursiveMengerSponge(lib3d::Figure& figure, std::vector<lib3d::F
 		}
 	}
 
-	lib3d::Figure combinedFigure = lib3d::combineFigures(newFigures);
+	lib3d::Figure combinedFigure;
+
+	lib3d::combineFigures(combinedFigure, newFigures);
 
 	fractals::recursiveMengerSponge(combinedFigure, fractal, scaleMatrix, iter + 1, max_iter);
 }

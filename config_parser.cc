@@ -1,18 +1,7 @@
-//
-// Created by matthew.
-//
+#include "config_parser.h"
 
-#include "wireframe.h"
-#include "fractals.h"
-
-img::EasyImage wireframe::generate_Wireframe(const ini::Configuration &conf, bool UseZBuffering)
+void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, const ini::Configuration& conf)
 {
-	double size = conf["General"]["size"].as_double_or_die();
-
-	img::Color backgroundColor = colorFromNormalizedDoubleTuple(conf["General"]["backgroundcolor"].as_double_tuple_or_die());
-
-	std::vector<lib3d::Figure> figures;
-
 	for (int i = 0; i < conf["General"]["nrFigures"].as_int_or_die(); i++)
 	{
 		std::string figureName = "Figure" + std::to_string(i);
@@ -20,7 +9,7 @@ img::EasyImage wireframe::generate_Wireframe(const ini::Configuration &conf, boo
 		std::string type = conf[figureName]["type"].as_string_or_die();
 
 		lib3d::Figure newFigure;
-		newFigure.color = colorFromNormalizedDoubleTuple(conf[figureName]["color"].as_double_tuple_or_die());
+		img::Color color = colorFromNormalizedDoubleTuple(conf[figureName]["color"].as_double_tuple_or_die());
 
 		std::vector<double> center = conf[figureName]["center"].as_double_tuple_or_die();
 
@@ -31,61 +20,61 @@ img::EasyImage wireframe::generate_Wireframe(const ini::Configuration &conf, boo
 			* lib3d::scaleMatrix(conf[figureName]["scale"].as_double_or_die())
 			* lib3d::translateMatrix(Vector3D().vector(center[0], center[1], center[2]));
 
-		if (type == "LineDrawing") parseLineDrawing(newFigure, conf, figureName);
-		else if (type == "3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName);
-		else if (type == "Cube") bodies::createCube(newFigure);
-		else if (type == "Tetrahedron") bodies::createTetrahedron(newFigure);
-		else if (type == "Octahedron") bodies::createOctahedron(newFigure);
-		else if (type == "Icosahedron") bodies::createIcosahedron(newFigure);
-		else if (type == "Dodecahedron") bodies::createDodecahedron(newFigure);
-		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
-		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
-		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die());
-		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
-		else if (type == "BuckyBall") bodies::createBuckyBall(newFigure);
+		if (type == "LineDrawing") parseLineDrawing(newFigure, conf, figureName, color);
+		else if (type == "3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName, color);
+		else if (type == "Cube") bodies::createCube(newFigure, color);
+		else if (type == "Tetrahedron") bodies::createTetrahedron(newFigure, color);
+		else if (type == "Octahedron") bodies::createOctahedron(newFigure, color);
+		else if (type == "Icosahedron") bodies::createIcosahedron(newFigure, color);
+		else if (type == "Dodecahedron") bodies::createDodecahedron(newFigure, color);
+		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), color);
+		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), color);
+		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die(), color);
+		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die(), color);
+		else if (type == "BuckyBall") bodies::createBuckyBall(newFigure, color);
 		else
 		{
 			std::vector<lib3d::Figure> newFigures;
 
 			if (type == "FractalCube")
 			{
-				bodies::createCube(newFigure);
+				bodies::createCube(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalDodecahedron")
 			{
-				bodies::createDodecahedron(newFigure);
+				bodies::createDodecahedron(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalIcosahedron")
 			{
-				bodies::createIcosahedron(newFigure);
+				bodies::createIcosahedron(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalOctahedron")
 			{
-				bodies::createOctahedron(newFigure);
+				bodies::createOctahedron(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalTetrahedron")
 			{
-				bodies::createTetrahedron(newFigure);
+				bodies::createTetrahedron(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalBuckyBall")
 			{
-				bodies::createBuckyBall(newFigure);
+				bodies::createBuckyBall(newFigure, color);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "MengerSponge")
 			{
-				bodies::createCube(newFigure);
+				bodies::createCube(newFigure, color);
 
 				fractals::createMengerSponge(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die());
 			}
@@ -113,19 +102,12 @@ img::EasyImage wireframe::generate_Wireframe(const ini::Configuration &conf, boo
 	}
 
 	std::vector<double> eye = conf["General"]["eye"].as_double_tuple_or_die();
-	if (figures.size() > 0)
-	{
-		lib3d::applyEyeTransform(figures, Vector3D().point(eye[0], eye[1], eye[2]));
 
-		std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
-
-		return imgFrom2DLines(pair.second, pair.first, size, backgroundColor, UseZBuffering);
-	}
-	else return img::EasyImage();
+	lib3d::applyEyeTransform(figures, Vector3D().point(eye[0], eye[1], eye[2]));
 }
 
 
-void wireframe::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name)
+void config_parser::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name, img::Color& color)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
@@ -146,7 +128,7 @@ void wireframe::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration
 	{
 		currentFacePoints = conf[name]["line" + std::to_string(i)].as_int_tuple_or_die();
 
-		lib3d::Face newFace;
+		lib3d::Face newFace(color);
 
 		newFace.point_indexes.push_back(currentFacePoints[0]);
 		newFace.point_indexes.push_back(currentFacePoints[1]);

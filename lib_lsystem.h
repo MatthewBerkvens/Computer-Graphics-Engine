@@ -15,7 +15,7 @@ using namespace std;
 namespace lib_lsystem {
     img::EasyImage generate_2DLSystem(const ini::Configuration &conf);
 
-	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename);
+	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename, img::Color& color);
 
 	void LSystem2DIterate(vector<Line2D>& lines,
 		vector<Point2D>& points,
@@ -37,6 +37,7 @@ namespace lib_lsystem {
 		Vector3D& U,
 		double& angleInRad,
 		char& chr,
+		img::Color& color,
 		unsigned int iter);
 }
 

@@ -8,6 +8,8 @@ const double MY_PI = 3.141592653589793238462643;
 #include "easy_image.h"
 #include <cmath>
 #include <map>
+#include <assert.h>
+#include <algorithm>
 
 #ifdef __linux__ 
 #define EXTRA_PATH_IF_WINDOWS ""
@@ -50,6 +52,8 @@ inline int roundToInt(double d)
 {
 	return static_cast<int>(std::round(d));
 };
+
+std::tuple<int, int, double, double, double> propertiesOfImage(std::vector<Point2D>& points, const double size);
 
 img::EasyImage imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& colorBackground, bool UseZBuffering);
 

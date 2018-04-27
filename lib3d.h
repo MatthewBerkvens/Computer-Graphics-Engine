@@ -1,5 +1,5 @@
 //
-// Created by matthew on 06.03.18.
+// Created by matthew
 //
 
 #ifndef ENGINE_LIB3D_H
@@ -11,23 +11,25 @@
 
 namespace lib3d
 {
-    class Face
-    {
-    public:
-        std::vector<unsigned int> point_indexes;
-		Face(std::vector<unsigned int> point_indexes);
-        Face();
-    };
+	class Face
+	{
+	public:
+		std::vector<unsigned int> point_indexes;
+		img::Color color;
+		Face(std::vector<unsigned int> _point_indexes, img::Color _color) : point_indexes(_point_indexes), color(_color) {}
+		Face(img::Color _color) : point_indexes({}), color(_color) {}
+	};
 
-    class Figure
-    {
-    public:
-        std::vector<Vector3D> points;
-        std::vector<Face> faces;
-        img::Color color;
-    };
+	class Figure
+	{
+	public:
+		std::vector<Vector3D> points;
+		std::vector<Face> faces;
+		
+		void triangulateFigure();
+	};
 
-    Matrix scaleMatrix(const double scale);
+	Matrix scaleMatrix(const double scale);
 
 	Matrix rotateXMatrix(const double angle);
 
@@ -49,7 +51,7 @@ namespace lib3d
 
 	Point2D projectPoint(const Vector3D& point, const double d);
 
-	Figure combineFigures(std::vector<lib3d::Figure>& figures);
+	void combineFigures(lib3d::Figure& out, std::vector<lib3d::Figure>& figures);
 }
 
 #endif //ENGINE_LIB3D_H

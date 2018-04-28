@@ -35,21 +35,21 @@ namespace lib3d
 		img::Color ambientLight;
 		img::Color diffuseLight;
 		img::Color specularLight;
-		Light(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight) : ambientLight(_ambientLight), diffuseLight(diffuseLight), specularLight(_specularLight) {}
+		Light(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight) : ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight) {}
 	};
 
 	class InfLight : public Light
 	{
 	public:
 		Vector3D ldVector;
-		InfLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _ldVector) : ldVector(_ldVector), Light(_ambientLight, _diffuseLight, _specularLight) {}
+		InfLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _ldVector) : Light(_ambientLight, _diffuseLight, _specularLight), ldVector(_ldVector) {}
 	};
 
 	class PointLight : public Light
 	{
 	public:
 		Vector3D location;
-		PointLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _location) : location(_location), Light(_ambientLight, _diffuseLight, _specularLight) {}
+		PointLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _location) : Light(_ambientLight, _diffuseLight, _specularLight), location(_location) {}
 	};
 
 

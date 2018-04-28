@@ -410,22 +410,40 @@ void bodies::createBuckyBall(lib3d::Figure& figure, img::Color& color)
 		}
 	}
 
+	std::vector<Vector3D> newPoints; //remove useless point
+	for (std::vector<Vector3D>::iterator it_pentagon_pt = pentagons.points.begin(); it_pentagon_pt != pentagons.points.end(); it_pentagon_pt++)
+	{
+		if (std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const lib3d::Face face) {
+			return (std::find_if(std::next(face.point_indexes.begin()), face.point_indexes.end(), [&](const unsigned int pt_index) {
+				return pentagons.points[pt_index] == *it_pentagon_pt;
+			}) != face.point_indexes.end());
+		}) != pentagons.faces.end())
+			newPoints.push_back(*it_pentagon_pt);
+	}
+
 	std::vector<lib3d::Face> newFaces; //remove point 0 from the faces we just generated
 	for (std::vector<lib3d::Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
 	{
-
 		lib3d::Face newFace(color);
-		for (std::vector<unsigned int>::iterator it_pt = std::next(it_pentagon_face->point_indexes.begin()); it_pt != it_pentagon_face->point_indexes.end(); it_pt++)
+		for (std::vector<unsigned int>::iterator it_pt_index = std::next(it_pentagon_face->point_indexes.begin()); it_pt_index != it_pentagon_face->point_indexes.end(); it_pt_index++)
 		{
-			newFace.point_indexes.push_back(*it_pt);
+			for (size_t i = 0; i < newPoints.size(); i++)
+			{
+				if (newPoints[i] == pentagons.points[*it_pt_index])
+					newFace.point_indexes.push_back(i);
+			}
 		}
 		assert(newFace.point_indexes.size() == 5);
 		newFaces.push_back(newFace);
 	}
+
+	pentagons.points = newPoints;
 	pentagons.faces = newFaces;
 
 	std::vector<lib3d::Figure> combined;
 	combined.push_back(pentagons);
 	combined.push_back(hexagons);
+	figure.points.clear();
+	figure.faces.clear();
 	lib3d::combineFigures(figure, combined);
 }

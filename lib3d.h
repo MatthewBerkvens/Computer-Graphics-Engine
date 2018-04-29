@@ -5,19 +5,96 @@
 #ifndef ENGINE_LIB3D_H
 #define ENGINE_LIB3D_H
 #include "vector3d.h"
-#include "easy_image.h"
-#include "mylibrary.h"
 #include <vector>
+#include <assert.h>
+#include <tuple>
 
 namespace lib3d
 {
+	/**
+	* \brief This class represents the color of a pixel in an img::EasyImage object
+	*/
+	class Color
+	{
+		//a safety warning to all of you: Do *NOT* rearrange the 'color components' in this class
+		//easyimage expects these three fields to be the *first* fields in the class AND expects
+		//them to be in *this* order
+		//if you alter the arrangement, the generated BMP files will contain garbage
+	public:
+		/**
+		* \brief The intensity of the blue color component
+		*/
+		uint8_t blue;
+
+		/**
+		* \brief The intensity of the green color component
+		*/
+		uint8_t green;
+
+		/**
+		* \brief The intensity of the red color component
+		*/
+		uint8_t red;
+
+		/**
+		* \brief Default Constructor
+		*/
+		Color();
+
+		/**
+		* \brief Constructs a Color with the given intensities
+		*
+		* \param r	The red color component
+		* \param g	The green color component
+		* \param b	The blue color component
+		*
+		*/
+		Color(uint8_t r, uint8_t g, uint8_t b);
+
+		/**
+		* Destructor
+		*/
+		~Color();
+	};
+
+	Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
+
+	class Point2D {
+	public:
+		double x;
+		double y;
+
+		Point2D(double x, double y) : x(x), y(y) {}
+	};
+
+	class Line2D {
+	public:
+		Point2D a;
+		double z_a;
+
+		Point2D b;
+		double z_b;
+
+		Color color;
+
+		Line2D(Point2D& a, Point2D& b, Color& color) : a(a), b(b), color(color) {}
+		Line2D(Point2D& a, double z_a, Point2D& b, double z_b, Color& color) : a(a), z_a(z_a), b(b), z_b(z_b), color(color) {}
+	};
+
 	class Face
 	{
 	public:
 		std::vector<unsigned int> point_indexes;
-		img::Color color;
-		Face(std::vector<unsigned int> _point_indexes, img::Color _color) : point_indexes(_point_indexes), color(_color) {}
-		Face(img::Color _color) : point_indexes({}), color(_color) {}
+		Color ambientReflection;
+		Color diffuseReflection;
+		Color specularReflection;
+		double reflectionCoefficient;
+
+		Face(const std::vector<unsigned int> _point_indexes, lib3d::Color& _ambientReflection, lib3d::Color& _diffuseReflection, lib3d::Color& _specularReflection, double _reflectionCoefficient) :
+			point_indexes(_point_indexes), ambientReflection(_ambientReflection), diffuseReflection(_diffuseReflection), specularReflection(_specularReflection), reflectionCoefficient(_reflectionCoefficient) {}
+
+		Face(lib3d::Color& _ambientReflection, lib3d::Color& _diffuseReflection, lib3d::Color& _specularReflection, double _reflectionCoefficient) :
+			point_indexes({}), ambientReflection(_ambientReflection), diffuseReflection(_diffuseReflection), specularReflection(_specularReflection), reflectionCoefficient(_reflectionCoefficient) {}
 	};
 
 	class Figure
@@ -32,24 +109,18 @@ namespace lib3d
 	class Light
 	{
 	public:
-		img::Color ambientLight;
-		img::Color diffuseLight;
-		img::Color specularLight;
-		Light(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight) : ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight) {}
-	};
+		std::tuple<double, double, double> ambientLight;
+		std::tuple<double, double, double> diffuseLight;
+		std::tuple<double, double, double> specularLight;
 
-	class InfLight : public Light
-	{
-	public:
+		bool specialLight;
+		bool infinity;
+
 		Vector3D ldVector;
-		InfLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _ldVector) : Light(_ambientLight, _diffuseLight, _specularLight), ldVector(_ldVector) {}
-	};
-
-	class PointLight : public Light
-	{
-	public:
 		Vector3D location;
-		PointLight(img::Color& _ambientLight, img::Color& _diffuseLight, img::Color& _specularLight, Vector3D& _location) : Light(_ambientLight, _diffuseLight, _specularLight), location(_location) {}
+
+		Light(std::tuple<double, double, double>& _ambientLight, std::tuple<double, double, double>& _diffuseLight, std::tuple<double, double, double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location) :
+			ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location) {}
 	};
 
 

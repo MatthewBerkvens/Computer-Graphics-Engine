@@ -4,12 +4,12 @@
 
 #include "img_generator.h"
 
-img::EasyImage img_generator::imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& backgroundColor)
+img::EasyImage img_generator::imgFrom2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor)
 {
-	auto minmax_x = std::minmax_element(points.begin(), points.end(), [](const Point2D &a, const Point2D &b) {
+	auto minmax_x = std::minmax_element(points.begin(), points.end(), [](const lib3d::Point2D &a, const lib3d::Point2D &b) {
 		return a.x < b.x;
 	});
-	auto minmax_y = std::minmax_element(points.begin(), points.end(), [](const Point2D &a, const Point2D &b) {
+	auto minmax_y = std::minmax_element(points.begin(), points.end(), [](const lib3d::Point2D &a, const lib3d::Point2D &b) {
 		return a.y < b.y;
 	});
 
@@ -33,7 +33,7 @@ img::EasyImage img_generator::imgFrom2DLines(std::vector<Line2D>& lines, std::ve
 
 	img::EasyImage image = img::EasyImage(roundToInt(image_x), roundToInt(image_y), backgroundColor);
 
-	for (std::vector<Line2D>::iterator it = lines.begin(); it != lines.end(); ++it)
+	for (std::vector<lib3d::Line2D>::iterator it = lines.begin(); it != lines.end(); ++it)
 	{
 		image.draw_line(
 			roundToInt((d * it->a.x) + offset_x),
@@ -47,12 +47,12 @@ img::EasyImage img_generator::imgFrom2DLines(std::vector<Line2D>& lines, std::ve
 }
 
 
-img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& backgroundColor)
+img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor)
 {
-	auto minmax_x = std::minmax_element(points.begin(), points.end(), [](const Point2D &a, const Point2D &b) {
+	auto minmax_x = std::minmax_element(points.begin(), points.end(), [](const lib3d::Point2D &a, const lib3d::Point2D &b) {
 		return a.x < b.x;
 	});
-	auto minmax_y = std::minmax_element(points.begin(), points.end(), [](const Point2D &a, const Point2D &b) {
+	auto minmax_y = std::minmax_element(points.begin(), points.end(), [](const lib3d::Point2D &a, const lib3d::Point2D &b) {
 		return a.y < b.y;
 	});
 
@@ -77,7 +77,7 @@ img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<Line2D>& lines
 	img::EasyImage image = img::EasyImage(roundToInt(image_x), roundToInt(image_y), backgroundColor);
 	img::ZBuffer zbuffer = img::ZBuffer(roundToInt(image_x), roundToInt(image_y));
 
-	for (std::vector<Line2D>::iterator it = lines.begin(); it != lines.end(); ++it)
+	for (std::vector<lib3d::Line2D>::iterator it = lines.begin(); it != lines.end(); ++it)
 	{
 		image.draw_zbuf_line(
 			zbuffer,
@@ -94,7 +94,7 @@ img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<Line2D>& lines
 }
 
 
-img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, img::Color& backgroundColor)
+img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights)
 {
 	double min_x = 0;
 	double max_x = 0;
@@ -145,7 +145,11 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 				d,
 				offset_x,
 				offset_y,
-				it_face->color);
+				it_face->ambientReflection,
+				it_face->diffuseReflection,
+				it_face->specularReflection,
+				it_face->reflectionCoefficient,
+				lights);
 		}
 	}
 

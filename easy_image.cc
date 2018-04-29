@@ -16,17 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "easy_image.h"
-#include "mylibrary.h"
-#include "lib3d.h"
-#include <algorithm>
-#include <assert.h>
-#include <math.h>
-#include <iostream>
-#include <limits>
 
 #define le32toh(x) (x)
 
-namespace
+namespace img
 {
 	//structs borrowed from wikipedia's article on the BMP file format
 	struct bmpfile_magic
@@ -113,16 +106,11 @@ namespace
 
 }
 
-img::Color::Color() :
-	blue(0), green(0), red(0)
+lib3d::Color lib3d::colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized)
 {
-}
-img::Color::Color(uint8_t r, uint8_t g, uint8_t b) :
-	blue(b), green(g), red(r)
-{
-}
-img::Color::~Color()
-{
+	if (colorNormalized.size() != 3)
+		throw std::invalid_argument("received vector with incorrect size for color, expected size 3.");
+	return lib3d::Color((int)(colorNormalized[0] * 255), (int)(colorNormalized[1] * 255), (int)(colorNormalized[2] * 255));
 }
 
 img::UnsupportedFileTypeException::UnsupportedFileTypeException(std::string const& msg) :
@@ -152,7 +140,7 @@ img::EasyImage::EasyImage() :
 {
 }
 
-img::EasyImage::EasyImage(unsigned int _width, unsigned int _height, Color color) :
+img::EasyImage::EasyImage(unsigned int _width, unsigned int _height, lib3d::Color color) :
 	width(_width), height(_height), bitmap(width * height, color)
 {
 }
@@ -185,29 +173,29 @@ unsigned int img::EasyImage::get_height() const
 	return height;
 }
 
-void img::EasyImage::clear(Color color)
+void img::EasyImage::clear(lib3d::Color color)
 {
-	for (std::vector<Color>::iterator i = bitmap.begin(); i != bitmap.end(); i++)
+	for (std::vector<lib3d::Color>::iterator i = bitmap.begin(); i != bitmap.end(); i++)
 	{
 		*i = color;
 	}
 }
 
-img::Color& img::EasyImage::operator()(unsigned int x, unsigned int y)
+lib3d::Color& img::EasyImage::operator()(unsigned int x, unsigned int y)
 {
 	assert(x < this->width);
 	assert(y < this->height);
 	return bitmap.at(x * height + y);
 }
 
-img::Color const& img::EasyImage::operator()(unsigned int x, unsigned int y) const
+lib3d::Color const& img::EasyImage::operator()(unsigned int x, unsigned int y) const
 {
 	assert(x < this->width);
 	assert(y < this->height);
 	return bitmap.at(x * height + y);
 }
 
-void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color)
+void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, lib3d::Color color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
@@ -275,16 +263,84 @@ img::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, const Color& color)
+void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights)
 {
 	assert(zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
-	Point2D projected_A = Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
-	Point2D projected_B = Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
-	Point2D projected_C = Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+	lib3d::Point2D projected_A = lib3d::Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
+	lib3d::Point2D projected_B = lib3d::Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
+	lib3d::Point2D projected_C = lib3d::Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+
+	Vector3D grav = Vector3D().point(
+		((projected_A.x + projected_B.x + projected_C.x) / 3), //xg
+		((projected_A.y + projected_B.y + projected_C.y) / 3), //yg
+		1 / (3 * A.z) + 1 / (3 * B.z) + 1 / (3 * C.z) // 1/zg
+	);
 
 	unsigned int y_min = roundToInt(std::min(projected_A.y, std::min(projected_B.y, projected_C.y)) + 0.5);
 	unsigned int y_max = roundToInt(std::max(projected_A.y, std::max(projected_B.y, projected_C.y)) - 0.5);
+
+	double w1 = ((B.y - A.y) * (C.z - A.z)) - ((B.z - A.z) * (C.y - A.y));
+
+	double w2 = ((B.z - A.z) * (C.x - A.x)) - ((B.x - A.x) * (C.z - A.z));
+
+	double w3 = ((B.x - A.x) * (C.y - A.y)) - ((B.y - A.y) * (C.x - A.x));
+
+	double k = w1 * A.x + w2 * A.y + w3 * A.z;
+
+	double dzdx = w1 / (-d * k);
+	double dzdy = w2 / (-d * k);
+
+	Vector3D normal = Vector3D().vector(w1, w2, w3);
+	normal.normalise();
+
+	lib3d::Color actualColor;
+
+	for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
+	{
+		if (!it->specialLight)
+		{
+			actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
+			actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
+			actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
+		}
+		else
+		{
+			if (it->infinity)
+			{
+				double scalar_product_diffuse = (normal.x * -it->ldVector.x) + (normal.y * -it->ldVector.y) + (normal.z * -it->ldVector.z);
+
+				actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
+				actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
+				actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
+
+				if (scalar_product_diffuse > 0)
+				{
+					actualColor.red += (uint8_t)roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_product_diffuse);
+					actualColor.green += (uint8_t)roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_product_diffuse);
+					actualColor.blue += (uint8_t)roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_product_diffuse);
+				}
+
+
+				Vector3D r = ((2 * scalar_product_diffuse) * normal) + it->ldVector;
+
+				double scalar_product_specular = (r.x * -it->ldVector.x) + (r.y * -it->ldVector.y) + (r.z * -it->ldVector.z);
+
+				if (scalar_product_specular > 0)
+				{
+					actualColor.red += (uint8_t)roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_product_specular, reflectionCoeff));
+					actualColor.green += (uint8_t)roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_product_specular, reflectionCoeff));
+					actualColor.blue += (uint8_t)roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_product_specular, reflectionCoeff));
+				}
+			}
+			else
+			{
+				actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
+				actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
+				actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
+			}
+		}
+	}
 
 	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
 	{
@@ -293,8 +349,8 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 		for (unsigned int i = 0; i < 3; i++)
 		{
-			const Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
-			const Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
+			const lib3d::Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
+			const lib3d::Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
 
 			if (P.y == Q.y || ((y_cur - P.y) * (y_cur - Q.y)) > 0) continue;
 
@@ -304,25 +360,53 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 		for (int x_cur = roundToInt(x_min + 0.5); x_cur <= roundToInt(x_max - 0.5); x_cur++)
 		{
-			double w1 = ((B.y - A.y) * (C.z - A.z)) - ((B.z - A.z) * (C.y - A.y));
-
-			double w2 = ((B.z - A.z) * (C.x - A.x)) - ((B.x - A.x) * (C.z - A.z));
-
-			double w3 = ((B.x - A.x) * (C.y - A.y)) - ((B.y - A.y) * (C.x - A.x));
-
-			double k = w1 * A.x + w2 * A.y + w3 * A.z;
-
-			double dzdx = w1 / (-d * k);
-			double dzdy = w2 / (-d * k);
-
 			double z_inv =
-				(1.0001 * (1 / (3 * A.z) + 1 / (3 * B.z) + 1 / (3 * C.z))) + // 1/zg
-				((x_cur - ((projected_A.x + projected_B.x + projected_C.x) / 3)) * dzdx) + // (x - xg) * dzdx
-				((y_cur - ((projected_A.y + projected_B.y + projected_C.y) / 3)) * dzdy); // (x - xg) * dzdy
-			
+				(1.0001 * (grav.z)) + // 1.0001 * 1/zg
+				((x_cur - grav.x) * dzdx) + // (x - xg) * dzdx
+				((y_cur - grav.y) * dzdy); // (y - yg) * dzdy
+
 			if (z_inv < zbuffer[x_cur][y_cur])
 			{
-				(*this)(x_cur, y_cur) = color;
+				lib3d::Color pixelColor(actualColor);
+
+				for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
+				{
+					if (it->specialLight && !it->infinity)
+					{
+						Vector3D pixelToPoint = Vector3D().point(
+							((x_cur - dx) * -(1.0 / z_inv)) / d, //-((xE - dx) * zE) / d
+							((y_cur - dy) * -(1.0 / z_inv)) / d, //-((yE - dx) * zE) / d
+							(1.0 / z_inv) //-zE
+						);
+
+						Vector3D pixelToVector = Vector3D().vector(pixelToPoint);
+
+						Vector3D pixelToLocationVector = Vector3D().vector(it->location) - pixelToVector;
+						pixelToLocationVector.normalise();
+
+						double scalar_product_diffuse = (normal.x * pixelToLocationVector.x) + (normal.y * pixelToLocationVector.y) + (normal.z * pixelToLocationVector.z);
+
+						if (scalar_product_diffuse > 0)
+						{
+							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_product_diffuse);
+							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_product_diffuse);
+							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_product_diffuse);
+						}
+
+						Vector3D r = ((2 * scalar_product_diffuse) * normal) - pixelToLocationVector;
+
+						double scalar_product_specular = (r.x * pixelToVector.x) + (r.y * pixelToVector.y) + (r.z * pixelToVector.z);
+
+						if (scalar_product_specular > 0)
+						{
+							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_product_specular, reflectionCoeff));
+							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_product_specular, reflectionCoeff));
+							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_product_specular, reflectionCoeff));
+						}
+					}
+				}
+
+				(*this)(x_cur, y_cur) = pixelColor;
 				zbuffer[x_cur][y_cur] = z_inv;
 			}
 		}
@@ -330,7 +414,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, const Color& color)
+void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
@@ -533,7 +617,7 @@ std::istream& img::operator>>(std::istream& in, EasyImage & image)
 	unsigned int line_padding = from_little_endian(header.pixel_size) / image.height - (3 * image.width);
 	//re-initialize the image bitmap
 	image.bitmap.clear();
-	image.bitmap.assign(image.height * image.width, Color());
+	image.bitmap.assign(image.height * image.width, lib3d::Color());
 	//okay let's read the pixels themselves:
 	//they are arranged left->right., bottom->top if height>0, top->bottom if height<0, b,g,r
 	for (unsigned int i = 0; i < image.get_height(); i++)

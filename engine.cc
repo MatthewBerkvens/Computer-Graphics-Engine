@@ -17,54 +17,47 @@ using namespace std;
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
 	string type = configuration["General"]["type"].as_string_or_die();
+	double size = configuration["General"]["size"].as_double_or_die();
+
 	if (type == "2DLSystem") return lib_lsystem::generate_2DLSystem(configuration);
 
-
 	std::vector<lib3d::Figure> figures;
+	std::vector<lib3d::Light> lights;
 
-	double size = configuration["General"]["size"].as_double_or_die();
-	img::Color backgroundColor = colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
+	config_parser::generateLightsFromConfig(lights, configuration);
+	config_parser::generateFiguresFromConfig(figures, lights, configuration);
+
+	lib3d::Color backgroundColor = lib3d::colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
 
 	if (type == "Wireframe")
 	{
-		config_parser::generateFiguresFromConfig(figures, configuration);
-
-		std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+		std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> pair = lib3d::projectFigures(figures, 1);
 
 		return img_generator::imgFrom2DLines(pair.second, pair.first, size, backgroundColor);
 	}
 	else if (type == "ZBufferedWireframe")
 	{
-		config_parser::generateFiguresFromConfig(figures, configuration);
-
-		std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+		std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> pair = lib3d::projectFigures(figures, 1);
 
 		return img_generator::imgFromZBuffered2DLines(pair.second, pair.first, size, backgroundColor);
 	}
 	else if (type == "ZBuffering")
 	{
-		config_parser::generateFiguresFromConfig(figures, configuration);
-
 		for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
 		{
 			it->triangulateFigure();
 		}
 
-		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor);
+		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
 	}
 	else if (type == "LightedZBuffering")
 	{
-		std::vector<lib3d::Light> lights;
-		config_parser::generateLightsFromConfig(lights, configuration);
-
-		config_parser::generateLightedFiguresFromConfig(figures, lights, configuration);
-
 		for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
 		{
 			it->triangulateFigure();
 		}
 
-		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor);
+		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
 	}
 
 	else return img::EasyImage();

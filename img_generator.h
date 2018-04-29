@@ -13,8 +13,8 @@
 
 namespace img_generator
 {
-	img::EasyImage imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& backgroundColor);
-	img::EasyImage imgFromZBuffered2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, img::Color& backgroundColor);
-	img::EasyImage imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, img::Color& backgroundColor);
+	img::EasyImage imgFrom2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor);
+	img::EasyImage imgFromZBuffered2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor);
+	img::EasyImage imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights);
 }
 #endif

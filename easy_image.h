@@ -17,10 +17,17 @@
  */
 #ifndef EASY_IMAGE_INCLUDED
 #define EASY_IMAGE_INCLUDED
-#include "vector3d.h"
 #include <iostream>
 #include <stdint.h>
 #include <vector>
+#include <algorithm>
+#include <assert.h>
+#include <math.h>
+#include <tuple>
+#include <limits>
+#include "vector3d.h"
+#include "mylibrary.h"
+#include "lib3d.h"
 
 /**
  * \brief The namespace of the EasyImage class
@@ -32,52 +39,6 @@ namespace img
 	{
 	public:
 		ZBuffer(const unsigned int width, const unsigned int height);
-	};
-
-	/**
-	 * \brief This class represents the color of a pixel in an img::EasyImage object
-	 */
-	class Color
-	{
-		//a safety warning to all of you: Do *NOT* rearrange the 'color components' in this class
-		//easyimage expects these three fields to be the *first* fields in the class AND expects
-		//them to be in *this* order
-		//if you alter the arrangement, the generated BMP files will contain garbage
-		public:
-			/**
-			 * \brief The intensity of the blue color component
-			 */
-			uint8_t blue;
-
-			/**
-			 * \brief The intensity of the green color component
-			 */
-			uint8_t green;
-
-			/**
-			 * \brief The intensity of the red color component
-			 */
-			uint8_t red;
-
-			/**
-			 * \brief Default Constructor
-			 */
-			Color();
-
-			/**
-			 * \brief Constructs a Color with the given intensities
-			 *
-			 * \param r	The red color component
-			 * \param g	The green color component
-			 * \param b	The blue color component
-			 *
-			 */
-			Color(uint8_t r, uint8_t g, uint8_t b);
-
-			/**
-			 * Destructor
-			 */
-			~Color();
 	};
 
 	/**
@@ -147,7 +108,7 @@ namespace img
 			 * \param height	the height of the image
 			 * \param color		(optional) the background color of the image
 			 */
-			EasyImage(unsigned int width, unsigned int height, Color color = Color());
+			EasyImage(unsigned int width, unsigned int height, lib3d::Color color = lib3d::Color());
 
 			/**
 			 * \brief Copy Constructor
@@ -191,7 +152,7 @@ namespace img
 			 * 	assert(x>=0 && x < getWidth())
 			 * 	assert(y>=0 && y < getHeight())
 			 */
-			Color& operator()(unsigned int x, unsigned int y);
+			lib3d::Color& operator()(unsigned int x, unsigned int y);
 
 			/**
 			 * \brief Function operator. This operator returns a const reference to a particular pixel of the image.
@@ -203,14 +164,14 @@ namespace img
 			 * 	assert(x>=0 && x < getWidth())
 			 * 	assert(y>=0 && y < getHeight())
 			 */
-			Color const& operator()(unsigned int x, unsigned int y) const;
+			lib3d::Color const& operator()(unsigned int x, unsigned int y) const;
 
 			/**
 			 * \brief Fills the image with a background of a specified color. Defaults to black
 			 *
 			 * \param color		The color to be assigned to each pixel
 			 */
-			void clear(Color color = Color());
+			void clear(lib3d::Color color = lib3d::Color());
 
 			/**
 			 * \brief Draws a line from pixel (x0,y0) to pixel (x1,y1) in the specified color
@@ -227,11 +188,11 @@ namespace img
 			 * 	assert(x1 < getWidth())
 			 * 	assert(y1 < getHeight())
 			 */
-			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
+			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, lib3d::Color color);
 
-			void draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, const Color& color);
+			void draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color);
 
-			void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, const Color& color);
+			void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);
@@ -246,7 +207,7 @@ namespace img
 			/**
 			 * \brief the vector containing all pixels
 			 */
-			std::vector<Color> bitmap;
+			std::vector<lib3d::Color> bitmap;
 	};
 
 	/**

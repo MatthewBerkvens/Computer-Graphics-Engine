@@ -360,7 +360,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 						//correct up until this comment
 
-						Vector3D r = ((2 * scalar_cos_alpha) * normal) - currentPixelVector_FromLight;
+						Vector3D r = ((2 * scalar_cos_alpha) * normal) + currentPixelVector_FromLight;
 						r.normalise();
 
 						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);

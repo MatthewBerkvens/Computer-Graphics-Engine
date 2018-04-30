@@ -298,48 +298,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 	for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
 	{
-		if (!it->specialLight)
-		{
-			actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
-			actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
-			actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
-		}
-		else
-		{
-			if (it->infinity)
-			{
-				double scalar_product_diffuse = (normal.x * -it->ldVector.x) + (normal.y * -it->ldVector.y) + (normal.z * -it->ldVector.z);
-
-				actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
-				actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
-				actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
-
-				if (scalar_product_diffuse > 0)
-				{
-					actualColor.red += (uint8_t)roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_product_diffuse);
-					actualColor.green += (uint8_t)roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_product_diffuse);
-					actualColor.blue += (uint8_t)roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_product_diffuse);
-				}
-
-
-				Vector3D r = ((2 * scalar_product_diffuse) * normal) + it->ldVector;
-
-				double scalar_product_specular = (r.x * -it->ldVector.x) + (r.y * -it->ldVector.y) + (r.z * -it->ldVector.z);
-
-				if (scalar_product_specular > 0)
-				{
-					actualColor.red += (uint8_t)roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_product_specular, reflectionCoeff));
-					actualColor.green += (uint8_t)roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_product_specular, reflectionCoeff));
-					actualColor.blue += (uint8_t)roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_product_specular, reflectionCoeff));
-				}
-			}
-			else
-			{
-				actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
-				actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
-				actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
-			}
-		}
+		actualColor.red += (uint8_t)roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red);
+		actualColor.green += (uint8_t)roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green);
+		actualColor.blue += (uint8_t)roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue);
 	}
 
 	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
@@ -369,40 +330,49 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 			{
 				lib3d::Color pixelColor(actualColor);
 
+				Vector3D currentPixelTo3DPoint = Vector3D().point(
+					((x_cur - dx) * -(1.0 / z_inv)) / d, //-((xE - dx) * zE) / d
+					((y_cur - dy) * -(1.0 / z_inv)) / d, //-((yE - dx) * zE) / d
+					(1.0 / z_inv) //-zE
+				);
+
 				for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
 				{
-					if (it->specialLight && !it->infinity)
+					if (it->specialLight)
 					{
-						Vector3D pixelToPoint = Vector3D().point(
-							((x_cur - dx) * -(1.0 / z_inv)) / d, //-((xE - dx) * zE) / d
-							((y_cur - dy) * -(1.0 / z_inv)) / d, //-((yE - dx) * zE) / d
-							(1.0 / z_inv) //-zE
-						);
+						Vector3D currentPixelVector_FromLight;
+						Vector3D currentPixelVector_FromEye = Vector3D().vector(currentPixelTo3DPoint);
 
-						Vector3D pixelToVector = Vector3D().vector(pixelToPoint);
-
-						Vector3D pixelToLocationVector = Vector3D().vector(it->location) - pixelToVector;
-						pixelToLocationVector.normalise();
-
-						double scalar_product_diffuse = (normal.x * pixelToLocationVector.x) + (normal.y * pixelToLocationVector.y) + (normal.z * pixelToLocationVector.z);
-
-						if (scalar_product_diffuse > 0)
+						if (it->infinity) currentPixelVector_FromLight = -it->ldVector;
+						else
 						{
-							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_product_diffuse);
-							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_product_diffuse);
-							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_product_diffuse);
+							currentPixelVector_FromLight = Vector3D().vector(it->location) - currentPixelVector_FromEye;
+							currentPixelVector_FromLight.normalise();
 						}
 
-						Vector3D r = ((2 * scalar_product_diffuse) * normal) - pixelToLocationVector;
+						currentPixelVector_FromEye.normalise();
 
-						double scalar_product_specular = (r.x * pixelToVector.x) + (r.y * pixelToVector.y) + (r.z * pixelToVector.z);
-
-						if (scalar_product_specular > 0)
+						double scalar_cos_alpha = (normal.x * currentPixelVector_FromLight.x) + (normal.y * currentPixelVector_FromLight.y) + (normal.z * currentPixelVector_FromLight.z);
+						if (scalar_cos_alpha > 0)
 						{
-							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_product_specular, reflectionCoeff));
-							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_product_specular, reflectionCoeff));
-							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_product_specular, reflectionCoeff));
+							assert(scalar_cos_alpha <= 1);
+							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_cos_alpha);
+							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_cos_alpha);
+							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_cos_alpha);
 						}
+
+						/*Vector3D r = ((2 * scalar_cos_alpha) * normal) + currentPixelVector_FromLight;
+						r.normalise();
+
+						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);
+
+						if (scalar_cos_beta > 0)
+						{
+							assert(scalar_cos_beta <= 1);
+							pixelColor.red += (uint8_t)roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_cos_beta, reflectionCoeff));
+							pixelColor.green += (uint8_t)roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_cos_beta, reflectionCoeff));
+							pixelColor.blue += (uint8_t)roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_cos_beta, reflectionCoeff));
+						}*/
 					}
 				}
 

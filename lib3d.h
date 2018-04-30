@@ -8,6 +8,7 @@
 #include <vector>
 #include <assert.h>
 #include <tuple>
+#include <cmath>
 
 namespace lib3d
 {

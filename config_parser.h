@@ -11,7 +11,7 @@
 #include "lib_lsystem.h"
 
 namespace config_parser {
-	void generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, std::vector<lib3d::Light>& lights, const ini::Configuration& conf);
+	void generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, const ini::Configuration& conf);
 
 	void generateLightsFromConfig(std::vector<lib3d::Light>& lights, const ini::Configuration& conf);
 

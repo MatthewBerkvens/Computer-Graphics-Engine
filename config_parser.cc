@@ -1,6 +1,6 @@
 #include "config_parser.h"
 
-void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, std::vector<lib3d::Light>& lights, const ini::Configuration& conf)
+void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, const ini::Configuration& conf)
 {
 	for (int i = 0; i < conf["General"]["nrFigures"].as_int_or_die(); i++)
 	{

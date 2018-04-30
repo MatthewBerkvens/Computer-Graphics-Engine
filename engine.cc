@@ -21,11 +21,11 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
 	if (type == "2DLSystem") return lib_lsystem::generate_2DLSystem(configuration);
 
-	std::vector<lib3d::Figure> figures;
 	std::vector<lib3d::Light> lights;
-
 	config_parser::generateLightsFromConfig(lights, configuration);
-	config_parser::generateFiguresFromConfig(figures, lights, configuration);
+
+	std::vector<lib3d::Figure> figures;
+	config_parser::generateFiguresFromConfig(figures, configuration);
 
 	lib3d::Color backgroundColor = lib3d::colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
 

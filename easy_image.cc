@@ -294,13 +294,13 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 	Vector3D normal = Vector3D().vector(w1, w2, w3);
 	normal.normalise();
 
-	lib3d::Color actualColor;
+	lib3d::Color ambientColor;
 
 	for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
 	{
-		actualColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)actualColor.red + roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red));
-		actualColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)actualColor.green + roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green));
-		actualColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)actualColor.blue + roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue));
+		ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red));
+		ambientColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.green + roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green));
+		ambientColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.blue + roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue));
 	}
 
 	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
@@ -328,7 +328,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 			if (z_inv < zbuffer[x_cur][y_cur])
 			{
-				lib3d::Color pixelColor(actualColor);
+				lib3d::Color pixelColor(ambientColor);
 
 				Vector3D currentPixelTo3DPoint = Vector3D().point(
 					((x_cur - dx) * -(1.0 / z_inv)) / d, //((xE - dx) * zE) / d

@@ -352,7 +352,6 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_alpha = (normal.x * -currentPixelVector_FromLight.x) + (normal.y * -currentPixelVector_FromLight.y) + (normal.z * -currentPixelVector_FromLight.z);
 						if (scalar_cos_alpha > 0)
 						{
-							assert(scalar_cos_alpha <= 1);
 							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_cos_alpha));
 							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_cos_alpha));
 							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_cos_alpha));
@@ -366,7 +365,6 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);
 						if (scalar_cos_beta > 0)
 						{
-							assert(scalar_cos_beta <= 1);
 							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_cos_beta, reflectionCoeff)));
 							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_cos_beta, reflectionCoeff)));
 							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_cos_beta, reflectionCoeff)));

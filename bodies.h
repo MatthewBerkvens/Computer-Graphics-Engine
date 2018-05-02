@@ -20,12 +20,14 @@ namespace bodies {
 
 	void createCone(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient);
 
-	void createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient);
+	void createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient, bool surfaces = true);
 
 	void createSphere(lib3d::Figure& figure, const unsigned int n, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient);
 
 	void createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient);
 
 	void createBuckyBall(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient);
+
+	void generateThickFigure(lib3d::Figure& lineDrawing, std::vector<lib3d::Figure>& figures, const double r, const int n, const int m);
 }
 #endif

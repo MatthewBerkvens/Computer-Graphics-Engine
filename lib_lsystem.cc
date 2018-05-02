@@ -119,13 +119,14 @@ void lib_lsystem::LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_
 		}
 		else if (l_system.get_alphabet().count(chr))
 		{
-			unsigned int size = figure.points.size();
-			figure.points.push_back(pos);
+			Vector3D oldpos = pos;
 			pos += H;
-			figure.points.push_back(pos);
 
 			if (l_system.draw(chr))
 			{
+				unsigned int size = figure.points.size();
+				figure.points.push_back(oldpos);
+				figure.points.push_back(pos);
 				figure.faces.push_back(lib3d::Face({ size, size + 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
 			}
 		}
@@ -194,8 +195,8 @@ void lib_lsystem::LSystem2DIterate(vector<lib3d::Line2D>& lines, vector<lib3d::P
 		{
 			lib3d::Point2D a = lib3d::Point2D(current_x, current_y);
 
-			current_x += cos(degreesToRad(angle));
-			current_y += sin(degreesToRad(angle));
+			current_x += std::cos(degreesToRad(angle));
+			current_y += std::sin(degreesToRad(angle));
 
 			lib3d::Point2D b = lib3d::Point2D(current_x, current_y);
 

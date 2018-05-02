@@ -90,9 +90,12 @@ Matrix lib3d::translateMatrix(const Vector3D& vector)
 Matrix lib3d::transformEyePointMatrix(const Vector3D& eyepoint)
 {
 	Matrix matrix;
-	double r = eyepoint.length();
-	double theta = std::atan2(eyepoint.y, eyepoint.x);
-	double phi = std::acos(eyepoint.z / r);
+
+	std::tuple<double, double, double> polar = lib3d::toPolar(eyepoint);
+
+	double r = std::get<0>(polar);
+	double theta = std::get<1>(polar);
+	double phi = std::get<2>(polar);
 
 	matrix(1, 1) = -std::sin(theta);
 	matrix(1, 2) = -std::cos(theta) * std::cos(phi);
@@ -109,6 +112,16 @@ Matrix lib3d::transformEyePointMatrix(const Vector3D& eyepoint)
 
 	return matrix;
 }
+
+std::tuple<double, double, double> lib3d::toPolar(const Vector3D& point)
+{
+	double r = point.length();
+	double theta = std::atan2(point.y, point.x);
+	double phi = std::acos(point.z / r);
+	return std::tuple<double, double, double>(r, theta, phi);
+}
+
+
 
 std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> lib3d::projectFigures(std::vector<Figure>& figures, const double d)
 {

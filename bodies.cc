@@ -187,7 +187,7 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 	figure.points = points;
 }
 
-void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient, bool surfaces) //CONFIRMED ANTI-CLOCKWISE
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
@@ -224,12 +224,18 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 			faces.push_back(lib3d::Face({ n + i - 1, i - 1, i, n + i }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
 		}
 
-		groundFace.point_indexes.insert(groundFace.point_indexes.begin(), i - 1);
-		ceilingFace.point_indexes.insert(ceilingFace.point_indexes.begin(), n + i - 1);
+		if (surfaces)
+		{
+			groundFace.point_indexes.insert(groundFace.point_indexes.begin(), i - 1);
+			ceilingFace.point_indexes.insert(ceilingFace.point_indexes.begin(), n + i - 1);
+		}
 	}
 
-	faces.push_back(groundFace);
-	faces.push_back(ceilingFace);
+	if (surfaces)
+	{
+		faces.push_back(groundFace);
+		faces.push_back(ceilingFace);
+	}
 
 	figure.faces = faces;
 	figure.points = points;
@@ -448,4 +454,61 @@ void bodies::createBuckyBall(lib3d::Figure& figure, lib3d::Color& ambientReflect
 	figure.points.clear();
 	figure.faces.clear();
 	lib3d::combineFigures(figure, combined);
+}
+
+
+void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figure>& figures, const double r, const int n, const int m)
+{
+	std::vector<Vector3D> visitedPoints;
+
+	for (std::vector<lib3d::Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); it_face++)
+	{
+		for (std::vector<unsigned int>::iterator it_pt_index = it_face->point_indexes.begin(); it_pt_index != it_face->point_indexes.end(); it_pt_index++)
+		{
+			lib3d::Figure newCyl;
+
+			Vector3D pt1 = figure.points[*it_pt_index];
+			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt1) == visitedPoints.end())
+			{
+				lib3d::Figure newSphere;
+
+				createSphere(newSphere, m, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient);
+
+				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
+				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt1)));
+
+				figures.push_back(newSphere);
+			}
+
+			Vector3D pt2 = (std::next(it_pt_index) != it_face->point_indexes.end()) ? figure.points[*std::next(it_pt_index)] : figure.points[*it_face->point_indexes.begin()];
+			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt2) == visitedPoints.end())
+			{
+				lib3d::Figure newSphere;
+
+				createSphere(newSphere, m, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient);
+
+				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
+				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt2)));
+
+				figures.push_back(newSphere);
+			}
+
+			Vector3D diff = Vector3D().vector(pt2) - Vector3D().vector(pt1);
+
+			std::tuple<double, double, double> polar = lib3d::toPolar(Vector3D().point(diff));
+
+			double theta = std::get<1>(polar);
+			double phi = std::get<2>(polar);
+
+			createCylinder(newCyl, n, diff.length() / r, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient, false);
+
+			lib3d::transformFigure(newCyl, lib3d::scaleMatrix(r));
+			lib3d::transformFigure(newCyl, lib3d::rotateYMatrix(phi));
+			lib3d::transformFigure(newCyl, lib3d::rotateZMatrix(theta));
+			lib3d::transformFigure(newCyl, lib3d::translateMatrix(Vector3D().vector(pt1)));
+
+			figures.push_back(newCyl);
+			if (it_face->point_indexes.size() == 2) break;
+		}
+	}
 }

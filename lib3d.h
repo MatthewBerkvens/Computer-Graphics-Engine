@@ -137,6 +137,8 @@ namespace lib3d
 
 	Matrix transformEyePointMatrix(const Vector3D& eyepoint);
 
+	std::tuple<double, double, double> toPolar(const Vector3D& point);
+
 
 
 	void transformFigure(Figure& figure, const Matrix& transformMatrix);

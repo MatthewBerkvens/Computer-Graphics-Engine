@@ -30,18 +30,18 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 			* lib3d::scaleMatrix(conf[figureName]["scale"].as_double_or_die())
 			* lib3d::translateMatrix(Vector3D().vector(center[0], center[1], center[2]));
 
-		if (type == "LineDrawing") parseLineDrawing(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Cube") bodies::createCube(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Tetrahedron") bodies::createTetrahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Octahedron") bodies::createOctahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Icosahedron") bodies::createIcosahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Dodecahedron") bodies::createDodecahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		if (type == "LineDrawing" || type == "ThickLineDrawing") parseLineDrawing(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "3DLSystem" || type ==  "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "Cube" || type == "ThickCube") bodies::createCube(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "Tetrahedron" || type == "ThickTetrahedron") bodies::createTetrahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "Octahedron" || type == "ThickOctahedron") bodies::createOctahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "Icosahedron" || type == "ThickIcosahedron") bodies::createIcosahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "Dodecahedron" || type == "ThickDodecahedron") bodies::createDodecahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
 		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
 		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
 		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
 		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "BuckyBall") bodies::createBuckyBall(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		else if (type == "BuckyBall" || type == "ThickBuckyBall") bodies::createBuckyBall(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
 		else
 		{
 			std::vector<lib3d::Figure> newFigures;
@@ -90,9 +90,9 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 			}
 			else continue;
 
-			for (std::vector<lib3d::Figure>::iterator it_figure = newFigures.begin(); it_figure != newFigures.end(); ++it_figure)
+			for (std::vector<lib3d::Figure>::iterator it_figure = newFigures.begin(); it_figure != newFigures.end(); it_figure++)
 			{
-				for (std::vector<Vector3D>::iterator it_point = it_figure->points.begin(); it_point != it_figure->points.end(); ++it_point)
+				for (std::vector<Vector3D>::iterator it_point = it_figure->points.begin(); it_point != it_figure->points.end(); it_point++)
 				{
 					(*it_point) *= combinedMatrix;
 				}
@@ -103,7 +103,25 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 			continue;
 		}
 
-		for (std::vector<Vector3D>::iterator it = newFigure.points.begin(); it != newFigure.points.end(); ++it)
+		if (type.length() > 5 && type.substr(0, 5) == "Thick")
+		{
+			std::vector<lib3d::Figure> newFigures;
+			bodies::generateThickFigure(newFigure, newFigures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
+
+			for (std::vector<lib3d::Figure>::iterator it_figure = newFigures.begin(); it_figure != newFigures.end(); it_figure++)
+			{
+				for (std::vector<Vector3D>::iterator it_point = it_figure->points.begin(); it_point != it_figure->points.end(); it_point++)
+				{
+					(*it_point) *= combinedMatrix;
+				}
+
+				figures.push_back(*it_figure);
+			}
+
+			continue;
+		}
+
+		for (std::vector<Vector3D>::iterator it = newFigure.points.begin(); it != newFigure.points.end(); it++)
 		{
 			(*it) *= combinedMatrix;
 		}
@@ -123,7 +141,7 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 
 	if (!conf["General"]["nrLights"].exists())
 	{
-		std::tuple<double, double, double> ambientLight(255, 255, 255);
+		std::tuple<double, double, double> ambientLight(1, 1, 1);
 		std::tuple<double, double, double> zeroLight(0, 0, 0);
 		lights.push_back(lib3d::Light(ambientLight, zeroLight, zeroLight, false, false, zeroVector, zeroVector));
 

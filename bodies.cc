@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <assert.h>
 
-void bodies::createCube(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -20,16 +20,16 @@ void bodies::createCube(lib3d::Figure& figure, lib3d::Color& ambientReflection, 
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 4, 2, 6 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 4, 1, 7, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 5, 3, 7 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 5, 0, 6, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 6, 2, 7, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 5, 1, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)
+		lib3d::Face({ 0, 4, 2, 6 }),
+		lib3d::Face({ 4, 1, 7, 2 }),
+		lib3d::Face({ 1, 5, 3, 7 }),
+		lib3d::Face({ 5, 0, 6, 3 }),
+		lib3d::Face({ 6, 2, 7, 3 }),
+		lib3d::Face({ 0, 5, 1, 4 })
 	};
 }
 
-void bodies::createTetrahedron(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -39,14 +39,14 @@ void bodies::createTetrahedron(lib3d::Figure& figure, lib3d::Color& ambientRefle
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 3, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 3, 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 2, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)
+		lib3d::Face({ 0, 1, 2 }),
+		lib3d::Face({ 1, 3, 2 }),
+		lib3d::Face({ 0, 3, 1 }),
+		lib3d::Face({ 0, 2, 3 })
 	};
 }
 
-void bodies::createOctahedron(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1,  0,  0),
@@ -58,18 +58,18 @@ void bodies::createOctahedron(lib3d::Figure& figure, lib3d::Color& ambientReflec
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 2, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 2, 3, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 3, 0, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 0, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 2, 1, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 3, 2, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 3, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)
+		lib3d::Face({ 0, 1, 5 }),
+		lib3d::Face({ 1, 2, 5 }),
+		lib3d::Face({ 2, 3, 5 }),
+		lib3d::Face({ 3, 0, 5 }),
+		lib3d::Face({ 1, 0, 4 }),
+		lib3d::Face({ 2, 1, 4 }),
+		lib3d::Face({ 3, 2, 4 }),
+		lib3d::Face({ 0, 3, 4 })
 	};
 }
 
-void bodies::createIcosahedron(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createIcosahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	std::vector<Vector3D> points;
 
@@ -94,32 +94,32 @@ void bodies::createIcosahedron(lib3d::Figure& figure, lib3d::Color& ambientRefle
 	figure.points = points;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 2, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 3, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 4, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 5, 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 6, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 2, 6, 7 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 2, 7, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 3, 7, 8 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 3, 8, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 4, 8, 9 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 4, 9, 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 5, 9, 10 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 5, 10, 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 10, 6 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 11, 7, 6 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 11, 8, 7 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 11, 9, 8 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 11, 10, 9 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 11, 6, 10 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)
+		lib3d::Face({ 0, 1, 2 }),
+		lib3d::Face({ 0, 2, 3 }),
+		lib3d::Face({ 0, 3, 4 }),
+		lib3d::Face({ 0, 4, 5 }),
+		lib3d::Face({ 0, 5, 1 }),
+		lib3d::Face({ 1, 6, 2 }),
+		lib3d::Face({ 2, 6, 7 }),
+		lib3d::Face({ 2, 7, 3 }),
+		lib3d::Face({ 3, 7, 8 }),
+		lib3d::Face({ 3, 8, 4 }),
+		lib3d::Face({ 4, 8, 9 }),
+		lib3d::Face({ 4, 9, 5 }),
+		lib3d::Face({ 5, 9, 10 }),
+		lib3d::Face({ 5, 10, 1 }),
+		lib3d::Face({ 1, 10, 6 }),
+		lib3d::Face({ 11, 7, 6 }),
+		lib3d::Face({ 11, 8, 7 }),
+		lib3d::Face({ 11, 9, 8 }),
+		lib3d::Face({ 11, 10, 9 }),
+		lib3d::Face({ 11, 6, 10 })
 	};
 }
 
-void bodies::createDodecahedron(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createDodecahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
-	createIcosahedron(figure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+	createIcosahedron(figure);
 
 	std::vector<Vector3D> newPoints;
 
@@ -139,26 +139,26 @@ void bodies::createDodecahedron(lib3d::Figure& figure, lib3d::Color& ambientRefl
 	figure.points = newPoints;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2, 3, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 0, 5, 6, 7, 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 1, 7, 8, 9, 2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 2, 9, 10, 11, 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 3, 11, 12, 13, 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 4, 13, 14, 5, 0 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 19, 18, 17, 16, 15 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 19, 14, 13, 12, 18 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 18, 12, 11, 10, 17 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 17, 10, 9, 8, 16 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 16, 8, 7, 6, 15 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
-		lib3d::Face({ 15, 6, 5, 14, 19 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient),
+		lib3d::Face({ 0, 1, 2, 3, 4 }),
+		lib3d::Face({ 0, 5, 6, 7, 1 }),
+		lib3d::Face({ 1, 7, 8, 9, 2 }),
+		lib3d::Face({ 2, 9, 10, 11, 3 }),
+		lib3d::Face({ 3, 11, 12, 13, 4 }),
+		lib3d::Face({ 4, 13, 14, 5, 0 }),
+		lib3d::Face({ 19, 18, 17, 16, 15 }),
+		lib3d::Face({ 19, 14, 13, 12, 18 }),
+		lib3d::Face({ 18, 12, 11, 10, 17 }),
+		lib3d::Face({ 17, 10, 9, 8, 16 }),
+		lib3d::Face({ 16, 8, 7, 6, 15 }),
+		lib3d::Face({ 15, 6, 5, 14, 19 }),
 	};
 }
 
-void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const double h)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
-	lib3d::Face groundFace(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+	lib3d::Face groundFace;
 
 	points.push_back(Vector3D().point(0, 0, h));
 
@@ -173,7 +173,7 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 
 	for (unsigned i = 1; i <= n; i++)
 	{
-		faces.push_back(lib3d::Face({ i, (i + 1), 0 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+		faces.push_back(lib3d::Face({ i, (i + 1), 0 }));
 	}
 
 	for (unsigned int i = n; i > 0; i--)
@@ -187,13 +187,13 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 	figure.points = points;
 }
 
-void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient, bool surfaces) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, bool surfaces) //CONFIRMED ANTI-CLOCKWISE
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
 
-	lib3d::Face groundFace(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-	lib3d::Face ceilingFace(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+	lib3d::Face groundFace;
+	lib3d::Face ceilingFace;
 
 	for (unsigned int i = 0; i < n; i++)
 	{
@@ -217,11 +217,11 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	{
 		if (i == n)
 		{
-			faces.push_back(lib3d::Face({ (2 * n) - 1, n - 1, 0, n }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+			faces.push_back(lib3d::Face({ (2 * n) - 1, n - 1, 0, n }));
 		}
 		else
 		{
-			faces.push_back(lib3d::Face({ n + i - 1, i - 1, i, n + i }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+			faces.push_back(lib3d::Face({ n + i - 1, i - 1, i, n + i }));
 		}
 
 		if (surfaces)
@@ -241,9 +241,9 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	figure.points = points;
 }
 
-void bodies::createSphere(lib3d::Figure& figure, const unsigned int n, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
 {
-	createIcosahedron(figure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+	createIcosahedron(figure);
 
 	for (unsigned int i = 0; i < n; i++)
 	{
@@ -274,13 +274,13 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n, lib3d::Co
 			newPoints.push_back(F); //size + 5
 
 
-			newFaces.push_back(lib3d::Face({ size + 4, size + 0, size + 3 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)); //A - E - D
+			newFaces.push_back(lib3d::Face({ size + 4, size + 0, size + 3 })); //A - E - D
 
-			newFaces.push_back(lib3d::Face({ size + 3, size + 1, size + 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)); //B - D - F
+			newFaces.push_back(lib3d::Face({ size + 3, size + 1, size + 5 })); //B - D - F
 
-			newFaces.push_back(lib3d::Face({ size + 5, size + 2, size + 4 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)); //C - F - E
+			newFaces.push_back(lib3d::Face({ size + 5, size + 2, size + 4 })); //C - F - E
 
-			newFaces.push_back(lib3d::Face({ size + 4, size + 3, size + 5 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient)); //D - E - F
+			newFaces.push_back(lib3d::Face({ size + 4, size + 3, size + 5 })); //D - E - F
 		}
 
 		figure.points = newPoints;
@@ -293,7 +293,7 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n, lib3d::Co
 	}
 }
 
-void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
@@ -319,8 +319,7 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 					((i + 1) % n)*m + ((j + 1) % m),
 					i*m + ((j + 1) % m),
 					i*m + j
-				}
-			, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+				}));
 		}
 	}
 
@@ -328,23 +327,23 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 	figure.faces = faces;
 }
 
-void bodies::createBuckyBall(lib3d::Figure& figure, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+void bodies::createBuckyBall(lib3d::Figure& figure)
 {
-	createIcosahedron(figure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+	createIcosahedron(figure);
 
-	lib3d::Figure hexagons;
-	lib3d::Figure triangles;
-	lib3d::Figure pentagons;
+	lib3d::Figure hexagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+	lib3d::Figure triangles(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+	lib3d::Figure pentagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
 	for (std::vector<lib3d::Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
 	{
 		assert(it->point_indexes.size() == 3);
 
-		lib3d::Face newHexagon(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		lib3d::Face newHexagon;
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			lib3d::Face newTriangle(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+			lib3d::Face newTriangle;
 			newTriangle.point_indexes.push_back(triangles.points.size());
 			newTriangle.point_indexes.push_back(triangles.points.size() + 1);
 			newTriangle.point_indexes.push_back(triangles.points.size() + 2);
@@ -376,7 +375,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure, lib3d::Color& ambientReflect
 
 		if (pentagon_face == pentagons.faces.end()) //if face was not found we need to make a new face with the current points, including point 0 as reference
 		{
-			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }));
 
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[0]]);
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
@@ -432,7 +431,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure, lib3d::Color& ambientReflect
 	std::vector<lib3d::Face> newFaces; //remove point 0 from the faces we just generated
 	for (std::vector<lib3d::Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
 	{
-		lib3d::Face newFace(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		lib3d::Face newFace;
 		for (std::vector<unsigned int>::iterator it_pt_index = std::next(it_pentagon_face->point_indexes.begin()); it_pt_index != it_pentagon_face->point_indexes.end(); it_pt_index++)
 		{
 			for (size_t i = 0; i < newPoints.size(); i++)
@@ -465,14 +464,14 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 	{
 		for (std::vector<unsigned int>::iterator it_pt_index = it_face->point_indexes.begin(); it_pt_index != it_face->point_indexes.end(); it_pt_index++)
 		{
-			lib3d::Figure newCyl;
+			lib3d::Figure newCyl(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
 			Vector3D pt1 = figure.points[*it_pt_index];
 			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt1) == visitedPoints.end())
 			{
-				lib3d::Figure newSphere;
+				lib3d::Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
-				createSphere(newSphere, m, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient);
+				createSphere(newSphere, m);
 
 				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
 				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt1)));
@@ -483,9 +482,9 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 			Vector3D pt2 = (std::next(it_pt_index) != it_face->point_indexes.end()) ? figure.points[*std::next(it_pt_index)] : figure.points[*it_face->point_indexes.begin()];
 			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt2) == visitedPoints.end())
 			{
-				lib3d::Figure newSphere;
+				lib3d::Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
-				createSphere(newSphere, m, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient);
+				createSphere(newSphere, m);
 
 				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
 				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt2)));
@@ -500,7 +499,7 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 			double theta = std::get<1>(polar);
 			double phi = std::get<2>(polar);
 
-			createCylinder(newCyl, n, diff.length() / r, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient, false);
+			createCylinder(newCyl, n, diff.length() / r, false);
 
 			lib3d::transformFigure(newCyl, lib3d::scaleMatrix(r));
 			lib3d::transformFigure(newCyl, lib3d::rotateYMatrix(phi));

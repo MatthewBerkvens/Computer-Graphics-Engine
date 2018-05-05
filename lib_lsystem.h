@@ -15,12 +15,7 @@ using namespace std;
 namespace lib_lsystem {
     img::EasyImage generate_2DLSystem(const ini::Configuration &conf);
 
-	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure,
-		const ini::Configuration &conf, string figurename,
-		lib3d::Color& ambientReflection,
-		lib3d::Color& diffuseReflection,
-		lib3d::Color& specularReflection,
-		double reflectionCoefficient);
+	lib3d::Figure generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename);
 
 	void LSystem2DIterate(vector<lib3d::Line2D>& lines,
 		vector<lib3d::Point2D>& points,
@@ -42,10 +37,6 @@ namespace lib_lsystem {
 		Vector3D& U,
 		double& angleInRad,
 		char& chr,
-		lib3d::Color& ambientReflection,
-		lib3d::Color& diffuseReflection,
-		lib3d::Color& specularReflection,
-		double reflectionCoefficient,
 		unsigned int iter);
 }
 

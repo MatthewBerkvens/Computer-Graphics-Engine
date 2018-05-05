@@ -192,7 +192,7 @@ namespace img
 
 			void draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color);
 
-			void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights);
+			void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);

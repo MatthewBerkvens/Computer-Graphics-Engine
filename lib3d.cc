@@ -8,8 +8,7 @@
 lib3d::Color::Color() : blue(0), green(0), red(0)
 {
 }
-lib3d::Color::Color(uint8_t r, uint8_t g, uint8_t b) :
-	blue(b), green(g), red(r)
+lib3d::Color::Color(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r)
 {
 }
 lib3d::Color::~Color()
@@ -31,7 +30,7 @@ void lib3d::Figure::triangulateFigure()
 
 		for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
 		{
-			triangulatedFaces.push_back(Face({ *it_face->point_indexes.begin(), *it_face_pt_index, *std::next(it_face_pt_index) }, it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient));
+			triangulatedFaces.push_back(Face({ *it_face->point_indexes.begin(), *it_face_pt_index, *std::next(it_face_pt_index) }));
 		}
 	}
 
@@ -121,6 +120,13 @@ std::tuple<double, double, double> lib3d::toPolar(const Vector3D& point)
 	return std::tuple<double, double, double>(r, theta, phi);
 }
 
+lib3d::Color lib3d::colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized)
+{
+	if (colorNormalized.size() != 3)
+		throw std::invalid_argument("expected size 3");
+	return lib3d::Color((uint8_t)roundToInt(colorNormalized[0] * 255), (uint8_t)roundToInt(colorNormalized[1] * 255), (uint8_t)roundToInt(colorNormalized[2] * 255));
+}
+
 
 
 std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> lib3d::projectFigures(std::vector<Figure>& figures, const double d)
@@ -130,6 +136,7 @@ std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> lib3d::projec
 
 	for (std::vector<Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); ++it_figure)
 	{
+		lib3d::Color color = colorFromNormalizedDoubleTuple(it_figure->ambientReflection);
 		for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); ++it_face)
 		{
 			for (std::vector<int>::size_type i = 0; i != it_face->point_indexes.size(); i++)
@@ -159,7 +166,7 @@ std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> lib3d::projec
 				points.push_back(a_pt);
 				points.push_back(b_pt);
 
-				lines.push_back(lib3d::Line2D(a_pt, a_vec.z, b_pt, b_vec.z, it_face->ambientReflection));
+				lines.push_back(lib3d::Line2D(a_pt, a_vec.z, b_pt, b_vec.z, color));
 			}
 		}
 	}
@@ -193,14 +200,13 @@ lib3d::Point2D lib3d::projectPoint(const Vector3D& point, const double d)
 
 void lib3d::combineFigures(Figure& out, std::vector<Figure>& figures)
 {
-
 	for (std::vector<Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
 	{
 		unsigned int offset = out.points.size();
 
 		for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); it_face++)
 		{
-			Face newFace(it_face->ambientReflection, it_face->diffuseReflection, it_face->specularReflection, it_face->reflectionCoefficient);
+			Face newFace;
 			for (std::vector<unsigned int>::iterator it_face_pt_index = it_face->point_indexes.begin(); it_face_pt_index != it_face->point_indexes.end(); it_face_pt_index++)
 			{
 				newFace.point_indexes.push_back(*it_face_pt_index + offset);

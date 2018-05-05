@@ -8,18 +8,17 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 
 		std::string type = conf[figureName]["type"].as_string_or_die();
 
-		lib3d::Figure newFigure;
+		std::vector<double> ambientReflectionVector;
 
+		if (conf[figureName]["ambientReflection"].exists()) ambientReflectionVector = conf[figureName]["ambientReflection"].as_double_tuple_or_die();
+		else ambientReflectionVector = conf[figureName]["color"].as_double_tuple_or_die();
 
-		lib3d::Color ambientReflection;
+		std::vector<double> diffuseReflectionVector = conf[figureName]["diffuseReflection"].as_double_tuple_or_default({ 0, 0, 0 });
+		std::vector<double> specularReflectionVector = conf[figureName]["specularReflection"].as_double_tuple_or_default({ 0, 0, 0 });
 
-		if (conf[figureName]["ambientReflection"].exists()) ambientReflection = lib3d::colorFromNormalizedDoubleTuple(conf[figureName]["ambientReflection"].as_double_tuple_or_die());
-		else ambientReflection = lib3d::colorFromNormalizedDoubleTuple(conf[figureName]["color"].as_double_tuple_or_die());
-
-		lib3d::Color diffuseReflection = lib3d::colorFromNormalizedDoubleTuple(conf[figureName]["diffuseReflection"].as_double_tuple_or_default({ 0, 0, 0 }));
-		lib3d::Color specularReflection = lib3d::colorFromNormalizedDoubleTuple(conf[figureName]["specularReflection"].as_double_tuple_or_default({ 0, 0, 0 }));
 		double reflectionCoefficient = conf[figureName]["reflectionCoefficient"].as_double_or_default(0);
 
+		lib3d::Figure newFigure(ambientReflectionVector, diffuseReflectionVector, specularReflectionVector, reflectionCoefficient);
 
 		std::vector<double> center = conf[figureName]["center"].as_double_tuple_or_die();
 
@@ -30,61 +29,61 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 			* lib3d::scaleMatrix(conf[figureName]["scale"].as_double_or_die())
 			* lib3d::translateMatrix(Vector3D().vector(center[0], center[1], center[2]));
 
-		if (type == "LineDrawing" || type == "ThickLineDrawing") parseLineDrawing(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "3DLSystem" || type ==  "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Cube" || type == "ThickCube") bodies::createCube(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Tetrahedron" || type == "ThickTetrahedron") bodies::createTetrahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Octahedron" || type == "ThickOctahedron") bodies::createOctahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Icosahedron" || type == "ThickIcosahedron") bodies::createIcosahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Dodecahedron" || type == "ThickDodecahedron") bodies::createDodecahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die(), ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
-		else if (type == "BuckyBall" || type == "ThickBuckyBall") bodies::createBuckyBall(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		if (type == "LineDrawing" || type == "ThickLineDrawing") parseLineDrawing(newFigure, conf, figureName);
+		else if (type == "3DLSystem" || type == "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName);
+		else if (type == "Cube" || type == "ThickCube") bodies::createCube(newFigure);
+		else if (type == "Tetrahedron" || type == "ThickTetrahedron") bodies::createTetrahedron(newFigure);
+		else if (type == "Octahedron" || type == "ThickOctahedron") bodies::createOctahedron(newFigure);
+		else if (type == "Icosahedron" || type == "ThickIcosahedron") bodies::createIcosahedron(newFigure);
+		else if (type == "Dodecahedron" || type == "ThickDodecahedron") bodies::createDodecahedron(newFigure);
+		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
+		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
+		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die());
+		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
+		else if (type == "BuckyBall" || type == "ThickBuckyBall") bodies::createBuckyBall(newFigure);
 		else
 		{
 			std::vector<lib3d::Figure> newFigures;
 
 			if (type == "FractalCube")
 			{
-				bodies::createCube(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createCube(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalDodecahedron")
 			{
-				bodies::createDodecahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createDodecahedron(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalIcosahedron")
 			{
-				bodies::createIcosahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createIcosahedron(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalOctahedron")
 			{
-				bodies::createOctahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createOctahedron(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalTetrahedron")
 			{
-				bodies::createTetrahedron(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createTetrahedron(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalBuckyBall")
 			{
-				bodies::createBuckyBall(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createBuckyBall(newFigure);
 
 				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "MengerSponge")
 			{
-				bodies::createCube(newFigure, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+				bodies::createCube(newFigure);
 
 				fractals::createMengerSponge(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die());
 			}
@@ -141,8 +140,8 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 
 	if (!conf["General"]["nrLights"].exists())
 	{
-		std::tuple<double, double, double> ambientLight(1, 1, 1);
-		std::tuple<double, double, double> zeroLight(0, 0, 0);
+		std::vector<double> ambientLight({ 1, 1, 1 });
+		std::vector<double> zeroLight({ 0, 0, 0 });
 		lights.push_back(lib3d::Light(ambientLight, zeroLight, zeroLight, false, false, zeroVector, zeroVector));
 
 		return;
@@ -155,10 +154,6 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 		std::vector<double> ambientLightVector = conf[lightName]["ambientLight"].as_double_tuple_or_default(ini::DoubleTuple({ 0,0,0 }));
 		std::vector<double> diffuseLightVector = conf[lightName]["diffuseLight"].as_double_tuple_or_default(ini::DoubleTuple({ 0,0,0 }));
 		std::vector<double> specularLightVector = conf[lightName]["specularLight"].as_double_tuple_or_default(ini::DoubleTuple({ 0,0,0 }));
-
-		std::tuple<double, double, double> ambientLight(ambientLightVector[0], ambientLightVector[1], ambientLightVector[2]);
-		std::tuple<double, double, double> diffuseLight(diffuseLightVector[0], diffuseLightVector[1], diffuseLightVector[2]);
-		std::tuple<double, double, double> specularLight(specularLightVector[0], specularLightVector[1], specularLightVector[2]);
 
 		bool infinity;
 		if (conf[lightName]["infinity"].as_bool_if_exists(infinity))
@@ -176,13 +171,13 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 
 			direction.normalise();
 
-			lights.push_back(lib3d::Light(ambientLight, diffuseLight, specularLight, true, infinity, direction, location));
+			lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, true, infinity, direction, location));
 		}
-		else lights.push_back(lib3d::Light(ambientLight, diffuseLight, specularLight, false, false, zeroVector, zeroVector));
+		else lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, false, false, zeroVector, zeroVector));
 	}
 }
 
-void config_parser::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+void config_parser::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;
@@ -203,7 +198,7 @@ void config_parser::parseLineDrawing(lib3d::Figure& figure, const ini::Configura
 	{
 		currentFacePoints = conf[name]["line" + std::to_string(i)].as_int_tuple_or_die();
 
-		lib3d::Face newFace(ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient);
+		lib3d::Face newFace;
 
 		newFace.point_indexes.push_back(currentFacePoints[0]);
 		newFace.point_indexes.push_back(currentFacePoints[1]);

@@ -106,13 +106,6 @@ namespace img
 
 }
 
-lib3d::Color lib3d::colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized)
-{
-	if (colorNormalized.size() != 3)
-		throw std::invalid_argument("received vector with incorrect size for color, expected size 3.");
-	return lib3d::Color((int)(colorNormalized[0] * 255), (int)(colorNormalized[1] * 255), (int)(colorNormalized[2] * 255));
-}
-
 img::UnsupportedFileTypeException::UnsupportedFileTypeException(std::string const& msg) :
 	message(msg)
 {
@@ -263,7 +256,7 @@ img::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights)
+void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights)
 {
 	assert(zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
@@ -298,9 +291,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 	for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
 	{
-		ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + roundToInt(std::get<0>(it->ambientLight) * ambientReflection.red));
-		ambientColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.green + roundToInt(std::get<1>(it->ambientLight) * ambientReflection.green));
-		ambientColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.blue + roundToInt(std::get<2>(it->ambientLight) * ambientReflection.blue));
+		ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + roundToInt(it->ambientLight[0] * ambientReflection[0] * 255));
+		ambientColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.green + roundToInt(it->ambientLight[1] * ambientReflection[1] * 255));
+		ambientColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.blue + roundToInt(it->ambientLight[2] * ambientReflection[2] * 255));
 	}
 
 	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
@@ -352,12 +345,10 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_alpha = (normal.x * -currentPixelVector_FromLight.x) + (normal.y * -currentPixelVector_FromLight.y) + (normal.z * -currentPixelVector_FromLight.z);
 						if (scalar_cos_alpha > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt((std::get<0>(it->diffuseLight) * diffuseReflection.red) * scalar_cos_alpha));
-							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt((std::get<1>(it->diffuseLight) * diffuseReflection.green) * scalar_cos_alpha));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt((std::get<2>(it->diffuseLight) * diffuseReflection.blue) * scalar_cos_alpha));
+							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt(it->diffuseLight[0] * diffuseReflection[0] * 255 * scalar_cos_alpha));
+							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt(it->diffuseLight[1] * diffuseReflection[1] * 255 * scalar_cos_alpha));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt(it->diffuseLight[2] * diffuseReflection[2] * 255 * scalar_cos_alpha));
 						}
-
-						//correct up until this comment
 
 						Vector3D r = ((2 * scalar_cos_alpha) * normal) + currentPixelVector_FromLight;
 						r.normalise();
@@ -365,9 +356,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);
 						if (scalar_cos_beta > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt((std::get<0>(it->specularLight) * specularReflection.red) * std::pow(scalar_cos_beta, reflectionCoeff)));
-							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt((std::get<1>(it->specularLight) * specularReflection.green) * std::pow(scalar_cos_beta, reflectionCoeff)));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt((std::get<2>(it->specularLight) * specularReflection.blue) * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + roundToInt(it->specularLight[0] * specularReflection[0] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + roundToInt(it->specularLight[1] * specularReflection[1] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + roundToInt(it->specularLight[2] * specularReflection[2] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
 						}
 					}
 				}

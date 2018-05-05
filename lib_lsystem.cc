@@ -15,7 +15,7 @@
 #include <algorithm>
 
 
-lib3d::Figure lib_lsystem::generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient)
+lib3d::Figure lib_lsystem::generate_3DLSystem(lib3d::Figure& figure, const ini::Configuration &conf, string figurename)
 {
 	string inputfile = EXTRA_PATH_IF_WINDOWS + conf[figurename]["inputfile"].as_string_or_die();
 
@@ -39,20 +39,20 @@ lib3d::Figure lib_lsystem::generate_3DLSystem(lib3d::Figure& figure, const ini::
 
 	for (unsigned int x = 0; x < initiator.length(); x++)
 	{
-		LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, initiator[x], ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient, 0);
+		LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, initiator[x], 0);
 	}
 
 	return figure;
 }
 
-void lib_lsystem::LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_system, vector<tuple<Vector3D, Vector3D, Vector3D, Vector3D>>& stack, Vector3D& pos, Vector3D& H, Vector3D& L, Vector3D& U, double& angleInRad, char& chr, lib3d::Color& ambientReflection, lib3d::Color& diffuseReflection, lib3d::Color& specularReflection, double reflectionCoefficient, unsigned int iter)
+void lib_lsystem::LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_system, vector<tuple<Vector3D, Vector3D, Vector3D, Vector3D>>& stack, Vector3D& pos, Vector3D& H, Vector3D& L, Vector3D& U, double& angleInRad, char& chr, unsigned int iter)
 {
 	if (iter < l_system.get_nr_iterations() && l_system.get_alphabet().count(chr))
 	{
 		string repl = l_system.get_replacement(chr);
 		for (unsigned int i = 0; i < repl.length(); i++)
 		{
-			LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, repl[i], ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient, iter + 1);
+			LSystem3DIterate(figure, l_system, stack, pos, H, L, U, angleInRad, repl[i], iter + 1);
 		}
 	}
 	else
@@ -127,7 +127,7 @@ void lib_lsystem::LSystem3DIterate(lib3d::Figure& figure, LParser::LSystem3D& l_
 				unsigned int size = figure.points.size();
 				figure.points.push_back(oldpos);
 				figure.points.push_back(pos);
-				figure.faces.push_back(lib3d::Face({ size, size + 1 }, ambientReflection, diffuseReflection, specularReflection, reflectionCoefficient));
+				figure.faces.push_back(lib3d::Face({ size, size + 1 }));
 			}
 		}
 	}

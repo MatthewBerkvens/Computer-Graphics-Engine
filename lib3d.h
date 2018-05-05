@@ -5,6 +5,7 @@
 #ifndef ENGINE_LIB3D_H
 #define ENGINE_LIB3D_H
 #include "vector3d.h"
+#include "mylibrary.h"
 #include <vector>
 #include <assert.h>
 #include <tuple>
@@ -58,8 +59,6 @@ namespace lib3d
 		~Color();
 	};
 
-	Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
-
 	class Point2D {
 	public:
 		double x;
@@ -86,16 +85,10 @@ namespace lib3d
 	{
 	public:
 		std::vector<unsigned int> point_indexes;
-		Color ambientReflection;
-		Color diffuseReflection;
-		Color specularReflection;
-		double reflectionCoefficient;
 
-		Face(const std::vector<unsigned int> _point_indexes, lib3d::Color& _ambientReflection, lib3d::Color& _diffuseReflection, lib3d::Color& _specularReflection, double _reflectionCoefficient) :
-			point_indexes(_point_indexes), ambientReflection(_ambientReflection), diffuseReflection(_diffuseReflection), specularReflection(_specularReflection), reflectionCoefficient(_reflectionCoefficient) {}
+		Face(std::vector<unsigned int> _point_indexes) : point_indexes(_point_indexes) {}
 
-		Face(lib3d::Color& _ambientReflection, lib3d::Color& _diffuseReflection, lib3d::Color& _specularReflection, double _reflectionCoefficient) :
-			point_indexes({}), ambientReflection(_ambientReflection), diffuseReflection(_diffuseReflection), specularReflection(_specularReflection), reflectionCoefficient(_reflectionCoefficient) {}
+		Face() : point_indexes({}) {}
 	};
 
 	class Figure
@@ -104,15 +97,28 @@ namespace lib3d
 		std::vector<Vector3D> points;
 		std::vector<Face> faces;
 
+		std::vector<double> ambientReflection;
+		std::vector<double> diffuseReflection;
+		std::vector<double> specularReflection;
+		double reflectionCoefficient;
+
+		Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient) :
+			ambientReflection(_ambientReflection), diffuseReflection(_diffuseReflection), specularReflection(_specularReflection), reflectionCoefficient(_reflectionCoefficient) 
+		{
+			assert(_ambientReflection.size() == 3);
+			assert(_diffuseReflection.size() == 3);
+			assert(_specularReflection.size() == 3);
+		}
+
 		void triangulateFigure();
 	};
 
 	class Light
 	{
 	public:
-		std::tuple<double, double, double> ambientLight;
-		std::tuple<double, double, double> diffuseLight;
-		std::tuple<double, double, double> specularLight;
+		std::vector<double> ambientLight;
+		std::vector<double> diffuseLight;
+		std::vector<double> specularLight;
 
 		bool specialLight;
 		bool infinity;
@@ -120,8 +126,13 @@ namespace lib3d
 		Vector3D ldVector;
 		Vector3D location;
 
-		Light(std::tuple<double, double, double>& _ambientLight, std::tuple<double, double, double>& _diffuseLight, std::tuple<double, double, double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location) :
-			ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location) {}
+		Light(std::vector<double>& _ambientLight, std::vector<double>& _diffuseLight, std::vector<double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location) :
+			ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location)
+		{
+			assert(_ambientLight.size() == 3);
+			assert(_diffuseLight.size() == 3);
+			assert(_specularLight.size() == 3);
+		}
 	};
 
 
@@ -139,6 +150,8 @@ namespace lib3d
 
 	std::tuple<double, double, double> toPolar(const Vector3D& point);
 
+	Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
+
 
 
 	void transformFigure(Figure& figure, const Matrix& transformMatrix);
@@ -149,7 +162,7 @@ namespace lib3d
 
 	Point2D projectPoint(const Vector3D& point, const double d);
 
-	void combineFigures(lib3d::Figure& out, std::vector<lib3d::Figure>& figures);
+	void combineFigures(Figure& out, std::vector<Figure>& figures);
 }
 
 #endif //ENGINE_LIB3D_H

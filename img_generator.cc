@@ -145,10 +145,10 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 				d,
 				offset_x,
 				offset_y,
-				it_face->ambientReflection,
-				it_face->diffuseReflection,
-				it_face->specularReflection,
-				it_face->reflectionCoefficient,
+				it_figure->ambientReflection,
+				it_figure->diffuseReflection,
+				it_figure->specularReflection,
+				it_figure->reflectionCoefficient,
 				lights);
 		}
 	}

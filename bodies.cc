@@ -473,10 +473,10 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 
 				createSphere(newSphere, m);
 
-				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
-				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt1)));
+				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r) * lib3d::translateMatrix(Vector3D().vector(pt1)));
 
 				figures.push_back(newSphere);
+				visitedPoints.push_back(pt1);
 			}
 
 			Vector3D pt2 = (std::next(it_pt_index) != it_face->point_indexes.end()) ? figure.points[*std::next(it_pt_index)] : figure.points[*it_face->point_indexes.begin()];
@@ -486,10 +486,10 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 
 				createSphere(newSphere, m);
 
-				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r));
-				lib3d::transformFigure(newSphere, lib3d::translateMatrix(Vector3D().vector(pt2)));
+				lib3d::transformFigure(newSphere, lib3d::scaleMatrix(r) * lib3d::translateMatrix(Vector3D().vector(pt2)));
 
 				figures.push_back(newSphere);
+				visitedPoints.push_back(pt2);
 			}
 
 			Vector3D diff = Vector3D().vector(pt2) - Vector3D().vector(pt1);
@@ -501,10 +501,7 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 
 			createCylinder(newCyl, n, diff.length() / r, false);
 
-			lib3d::transformFigure(newCyl, lib3d::scaleMatrix(r));
-			lib3d::transformFigure(newCyl, lib3d::rotateYMatrix(phi));
-			lib3d::transformFigure(newCyl, lib3d::rotateZMatrix(theta));
-			lib3d::transformFigure(newCyl, lib3d::translateMatrix(Vector3D().vector(pt1)));
+			lib3d::transformFigure(newCyl, lib3d::scaleMatrix(r) * lib3d::rotateYMatrix(phi) * lib3d::rotateZMatrix(theta) * lib3d::translateMatrix(Vector3D().vector(pt1)));
 
 			figures.push_back(newCyl);
 			if (it_face->point_indexes.size() == 2) break;

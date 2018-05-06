@@ -306,10 +306,10 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 			const lib3d::Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
 			const lib3d::Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
 
-			if (P.y == Q.y || ((y_cur - P.y) * (y_cur - Q.y)) > 0) continue;
+			if (P.y == Q.y || (((double)y_cur - P.y) * ((double)y_cur - Q.y)) > 0) continue;
 
-			x_min = std::min(x_min, Q.x + ((P.x - Q.x) * ((y_cur - Q.y) / (P.y - Q.y))));
-			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * ((y_cur - Q.y) / (P.y - Q.y))));
+			x_min = std::min(x_min, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
+			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
 		}
 
 		for (int x_cur = roundToInt(x_min + 0.5); x_cur <= roundToInt(x_max - 0.5); x_cur++)

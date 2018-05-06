@@ -15,28 +15,6 @@ lib3d::Color::~Color()
 {
 }
 
-
-void lib3d::Figure::triangulateFigure()
-{
-	std::vector<Face> triangulatedFaces;
-
-	for (std::vector<Face>::iterator it_face = faces.begin(); it_face != faces.end(); it_face++)
-	{
-		if (it_face->point_indexes.size() <= 3)
-		{
-			triangulatedFaces.push_back(*it_face);
-			continue;
-		}
-
-		for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
-		{
-			triangulatedFaces.push_back(Face({ *it_face->point_indexes.begin(), *it_face_pt_index, *std::next(it_face_pt_index) }));
-		}
-	}
-
-	faces = triangulatedFaces;
-}
-
 Matrix lib3d::scaleMatrix(const double scale)
 {
 	Matrix matrix;

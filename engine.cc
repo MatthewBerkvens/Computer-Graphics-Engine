@@ -43,20 +43,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 	}
 	else if (type == "ZBuffering")
 	{
-		for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
-		{
-			it->triangulateFigure();
-		}
-
 		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
 	}
 	else if (type == "LightedZBuffering")
 	{
-		for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
-		{
-			it->triangulateFigure();
-		}
-
 		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
 	}
 

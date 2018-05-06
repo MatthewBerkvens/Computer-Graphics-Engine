@@ -105,10 +105,10 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 	for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
 	{
 		auto minmax_x = std::minmax_element(it->points.begin(), it->points.end(), [](const Vector3D& a, const Vector3D& b) {
-			return a.x < b.x;
+			return lib3d::projectPoint(a, 1).x < lib3d::projectPoint(b, 1) .x;
 		});
 		auto minmax_y = std::minmax_element(it->points.begin(), it->points.end(), [](const Vector3D& a, const Vector3D& b) {
-			return a.y < b.y;
+			return lib3d::projectPoint(a, 1).y < lib3d::projectPoint(b, 1).y;
 		});
 
 		min_x = std::min(min_x, lib3d::projectPoint(*minmax_x.first, 1).x);
@@ -136,20 +136,22 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 	{
 		for (std::vector<lib3d::Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); ++it_face)
 		{
-			assert(it_face->point_indexes.size() == 3);
-			image.draw_zbuf_triag(
-				zbuffer,
-				it_figure->points[it_face->point_indexes[0]],
-				it_figure->points[it_face->point_indexes[1]],
-				it_figure->points[it_face->point_indexes[2]],
-				d,
-				offset_x,
-				offset_y,
-				it_figure->ambientReflection,
-				it_figure->diffuseReflection,
-				it_figure->specularReflection,
-				it_figure->reflectionCoefficient,
-				lights);
+			for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
+			{
+				image.draw_zbuf_triag(
+					zbuffer,
+					it_figure->points[*it_face->point_indexes.begin()],
+					it_figure->points[*it_face_pt_index],
+					it_figure->points[*std::next(it_face_pt_index)],
+					d,
+					offset_x,
+					offset_y,
+					it_figure->ambientReflection,
+					it_figure->diffuseReflection,
+					it_figure->specularReflection,
+					it_figure->reflectionCoefficient,
+					lights);
+			}
 		}
 	}
 

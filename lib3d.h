@@ -109,8 +109,6 @@ namespace lib3d
 			assert(_diffuseReflection.size() == 3);
 			assert(_specularReflection.size() == 3);
 		}
-
-		void triangulateFigure();
 	};
 
 	class Light

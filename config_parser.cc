@@ -29,7 +29,9 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 			* lib3d::scaleMatrix(conf[figureName]["scale"].as_double_or_die())
 			* lib3d::translateMatrix(Vector3D().vector(center[0], center[1], center[2]));
 
-		if (type == "LineDrawing" || type == "ThickLineDrawing") parseLineDrawing(newFigure, conf, figureName);
+		unsigned int figureSize = figures.size();
+
+		if (type == "LineDrawing" || type == "ThickLineDrawing") parse3DLineDrawing(newFigure, conf, figureName);
 		else if (type == "3DLSystem" || type == "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName);
 		else if (type == "Cube" || type == "ThickCube") bodies::createCube(newFigure);
 		else if (type == "Tetrahedron" || type == "ThickTetrahedron") bodies::createTetrahedron(newFigure);
@@ -43,89 +45,76 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 		else if (type == "BuckyBall" || type == "ThickBuckyBall") bodies::createBuckyBall(newFigure);
 		else
 		{
-			std::vector<lib3d::Figure> newFigures;
-
 			if (type == "FractalCube")
 			{
 				bodies::createCube(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalDodecahedron")
 			{
 				bodies::createDodecahedron(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalIcosahedron")
 			{
 				bodies::createIcosahedron(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalOctahedron")
 			{
 				bodies::createOctahedron(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalTetrahedron")
 			{
 				bodies::createTetrahedron(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "FractalBuckyBall")
 			{
 				bodies::createBuckyBall(newFigure);
 
-				fractals::createFractal(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 			}
 			else if (type == "MengerSponge")
 			{
 				bodies::createCube(newFigure);
 
-				fractals::createMengerSponge(newFigure, newFigures, conf[figureName]["nrIterations"].as_int_or_die());
+				fractals::createMengerSponge(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die());
 			}
-			else continue;
 
-			for (std::vector<lib3d::Figure>::iterator it_figure = newFigures.begin(); it_figure != newFigures.end(); it_figure++)
+			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
 			{
-				for (std::vector<Vector3D>::iterator it_point = it_figure->points.begin(); it_point != it_figure->points.end(); it_point++)
-				{
-					(*it_point) *= combinedMatrix;
-				}
-
-				figures.push_back(*it_figure);
+				lib3d::transformFigure(*it_figure, combinedMatrix);
 			}
 
 			continue;
 		}
+
 
 		if (type.length() > 5 && type.substr(0, 5) == "Thick")
 		{
-			std::vector<lib3d::Figure> newFigures;
-			bodies::generateThickFigure(newFigure, newFigures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
+			bodies::generateThickFigure(newFigure, figures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
 
-			for (std::vector<lib3d::Figure>::iterator it_figure = newFigures.begin(); it_figure != newFigures.end(); it_figure++)
+			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
 			{
-				for (std::vector<Vector3D>::iterator it_point = it_figure->points.begin(); it_point != it_figure->points.end(); it_point++)
-				{
-					(*it_point) *= combinedMatrix;
-				}
-
-				figures.push_back(*it_figure);
+				lib3d::transformFigure(*it_figure, combinedMatrix);
 			}
 
 			continue;
 		}
 
-		for (std::vector<Vector3D>::iterator it = newFigure.points.begin(); it != newFigure.points.end(); it++)
-		{
-			(*it) *= combinedMatrix;
-		}
-
 		figures.push_back(newFigure);
+
+		for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+		{
+			lib3d::transformFigure(*it_figure, combinedMatrix);
+		}
 	}
 
 	std::vector<double> eye = conf["General"]["eye"].as_double_tuple_or_die();
@@ -177,7 +166,7 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 	}
 }
 
-void config_parser::parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name)
+void config_parser::parse3DLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name)
 {
 	std::vector<Vector3D> points;
 	std::vector<lib3d::Face> faces;

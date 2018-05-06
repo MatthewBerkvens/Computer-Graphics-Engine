@@ -15,7 +15,7 @@ namespace config_parser {
 
 	void generateLightsFromConfig(std::vector<lib3d::Light>& lights, const ini::Configuration& conf);
 
-	void parseLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name);
+	void parse3DLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name);
 }
 
 #endif

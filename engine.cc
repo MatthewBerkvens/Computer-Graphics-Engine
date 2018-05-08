@@ -47,7 +47,8 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 	}
 	else if (type == "LightedZBuffering")
 	{
-		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
+		std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
+		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights, configuration["General"]["shadowEnabled"].as_bool_or_default(false), configuration["General"]["shadowMask"].as_int_or_default(0), lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2])));
 	}
 
 	else return img::EasyImage();

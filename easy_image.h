@@ -34,13 +34,6 @@
  */
 namespace img
 {
-	//added by Matthew
-	class ZBuffer : public std::vector<std::vector<double>>
-	{
-	public:
-		ZBuffer(const unsigned int width, const unsigned int height);
-	};
-
 	/**
 	 * \brief The exception that is thrown when an error occurs while trying to read an img::EasyImage from an input stream
 	 */
@@ -190,9 +183,13 @@ namespace img
 			 */
 			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, lib3d::Color color);
 
-			void draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color);
+			void draw_zbuf_line(lib3d::ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color);
 
-			void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights);
+			void draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
+				double d, double dx, double dy,
+				std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
+				std::vector<lib3d::Light>& lights,
+				bool shadow, Matrix& reversedEyeMatrix);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);

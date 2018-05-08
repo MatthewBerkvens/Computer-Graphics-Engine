@@ -5,14 +5,88 @@
 #include "lib3d.h"
 
 
-lib3d::Color::Color() : blue(0), green(0), red(0)
-{
+lib3d::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
+	double posInf = std::numeric_limits<double>::infinity();
+
+	for (unsigned int x = 0; x < width; x++)
+	{
+		this->push_back(std::vector<double>());
+		for (unsigned int y = 0; y < height; y++)
+		{
+			(*this)[x].push_back(posInf);
+		}
+	}
 }
-lib3d::Color::Color(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r)
+
+lib3d::Color::Color() : blue(0), green(0), red(0) {}
+lib3d::Color::Color(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r) {}
+lib3d::Color::~Color() {}
+
+
+void lib3d::Light::addShadowTriangle(const Vector3D& A, const Vector3D& B, const Vector3D& C)
 {
+	lib3d::Point2D projected_A = lib3d::Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
+	lib3d::Point2D projected_B = lib3d::Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
+	lib3d::Point2D projected_C = lib3d::Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+
+	Vector3D grav = Vector3D().point(
+		((projected_A.x + projected_B.x + projected_C.x) / 3), //xg
+		((projected_A.y + projected_B.y + projected_C.y) / 3), //yg
+		1 / (3 * A.z) + 1 / (3 * B.z) + 1 / (3 * C.z) // 1/zg
+	);
+
+	unsigned int y_min = roundToInt(std::min(projected_A.y, std::min(projected_B.y, projected_C.y)) + 0.5);
+	unsigned int y_max = roundToInt(std::max(projected_A.y, std::max(projected_B.y, projected_C.y)) - 0.5);
+
+	double w1 = ((B.y - A.y) * (C.z - A.z)) - ((B.z - A.z) * (C.y - A.y));
+
+	double w2 = ((B.z - A.z) * (C.x - A.x)) - ((B.x - A.x) * (C.z - A.z));
+
+	double w3 = ((B.x - A.x) * (C.y - A.y)) - ((B.y - A.y) * (C.x - A.x));
+
+	double k = w1 * A.x + w2 * A.y + w3 * A.z;
+
+	double dzdx = w1 / (-d * k);
+	double dzdy = w2 / (-d * k);
+
+	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
+	{
+		double x_min = std::numeric_limits<double>::infinity();
+		double x_max = -std::numeric_limits<double>::infinity();
+
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			const lib3d::Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
+			const lib3d::Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
+
+			if (P.y == Q.y || (((double)y_cur - P.y) * ((double)y_cur - Q.y)) > 0) continue;
+
+			x_min = std::min(x_min, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
+			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
+		}
+
+		for (int x_cur = roundToInt(x_min + 0.5); x_cur <= roundToInt(x_max - 0.5); x_cur++)
+		{
+			double z_inv =
+				(grav.z) + // 1/zg
+				((x_cur - grav.x) * dzdx) + // (x - xg) * dzdx
+				((y_cur - grav.y) * dzdy); // (y - yg) * dzdy
+
+			if (z_inv < shadowmask[x_cur][y_cur])
+			{
+				shadowmask[x_cur][y_cur] = z_inv;
+			}
+		}
+	}
 }
-lib3d::Color::~Color()
+
+bool lib3d::Light::isInSight(Vector3D& realWorldPoint)
 {
+	Vector3D pointFromLightAsEye = realWorldPoint * lightAsEyeMatrix;
+	Point2D projected = Point2D(((d * pointFromLightAsEye.x) / -pointFromLightAsEye.z) + dx, ((d * pointFromLightAsEye.y) / -pointFromLightAsEye.z) + dy);
+	double inf = std::numeric_limits<double>::infinity();
+	double inv = shadowmask[roundToInt(projected.x)][roundToInt(projected.y)];
+	return std::abs(inv - (1 / pointFromLightAsEye.z)) < 1E-10;
 }
 
 Matrix lib3d::scaleMatrix(const double scale)

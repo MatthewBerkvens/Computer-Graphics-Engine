@@ -46,7 +46,6 @@ img::EasyImage img_generator::imgFrom2DLines(std::vector<lib3d::Line2D>& lines, 
 	return image;
 }
 
-
 img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor)
 {
 	auto minmax_x = std::minmax_element(points.begin(), points.end(), [](const lib3d::Point2D &a, const lib3d::Point2D &b) {
@@ -74,8 +73,8 @@ img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<lib3d::Line2D>
 	double offset_x = (image_x / 2.0) - (d*(min_x + max_x) / 2.0);
 	double offset_y = (image_y / 2.0) - (d*(min_y + max_y) / 2.0);
 
-	img::EasyImage image = img::EasyImage(roundToInt(image_x), roundToInt(image_y), backgroundColor);
-	img::ZBuffer zbuffer = img::ZBuffer(roundToInt(image_x), roundToInt(image_y));
+	img::EasyImage image(roundToInt(image_x), roundToInt(image_y), backgroundColor);
+	lib3d::ZBuffer zbuffer(roundToInt(image_x), roundToInt(image_y));
 
 	for (std::vector<lib3d::Line2D>::iterator it = lines.begin(); it != lines.end(); ++it)
 	{
@@ -93,8 +92,7 @@ img::EasyImage img_generator::imgFromZBuffered2DLines(std::vector<lib3d::Line2D>
 	return image;
 }
 
-
-img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights)
+img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights, bool shadow, unsigned int shadowSize, Matrix eyeMatrix)
 {
 	double min_x = 0;
 	double max_x = 0;
@@ -105,7 +103,7 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 	for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
 	{
 		auto minmax_x = std::minmax_element(it->points.begin(), it->points.end(), [](const Vector3D& a, const Vector3D& b) {
-			return lib3d::projectPoint(a, 1).x < lib3d::projectPoint(b, 1) .x;
+			return lib3d::projectPoint(a, 1).x < lib3d::projectPoint(b, 1).x;
 		});
 		auto minmax_y = std::minmax_element(it->points.begin(), it->points.end(), [](const Vector3D& a, const Vector3D& b) {
 			return lib3d::projectPoint(a, 1).y < lib3d::projectPoint(b, 1).y;
@@ -126,11 +124,73 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 
 	double d = 0.95 * (image_x / range_x);
 
-	img::EasyImage image = img::EasyImage(roundToInt(image_x), roundToInt(image_y), backgroundColor);
-	img::ZBuffer zbuffer = img::ZBuffer(roundToInt(image_x), roundToInt(image_y));
+	img::EasyImage image(roundToInt(image_x), roundToInt(image_y), backgroundColor);
+	lib3d::ZBuffer zbuffer(roundToInt(image_x), roundToInt(image_y));
 
-	double offset_x = (image_x / 2.0) - (d*(min_x + max_x) / 2.0);
-	double offset_y = (image_y / 2.0) - (d*(min_y + max_y) / 2.0);
+	double offset_x = (image_x / 2.0) - (d * (min_x + max_x) / 2.0);
+	double offset_y = (image_y / 2.0) - (d * (min_y + max_y) / 2.0);
+
+	if (shadow)
+	{
+		eyeMatrix.inv();
+
+		for (std::vector<lib3d::Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
+		{
+			double min_x_shadow = 0;
+			double max_x_shadow = 0;
+
+			double min_y_shadow = 0;
+			double max_y_shadow = 0;
+
+			for (std::vector<lib3d::Figure>::iterator it = figures.begin(); it != figures.end(); it++)
+			{
+				auto minmax_x_shadow = std::minmax_element(it->points.begin(), it->points.end(), [&](const Vector3D& a, const Vector3D& b) {
+					return lib3d::projectPoint(((a * eyeMatrix) * it_light->lightAsEyeMatrix), 1).x < lib3d::projectPoint(((b * eyeMatrix) * it_light->lightAsEyeMatrix), 1).x;
+				});
+				auto minmax_y_shadow = std::minmax_element(it->points.begin(), it->points.end(), [&](const Vector3D& a, const Vector3D& b) {
+					return lib3d::projectPoint(((a * eyeMatrix) * it_light->lightAsEyeMatrix), 1).y < lib3d::projectPoint(((b * eyeMatrix) * it_light->lightAsEyeMatrix), 1).y;
+				});
+
+				min_x_shadow = std::min(min_x_shadow, lib3d::projectPoint(*minmax_x_shadow.first * eyeMatrix * it_light->lightAsEyeMatrix, 1).x);
+				max_x_shadow = std::max(max_x_shadow, lib3d::projectPoint(*minmax_x_shadow.second* eyeMatrix * it_light->lightAsEyeMatrix, 1).x);
+
+				min_y_shadow = std::min(min_y_shadow, lib3d::projectPoint(*minmax_y_shadow.first* eyeMatrix * it_light->lightAsEyeMatrix, 1).y);
+				max_y_shadow = std::max(max_y_shadow, lib3d::projectPoint(*minmax_y_shadow.second* eyeMatrix * it_light->lightAsEyeMatrix, 1).y);
+			}
+
+			double range_x_shadow = max_x_shadow - min_x_shadow;
+			double range_y_shadow = max_y_shadow - min_y_shadow;
+
+			double image_x_shadow = shadowSize * range_x_shadow / std::max(range_x_shadow, range_y_shadow);
+			double image_y_shadow = shadowSize * range_y_shadow / std::max(range_x_shadow, range_y_shadow);
+
+			double d_shadow = 0.95 * (image_x_shadow / range_x_shadow);
+
+			double offset_x_shadow = (image_x_shadow / 2.0) - (d_shadow * (min_x_shadow + max_x_shadow) / 2.0);
+			double offset_y_shadow = (image_y_shadow / 2.0) - (d_shadow * (min_y_shadow + max_y_shadow) / 2.0);
+
+			it_light->shadowmask = lib3d::ZBuffer(roundToInt(image_x_shadow), roundToInt(image_y_shadow));
+
+			it_light->d = d_shadow;
+			it_light->dx = offset_x_shadow;
+			it_light->dy = offset_y_shadow;
+
+			for (std::vector<lib3d::Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
+			{
+				for (std::vector<lib3d::Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); ++it_face)
+				{
+					for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
+					{
+						it_light->addShadowTriangle(
+							it_figure->points[*it_face->point_indexes.begin()] * eyeMatrix * it_light->lightAsEyeMatrix,
+							it_figure->points[*it_face_pt_index] * eyeMatrix * it_light->lightAsEyeMatrix,
+							it_figure->points[*std::next(it_face_pt_index)] * eyeMatrix * it_light->lightAsEyeMatrix);
+					}
+				}
+			}
+		}
+	}
+
 
 	for (std::vector<lib3d::Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
 	{
@@ -150,7 +210,9 @@ img::EasyImage img_generator::imgFromTriangleFigures(std::vector<lib3d::Figure>&
 					it_figure->diffuseReflection,
 					it_figure->specularReflection,
 					it_figure->reflectionCoefficient,
-					lights);
+					lights,
+					shadow,
+					eyeMatrix);
 			}
 		}
 	}

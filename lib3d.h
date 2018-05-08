@@ -10,9 +10,16 @@
 #include <assert.h>
 #include <tuple>
 #include <cmath>
+#include <algorithm>
 
 namespace lib3d
 {
+	class ZBuffer : public std::vector<std::vector<double>>
+	{
+	public:
+		ZBuffer(const unsigned int width, const unsigned int height);
+	};
+
 	/**
 	* \brief This class represents the color of a pixel in an img::EasyImage object
 	*/
@@ -111,29 +118,6 @@ namespace lib3d
 		}
 	};
 
-	class Light
-	{
-	public:
-		std::vector<double> ambientLight;
-		std::vector<double> diffuseLight;
-		std::vector<double> specularLight;
-
-		bool specialLight;
-		bool infinity;
-
-		Vector3D ldVector;
-		Vector3D location;
-
-		Light(std::vector<double>& _ambientLight, std::vector<double>& _diffuseLight, std::vector<double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location) :
-			ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location)
-		{
-			assert(_ambientLight.size() == 3);
-			assert(_diffuseLight.size() == 3);
-			assert(_specularLight.size() == 3);
-		}
-	};
-
-
 	Matrix scaleMatrix(const double scale);
 
 	Matrix rotateXMatrix(const double angle);
@@ -149,6 +133,38 @@ namespace lib3d
 	std::tuple<double, double, double> toPolar(const Vector3D& point);
 
 	Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
+
+	class Light
+	{
+	public:
+		std::vector<double> ambientLight;
+		std::vector<double> diffuseLight;
+		std::vector<double> specularLight;
+
+		bool specialLight;
+		bool infinity;
+
+		ZBuffer shadowmask;
+		Matrix lightAsEyeMatrix;
+		double d;
+		double dx;
+		double dy;
+
+		Vector3D ldVector;
+		Vector3D location;
+
+		Light(std::vector<double>& _ambientLight, std::vector<double>& _diffuseLight, std::vector<double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location, Matrix _lightAsEyeMatrix = Matrix()) :
+			ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location), shadowmask(0, 0), lightAsEyeMatrix(_lightAsEyeMatrix)
+		{
+			assert(_ambientLight.size() == 3);
+			assert(_diffuseLight.size() == 3);
+			assert(_specularLight.size() == 3);
+		}
+
+		void addShadowTriangle(const Vector3D& A, const Vector3D& B, const Vector3D& C);
+
+		bool isInSight(Vector3D& realWorldPoint);
+	};
 
 
 

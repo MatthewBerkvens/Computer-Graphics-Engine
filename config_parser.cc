@@ -155,12 +155,13 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 
 			std::vector<double> eye = conf["General"]["eye"].as_double_tuple_or_die();
 			Matrix eyePointMatrix = lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
+			Matrix lightAsEyeMatrix = lib3d::transformEyePointMatrix(location);
 			location *= eyePointMatrix;
 			direction *= eyePointMatrix;
 
 			direction.normalise();
 
-			lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, true, infinity, direction, location));
+			lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, true, infinity, direction, location, lightAsEyeMatrix));
 		}
 		else lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, false, false, zeroVector, zeroVector));
 	}

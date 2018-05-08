@@ -242,21 +242,11 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
 }
 
 //added by Matthew
-img::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
-	double posInf = std::numeric_limits<double>::infinity();
-
-	for (unsigned int x = 0; x < width; x++)
-	{
-		this->push_back(std::vector<double>());
-		for (unsigned int y = 0; y < height; y++)
-		{
-			(*this)[x].push_back(posInf);
-		}
-	}
-}
-
-//added by Matthew
-void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C, double d, double dx, double dy, std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff, std::vector<lib3d::Light>& lights)
+void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
+	double d, double dx, double dy,
+	std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
+	std::vector<lib3d::Light>& lights,
+	bool shadow, Matrix& reversedEyeMatrix)
 {
 	assert(zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
@@ -329,15 +319,18 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					(1.0 / z_inv) //-zE
 				);
 
-				for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
+				for (std::vector<lib3d::Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 				{
-					if (it->specialLight)
+					if (it_light->specialLight)
 					{
+						Vector3D realWorldPoint = currentPixelTo3DPoint * reversedEyeMatrix;
+						if (shadow && !it_light->isInSight(realWorldPoint)) continue;
+
 						Vector3D currentPixelVector_FromLight;
 						Vector3D currentPixelVector_FromEye = Vector3D().vector(currentPixelTo3DPoint);
 
-						if (it->infinity) currentPixelVector_FromLight = it->ldVector;
-						else currentPixelVector_FromLight = currentPixelVector_FromEye - Vector3D().vector(it->location);
+						if (it_light->infinity) currentPixelVector_FromLight = it_light->ldVector;
+						else currentPixelVector_FromLight = currentPixelVector_FromEye - Vector3D().vector(it_light->location);
 
 						currentPixelVector_FromLight.normalise();
 						currentPixelVector_FromEye.normalise();
@@ -345,9 +338,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_alpha = (normal.x * -currentPixelVector_FromLight.x) + (normal.y * -currentPixelVector_FromLight.y) + (normal.z * -currentPixelVector_FromLight.z);
 						if (scalar_cos_alpha > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it->diffuseLight[0] * diffuseReflection[0] * 255 * scalar_cos_alpha));
-							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it->diffuseLight[1] * diffuseReflection[1] * 255 * scalar_cos_alpha));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it->diffuseLight[2] * diffuseReflection[2] * 255 * scalar_cos_alpha));
+							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->diffuseLight[0] * diffuseReflection[0] * 255 * scalar_cos_alpha));
+							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it_light->diffuseLight[1] * diffuseReflection[1] * 255 * scalar_cos_alpha));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->diffuseLight[2] * diffuseReflection[2] * 255 * scalar_cos_alpha));
 						}
 
 						Vector3D r = ((2 * scalar_cos_alpha) * normal) + currentPixelVector_FromLight;
@@ -356,9 +349,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);
 						if (scalar_cos_beta > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it->specularLight[0] * specularReflection[0] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
-							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it->specularLight[1] * specularReflection[1] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it->specularLight[2] * specularReflection[2] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->specularLight[0] * specularReflection[0] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it_light->specularLight[1] * specularReflection[1] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->specularLight[2] * specularReflection[2] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
 						}
 					}
 				}
@@ -371,7 +364,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color)
+void img::EasyImage::draw_zbuf_line(lib3d::ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);

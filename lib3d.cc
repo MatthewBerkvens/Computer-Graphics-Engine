@@ -84,9 +84,8 @@ bool lib3d::Light::isInSight(Vector3D& realWorldPoint)
 {
 	Vector3D pointFromLightAsEye = realWorldPoint * lightAsEyeMatrix;
 	Point2D projected = Point2D(((d * pointFromLightAsEye.x) / -pointFromLightAsEye.z) + dx, ((d * pointFromLightAsEye.y) / -pointFromLightAsEye.z) + dy);
-	double inf = std::numeric_limits<double>::infinity();
 	double inv = shadowmask[roundToInt(projected.x)][roundToInt(projected.y)];
-	return std::abs(inv - (1 / pointFromLightAsEye.z)) < 1E-10;
+	return std::abs(inv - (1 / pointFromLightAsEye.z)) < 1E-5;
 }
 
 Matrix lib3d::scaleMatrix(const double scale)

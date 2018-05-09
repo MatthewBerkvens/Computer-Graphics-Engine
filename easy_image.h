@@ -189,7 +189,7 @@ namespace img
 				double d, double dx, double dy,
 				std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
 				std::vector<lib3d::Light>& lights,
-				bool shadow, Matrix& reversedEyeMatrix);
+				bool shadow, Matrix& inversedEyeMatrix);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);

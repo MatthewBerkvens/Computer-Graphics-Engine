@@ -29,26 +29,25 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
 	lib3d::Color backgroundColor = lib3d::colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
 
+	std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
+	Matrix eyeMatrix = lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
+
 	if (type == "Wireframe")
 	{
-		std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> pair = lib3d::projectFigures(figures, 1);
-
-		return img_generator::imgFrom2DLines(pair.second, pair.first, size, backgroundColor);
+		return img_generator::imgFromFigures_Wireframe(figures, size, eyeMatrix, backgroundColor);
 	}
 	else if (type == "ZBufferedWireframe")
 	{
-		std::pair<std::vector<lib3d::Point2D>, std::vector<lib3d::Line2D>> pair = lib3d::projectFigures(figures, 1);
-
-		return img_generator::imgFromZBuffered2DLines(pair.second, pair.first, size, backgroundColor);
+		return img_generator::imgFromFigures_ZBufferWireframe(figures, size, eyeMatrix, backgroundColor);
 	}
 	else if (type == "ZBuffering")
 	{
-		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights);
+		return img_generator::imgFromFigures_Triangles(figures, size, eyeMatrix, backgroundColor, lights);
 	}
 	else if (type == "LightedZBuffering")
 	{
 		std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
-		return img_generator::imgFromTriangleFigures(figures, size, backgroundColor, lights, configuration["General"]["shadowEnabled"].as_bool_or_default(false), configuration["General"]["shadowMask"].as_int_or_default(0), lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2])));
+		return img_generator::imgFromFigures_Triangles(figures, size, eyeMatrix, backgroundColor, lights, configuration["General"]["shadowEnabled"].as_bool_or_default(false), configuration["General"]["shadowMask"].as_int_or_default(0));
 	}
 
 	else return img::EasyImage();

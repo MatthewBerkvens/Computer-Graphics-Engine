@@ -246,7 +246,7 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 	double d, double dx, double dy,
 	std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
 	std::vector<lib3d::Light>& lights,
-	bool shadow, Matrix& reversedEyeMatrix)
+	bool shadow, Matrix& inversedEyeMatrix)
 {
 	assert(zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
@@ -323,7 +323,7 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 				{
 					if (it_light->specialLight)
 					{
-						Vector3D realWorldPoint = currentPixelTo3DPoint * reversedEyeMatrix;
+						Vector3D realWorldPoint = currentPixelTo3DPoint * inversedEyeMatrix;
 						if (shadow && !it_light->isInSight(realWorldPoint)) continue;
 
 						Vector3D currentPixelVector_FromLight;

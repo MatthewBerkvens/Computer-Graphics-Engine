@@ -33,71 +33,34 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 
 		if (type == "LineDrawing" || type == "ThickLineDrawing") parse3DLineDrawing(newFigure, conf, figureName);
 		else if (type == "3DLSystem" || type == "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName);
-		else if (type == "Cube" || type == "ThickCube") bodies::createCube(newFigure);
-		else if (type == "Tetrahedron" || type == "ThickTetrahedron") bodies::createTetrahedron(newFigure);
-		else if (type == "Octahedron" || type == "ThickOctahedron") bodies::createOctahedron(newFigure);
-		else if (type == "Icosahedron" || type == "ThickIcosahedron") bodies::createIcosahedron(newFigure);
-		else if (type == "Dodecahedron" || type == "ThickDodecahedron") bodies::createDodecahedron(newFigure);
+		else if (type == "Cube" || type == "ThickCube" || type == "FractalCube") bodies::createCube(newFigure);
+		else if (type == "Tetrahedron" || type == "ThickTetrahedron" || type == "FractalTetrahedron") bodies::createTetrahedron(newFigure);
+		else if (type == "Octahedron" || type == "ThickOctahedron" || type == "FractalOctahedron") bodies::createOctahedron(newFigure);
+		else if (type == "Icosahedron" || type == "ThickIcosahedron" || type == "FractalIcosahedron") bodies::createIcosahedron(newFigure);
+		else if (type == "Dodecahedron" || type == "ThickDodecahedron" || type == "FractalDodecahedron") bodies::createDodecahedron(newFigure);
 		else if (type == "Cone") bodies::createCone(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
 		else if (type == "Cylinder") bodies::createCylinder(newFigure, conf[figureName]["n"].as_int_or_die(), conf[figureName]["height"].as_double_or_die());
 		else if (type == "Sphere") bodies::createSphere(newFigure, conf[figureName]["n"].as_int_or_die());
 		else if (type == "Torus") bodies::createTorus(newFigure, conf[figureName]["r"].as_double_or_die(), conf[figureName]["R"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
-		else if (type == "BuckyBall" || type == "ThickBuckyBall") bodies::createBuckyBall(newFigure);
-		else
+		else if (type == "BuckyBall" || type == "ThickBuckyBall" || type == "FractalBuckyBall") bodies::createBuckyBall(newFigure);
+		else if (type == "MengerSponge")
 		{
-			if (type == "FractalCube")
-			{
-				bodies::createCube(newFigure);
+			bodies::createCube(newFigure);
 
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "FractalDodecahedron")
-			{
-				bodies::createDodecahedron(newFigure);
+			fractals::createMengerSponge(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die());
+		}
 
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "FractalIcosahedron")
-			{
-				bodies::createIcosahedron(newFigure);
 
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "FractalOctahedron")
-			{
-				bodies::createOctahedron(newFigure);
-
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "FractalTetrahedron")
-			{
-				bodies::createTetrahedron(newFigure);
-
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "FractalBuckyBall")
-			{
-				bodies::createBuckyBall(newFigure);
-
-				fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-			}
-			else if (type == "MengerSponge")
-			{
-				bodies::createCube(newFigure);
-
-				fractals::createMengerSponge(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die());
-			}
+		if (type.length() > 7 && type.substr(0, 7) == "Fractal")
+		{
+			fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 
 			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
 			{
 				lib3d::transformFigure(*it_figure, combinedMatrix);
 			}
-
-			continue;
 		}
-
-
-		if (type.length() > 5 && type.substr(0, 5) == "Thick")
+		else if (type.length() > 5 && type.substr(0, 5) == "Thick")
 		{
 			bodies::generateThickFigure(newFigure, figures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
 
@@ -108,18 +71,16 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 
 			continue;
 		}
-
-		figures.push_back(newFigure);
-
-		for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+		else
 		{
-			lib3d::transformFigure(*it_figure, combinedMatrix);
+			figures.push_back(newFigure);
+
+			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+			{
+				lib3d::transformFigure(*it_figure, combinedMatrix);
+			}
 		}
 	}
-
-	std::vector<double> eye = conf["General"]["eye"].as_double_tuple_or_die();
-
-	lib3d::applyEyeTransform(figures, Vector3D().point(eye[0], eye[1], eye[2]));
 }
 
 

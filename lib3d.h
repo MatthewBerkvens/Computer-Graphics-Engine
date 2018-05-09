@@ -14,6 +14,7 @@
 
 namespace lib3d
 {
+
 	class ZBuffer : public std::vector<std::vector<double>>
 	{
 	public:

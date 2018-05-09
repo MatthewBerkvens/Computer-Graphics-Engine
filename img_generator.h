@@ -14,7 +14,10 @@
 namespace img_generator
 {
 	img::EasyImage imgFrom2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor);
-	img::EasyImage imgFromZBuffered2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor);
-	img::EasyImage imgFromTriangleFigures(std::vector<lib3d::Figure>& figures, double size, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights, bool shadow = false, unsigned int shadowSize = 0, Matrix eyeMatrix = Matrix());
+	img::EasyImage imgFromFigures_Wireframe(std::vector<lib3d::Figure>& figures, const double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor);
+	img::EasyImage imgFromFigures_ZBufferWireframe(std::vector<lib3d::Figure>& figures, const double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor);
+	img::EasyImage imgFromFigures_Triangles(std::vector<lib3d::Figure>& figures, double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights, bool shadow = false, unsigned int shadowSize = 0);
+
+	std::tuple<std::pair<int, int>, double, std::pair<double, double>> getImageFacts(std::vector<lib3d::Figure>& figures, double size, Matrix& eyeMatrix);
 }
 #endif

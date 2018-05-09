@@ -309,25 +309,30 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 				((x_cur - grav.x) * dzdx) + // (x - xg) * dzdx
 				((y_cur - grav.y) * dzdy); // (y - yg) * dzdy
 
+			double z_real =
+				(grav.z) + // 1/zg
+				((x_cur - grav.x) * dzdx) + // (x - xg) * dzdx
+				((y_cur - grav.y) * dzdy); // (y - yg) * dzdy
+
 			if (z_inv < zbuffer[x_cur][y_cur])
 			{
 				lib3d::Color pixelColor(ambientColor);
 
-				Vector3D currentPixelTo3DPoint = Vector3D().point(
-					((x_cur - dx) * -(1.0 / z_inv)) / d, //((xE - dx) * zE) / d
-					((y_cur - dy) * -(1.0 / z_inv)) / d, //((yE - dx) * zE) / d
-					(1.0 / z_inv) //-zE
+				Vector3D currentPixelTo3DPointReal = Vector3D().point(
+					((x_cur - dx) * -(1.0 / z_real)) / d, //((xE - dx) * zE) / d
+					((y_cur - dy) * -(1.0 / z_real)) / d, //((yE - dx) * zE) / d
+					(1.0 / z_real) //-zE
 				);
 
 				for (std::vector<lib3d::Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 				{
 					if (it_light->specialLight)
 					{
-						Vector3D realWorldPoint = currentPixelTo3DPoint * inversedEyeMatrix;
+						Vector3D realWorldPoint = currentPixelTo3DPointReal * inversedEyeMatrix;
 						if (shadow && !it_light->isInSight(realWorldPoint)) continue;
 
 						Vector3D currentPixelVector_FromLight;
-						Vector3D currentPixelVector_FromEye = Vector3D().vector(currentPixelTo3DPoint);
+						Vector3D currentPixelVector_FromEye = Vector3D().vector(currentPixelTo3DPointReal);
 
 						if (it_light->infinity) currentPixelVector_FromLight = it_light->ldVector;
 						else currentPixelVector_FromLight = currentPixelVector_FromEye - Vector3D().vector(it_light->location);

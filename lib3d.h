@@ -11,6 +11,8 @@
 #include <tuple>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 
 namespace lib3d
 {
@@ -19,6 +21,7 @@ namespace lib3d
 	{
 	public:
 		ZBuffer(const unsigned int width, const unsigned int height);
+		void print(std::ofstream& stream);
 	};
 
 	/**

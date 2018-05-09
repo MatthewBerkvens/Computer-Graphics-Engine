@@ -208,9 +208,9 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<lib3d::Figure
 					}
 				}
 			}
+			//return maskimage;
 		}
 	}
-
 
 	for (std::vector<lib3d::Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
 	{
@@ -236,6 +236,19 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<lib3d::Figure
 			}
 		}
 	}
+
+
+
+	/*for (std::vector<lib3d::Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
+	{
+		std::string name = "light" + std::distance(lights.begin(), it_light);
+		name += ".txt";
+		std::ofstream outfile(name);
+		it_light->shadowmask.print(outfile);
+	}
+
+	std::ofstream outfile("image.txt");
+	zbuffer.print(outfile);*/
 
 	return image;
 }

@@ -18,6 +18,18 @@ lib3d::ZBuffer::ZBuffer(const unsigned int width, const unsigned int height) {
 	}
 }
 
+void lib3d::ZBuffer::print(std::ofstream& stream)
+{
+	for (unsigned int x = 0; x < this->size(); x++)
+	{
+		for (unsigned int y = 0; y < (*this)[x].size(); y++)
+		{
+			stream << (*this)[x][y] << " ";
+		}
+		stream << std::endl;
+	}
+}
+
 lib3d::Color::Color() : blue(0), green(0), red(0) {}
 lib3d::Color::Color(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r) {}
 lib3d::Color::~Color() {}
@@ -25,7 +37,7 @@ lib3d::Color::~Color() {}
 
 void lib3d::Light::addShadowTriangle(const Vector3D& A, const Vector3D& B, const Vector3D& C)
 {
-	lib3d::Point2D projected_A = lib3d::Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
+	/*lib3d::Point2D projected_A = lib3d::Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
 	lib3d::Point2D projected_B = lib3d::Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
 	lib3d::Point2D projected_C = lib3d::Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
 
@@ -77,15 +89,32 @@ void lib3d::Light::addShadowTriangle(const Vector3D& A, const Vector3D& B, const
 				shadowmask[x_cur][y_cur] = z_inv;
 			}
 		}
-	}
+	}*/
 }
 
 bool lib3d::Light::isInSight(Vector3D& realWorldPoint)
 {
 	Vector3D pointFromLightAsEye = realWorldPoint * lightAsEyeMatrix;
 	Point2D projected = Point2D(((d * pointFromLightAsEye.x) / -pointFromLightAsEye.z) + dx, ((d * pointFromLightAsEye.y) / -pointFromLightAsEye.z) + dy);
-	double inv = shadowmask[roundToInt(projected.x)][roundToInt(projected.y)];
-	return std::abs(inv - (1 / pointFromLightAsEye.z)) < 1E-5;
+
+	double z_old = shadowmask[roundToInt(projected.x)][roundToInt(projected.y)];
+
+	double a_x = projected.x - std::floor(projected.x);
+	double a_y = projected.y - std::floor(projected.y);
+
+	double z_a = shadowmask[(int)std::floor(projected.x)][(int)std::floor(projected.y)];
+	double z_b = shadowmask[(int)std::ceil(projected.x)][(int)std::floor(projected.y)];
+
+	double z_c = shadowmask[(int)std::floor(projected.x)][(int)std::ceil(projected.y)];
+	double z_d = shadowmask[(int)std::ceil(projected.x)][(int)std::ceil(projected.y)];
+
+
+	double z_e = ((1.0 - a_x) / z_a) + (a_x / z_b);
+	double z_f = ((1.0 - a_x) / z_c) + (a_x / z_d);
+
+	double z_projected = ((1.0 - a_y) / z_e) + (a_y / z_f);
+
+	return std::abs(z_projected - (1 / pointFromLightAsEye.z)) < 1E-4;
 }
 
 Matrix lib3d::scaleMatrix(const double scale)

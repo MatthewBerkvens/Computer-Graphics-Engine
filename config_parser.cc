@@ -52,33 +52,15 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 
 
 		if (type.length() > 7 && type.substr(0, 7) == "Fractal")
-		{
 			fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
-
-			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
-			{
-				lib3d::transformFigure(*it_figure, combinedMatrix);
-			}
-		}
 		else if (type.length() > 5 && type.substr(0, 5) == "Thick")
-		{
 			bodies::generateThickFigure(newFigure, figures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
-
-			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
-			{
-				lib3d::transformFigure(*it_figure, combinedMatrix);
-			}
-
-			continue;
-		}
-		else
-		{
+		else if (type != "MengerSponge")
 			figures.push_back(newFigure);
 
-			for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
-			{
-				lib3d::transformFigure(*it_figure, combinedMatrix);
-			}
+		for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+		{
+			lib3d::transformFigure(*it_figure, combinedMatrix);
 		}
 	}
 }

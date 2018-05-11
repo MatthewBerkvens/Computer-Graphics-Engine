@@ -24,14 +24,14 @@ public:
 	bool specialLight;
 	bool infinity;
 
-	ZBuffer shadowmask;
+	Vector3D ldVector;
+	Vector3D location;
+
 	Matrix lightAsEyeMatrix;
+	ZBuffer shadowmask;
 	double d;
 	double dx;
 	double dy;
-
-	Vector3D ldVector;
-	Vector3D location;
 
 	Light(std::vector<double>& _ambientLight, std::vector<double>& _diffuseLight, std::vector<double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location, Matrix _lightAsEyeMatrix = Matrix());
 

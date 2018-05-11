@@ -11,6 +11,7 @@
 #include "Line2D.h"
 #include "Point2D.h"
 #include "Figure.h"
+#include "img_generator.h"
 
 #include <assert.h>
 #include <fstream>

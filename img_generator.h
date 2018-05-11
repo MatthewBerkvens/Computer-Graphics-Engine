@@ -8,6 +8,7 @@
 #include "Point2D.h"
 #include "Line2D.h"
 #include "Light.h"
+#include "Projecting.h"
 #include "lib3d.h"
 
 #include <cmath>

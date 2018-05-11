@@ -248,7 +248,7 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 	std::vector<Light>& lights, bool shadow,
 	Matrix& inversedEyeMatrix)
 {
-	assert(zbuffer.size() == this->width);
+	assert(zbuffer.zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
 	Point2D projected_A = Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
 	Point2D projected_B = Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
@@ -373,7 +373,7 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
-	assert(zbuffer.size() == this->width);
+	assert(zbuffer.zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
 	if (x0 == x1)
 	{

@@ -10,8 +10,6 @@
 #include <iomanip>
 #include <vector>
 
-Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
-
 /**
 * \brief This class represents the color of a pixel in an img::EasyImage object
 */
@@ -57,5 +55,7 @@ public:
 	*/
 	~Color();
 };
+
+Color colorFromNormalizedDoubleTuple(std::vector<double> colorNormalized);
 
 #endif

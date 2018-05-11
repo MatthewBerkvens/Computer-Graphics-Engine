@@ -61,7 +61,7 @@ img::EasyImage img_generator::imgFromFigures_Wireframe(std::vector<Figure>& figu
 		lib3d::transformFigure(*it_figure, eyeMatrix);
 	}
 
-	std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+	std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = projectFigures(figures, 1);
 
 	for (std::vector<Line2D>::iterator it = pair.second.begin(); it != pair.second.end(); ++it)
 	{
@@ -91,7 +91,7 @@ img::EasyImage img_generator::imgFromFigures_ZBufferWireframe(std::vector<Figure
 		lib3d::transformFigure(*it_figure, eyeMatrix);
 	}
 
-	std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = lib3d::projectFigures(figures, 1);
+	std::pair<std::vector<Point2D>, std::vector<Line2D>> pair = projectFigures(figures, 1);
 
 	for (std::vector<Line2D>::iterator it = pair.second.begin(); it != pair.second.end(); ++it)
 	{
@@ -192,17 +192,17 @@ std::tuple<std::pair<int, int>, double, std::pair<double, double>> img_generator
 	for (std::vector<Figure>::iterator it = figures.begin(); it != figures.end(); it++)
 	{
 		auto minmax_x = std::minmax_element(it->points.begin(), it->points.end(), [&](const Vector3D& a, const Vector3D& b) {
-			return lib3d::projectPoint(a * eyeMatrix, 1).x < lib3d::projectPoint(b * eyeMatrix, 1).x;
+			return projectPoint(a * eyeMatrix, 1).x < projectPoint(b * eyeMatrix, 1).x;
 		});
 		auto minmax_y = std::minmax_element(it->points.begin(), it->points.end(), [&](const Vector3D& a, const Vector3D& b) {
-			return lib3d::projectPoint(a * eyeMatrix, 1).y < lib3d::projectPoint(b * eyeMatrix, 1).y;
+			return projectPoint(a * eyeMatrix, 1).y < projectPoint(b * eyeMatrix, 1).y;
 		});
 
-		min_x = std::min(min_x, lib3d::projectPoint(*minmax_x.first * eyeMatrix, 1).x);
-		max_x = std::max(max_x, lib3d::projectPoint(*minmax_x.second * eyeMatrix, 1).x);
+		min_x = std::min(min_x, projectPoint(*minmax_x.first * eyeMatrix, 1).x);
+		max_x = std::max(max_x, projectPoint(*minmax_x.second * eyeMatrix, 1).x);
 
-		min_y = std::min(min_y, lib3d::projectPoint(*minmax_y.first * eyeMatrix, 1).y);
-		max_y = std::max(max_y, lib3d::projectPoint(*minmax_y.second * eyeMatrix, 1).y);
+		min_y = std::min(min_y, projectPoint(*minmax_y.first * eyeMatrix, 1).y);
+		max_y = std::max(max_y, projectPoint(*minmax_y.second * eyeMatrix, 1).y);
 	}
 
 	double range_x = max_x - min_x;

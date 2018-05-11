@@ -28,15 +28,11 @@ namespace lib3d
 
 	Matrix translateMatrix(const Vector3D& vector);
 
-	Matrix transformEyePointMatrix(const Vector3D& eyepoint);
+	Matrix eyePointMatrix(const Vector3D& eyepoint);
 
 	std::tuple<double, double, double> toPolar(const Vector3D& point);
 
-
-
 	void transformFigure(Figure& figure, const Matrix& transformMatrix);
-
-	void applyEyeTransform(std::vector<Figure>& figures, const Vector3D& eyepoint);
 }
 
 #endif //ENGINE_LIB3D_H

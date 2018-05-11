@@ -1,7 +1,7 @@
 #include "Light.h"
 
 Light::Light(std::vector<double>& _ambientLight, std::vector<double>& _diffuseLight, std::vector<double>& _specularLight, bool _specialLight, bool _infinity, Vector3D& _ldVector, Vector3D& _location, Matrix _lightAsEyeMatrix)
-	: ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location), shadowmask(0, 0), lightAsEyeMatrix(_lightAsEyeMatrix)
+	: ambientLight(_ambientLight), diffuseLight(_diffuseLight), specularLight(_specularLight), specialLight(_specialLight), infinity(_infinity), ldVector(_ldVector), location(_location), lightAsEyeMatrix(_lightAsEyeMatrix), shadowmask(0, 0)
 {
 	assert(_ambientLight.size() == 3);
 	assert(_diffuseLight.size() == 3);

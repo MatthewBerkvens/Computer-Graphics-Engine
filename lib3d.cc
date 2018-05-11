@@ -53,7 +53,7 @@ Matrix lib3d::translateMatrix(const Vector3D& vector)
 	return matrix;
 }
 
-Matrix lib3d::transformEyePointMatrix(const Vector3D& eyepoint)
+Matrix lib3d::eyePointMatrix(const Vector3D& eyepoint)
 {
 	Matrix matrix;
 
@@ -92,15 +92,5 @@ void lib3d::transformFigure(Figure& figure, const Matrix& transformMatrix)
 	for (std::vector<Vector3D>::iterator it = figure.points.begin(); it != figure.points.end(); ++it)
 	{
 		(*it) *= transformMatrix;
-	}
-}
-
-void lib3d::applyEyeTransform(std::vector<Figure>& figures, const Vector3D& eyepoint)
-{
-	Matrix eyePointMatrix = transformEyePointMatrix(eyepoint);
-
-	for (std::vector<Figure>::iterator it = figures.begin(); it != figures.end(); ++it)
-	{
-		transformFigure(*it, eyePointMatrix);
 	}
 }

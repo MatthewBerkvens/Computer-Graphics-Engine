@@ -98,8 +98,8 @@ void generateLightsFromConfig(std::vector<Light>& lights, const ini::Configurati
 			Vector3D location = Vector3D().point(locationDouble[0], locationDouble[1], locationDouble[2]);
 
 			std::vector<double> eye = conf["General"]["eye"].as_double_tuple_or_die();
-			Matrix eyePointMatrix = lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
-			Matrix lightAsEyeMatrix = lib3d::transformEyePointMatrix(location);
+			Matrix eyePointMatrix = lib3d::eyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
+			Matrix lightAsEyeMatrix = lib3d::eyePointMatrix(location);
 			location *= eyePointMatrix;
 			direction *= eyePointMatrix;
 

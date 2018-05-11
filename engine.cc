@@ -29,7 +29,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 	Color backgroundColor = colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
 
 	std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
-	Matrix eyeMatrix = lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
+	Matrix eyeMatrix = lib3d::eyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
 
 	if (type == "Wireframe")
 		return img_generator::imgFromFigures_Wireframe(figures, size, eyeMatrix, backgroundColor);

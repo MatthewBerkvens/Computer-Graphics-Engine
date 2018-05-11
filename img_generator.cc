@@ -1,7 +1,3 @@
-//
-// Created by matthew
-//
-
 #include "img_generator.h"
 
 img::EasyImage img_generator::imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, Color& backgroundColor)

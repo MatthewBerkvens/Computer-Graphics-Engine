@@ -66,7 +66,7 @@ void combineFigures(Figure& out, std::vector<Figure>& figures)
 	}
 }
 
-Point2D projectPoint(const Vector3D& point, const double d)
+Point2D projectPoint(const Vector3D& point, const double d, const double dx, const double dy)
 {
-	return Point2D(d*(point.x / -point.z), d*(point.y / -point.z));
+	return Point2D((d* (point.x / -point.z)) + dy, (d*(point.y / -point.z)) + dx);
 }

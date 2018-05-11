@@ -7,7 +7,6 @@
 #include "vector3d.h"
 #include "mylibrary.h"
 #include "Figure.h"
-#include "Point2D.h"
 
 #include <vector>
 #include <assert.h>
@@ -38,8 +37,6 @@ namespace lib3d
 	void transformFigure(Figure& figure, const Matrix& transformMatrix);
 
 	void applyEyeTransform(std::vector<Figure>& figures, const Vector3D& eyepoint);
-
-	Point2D projectPoint(const Vector3D& point, const double d);
 }
 
 #endif //ENGINE_LIB3D_H

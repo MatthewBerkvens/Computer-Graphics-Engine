@@ -5,6 +5,7 @@
 #include "lib3d.h"
 #include "config_parser.h"
 #include "img_generator.h"
+#include "Projecting.h"
 
 #include <fstream>
 #include <iostream>

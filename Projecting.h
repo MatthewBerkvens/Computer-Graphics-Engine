@@ -22,4 +22,6 @@ std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<
 
 void combineFigures(Figure& out, std::vector<Figure>& figures);
 
+Point2D projectPoint(const Vector3D& point, const double d);
+
 #endif

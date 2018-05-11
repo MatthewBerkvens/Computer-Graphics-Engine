@@ -21,6 +21,7 @@
 #include "Color.h"
 #include "Line2D.h"
 #include "ZBuffer.h"
+#include "Light.h"
 
 #include <iostream>
 #include <stdint.h>

@@ -104,8 +104,3 @@ void lib3d::applyEyeTransform(std::vector<Figure>& figures, const Vector3D& eyep
 		transformFigure(*it, eyePointMatrix);
 	}
 }
-
-Point2D lib3d::projectPoint(const Vector3D& point, const double d)
-{
-	return Point2D(d*(point.x / -point.z), d*(point.y / -point.z));
-}

@@ -133,7 +133,7 @@ img::EasyImage::EasyImage() :
 {
 }
 
-img::EasyImage::EasyImage(unsigned int _width, unsigned int _height, lib3d::Color color) :
+img::EasyImage::EasyImage(unsigned int _width, unsigned int _height, Color color) :
 	width(_width), height(_height), bitmap(width * height, color)
 {
 }
@@ -166,29 +166,29 @@ unsigned int img::EasyImage::get_height() const
 	return height;
 }
 
-void img::EasyImage::clear(lib3d::Color color)
+void img::EasyImage::clear(Color color)
 {
-	for (std::vector<lib3d::Color>::iterator i = bitmap.begin(); i != bitmap.end(); i++)
+	for (std::vector<Color>::iterator i = bitmap.begin(); i != bitmap.end(); i++)
 	{
 		*i = color;
 	}
 }
 
-lib3d::Color& img::EasyImage::operator()(unsigned int x, unsigned int y)
+Color& img::EasyImage::operator()(unsigned int x, unsigned int y)
 {
 	assert(x < this->width);
 	assert(y < this->height);
 	return bitmap.at(x * height + y);
 }
 
-lib3d::Color const& img::EasyImage::operator()(unsigned int x, unsigned int y) const
+Color const& img::EasyImage::operator()(unsigned int x, unsigned int y) const
 {
 	assert(x < this->width);
 	assert(y < this->height);
 	return bitmap.at(x * height + y);
 }
 
-void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, lib3d::Color color)
+void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
@@ -242,17 +242,17 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
+void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
 	double d, double dx, double dy,
 	std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
-	std::vector<lib3d::Light>& lights,
-	bool shadow, Matrix& inversedEyeMatrix)
+	std::vector<Light>& lights, bool shadow,
+	Matrix& inversedEyeMatrix)
 {
 	assert(zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
-	lib3d::Point2D projected_A = lib3d::Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
-	lib3d::Point2D projected_B = lib3d::Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
-	lib3d::Point2D projected_C = lib3d::Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+	Point2D projected_A = Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
+	Point2D projected_B = Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
+	Point2D projected_C = Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
 
 	Vector3D grav = Vector3D().point(
 		((projected_A.x + projected_B.x + projected_C.x) / 3), //xg
@@ -277,9 +277,9 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 	Vector3D normal = Vector3D().vector(w1, w2, w3);
 	normal.normalise();
 
-	lib3d::Color ambientColor;
+	Color ambientColor;
 
-	for (std::vector<lib3d::Light>::iterator it = lights.begin(); it != lights.end(); it++)
+	for (std::vector<Light>::iterator it = lights.begin(); it != lights.end(); it++)
 	{
 		ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + (unsigned int)roundToInt(it->ambientLight[0] * ambientReflection[0] * 255));
 		ambientColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.green + (unsigned int)roundToInt(it->ambientLight[1] * ambientReflection[1] * 255));
@@ -293,8 +293,8 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 
 		for (unsigned int i = 0; i < 3; i++)
 		{
-			const lib3d::Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
-			const lib3d::Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
+			const Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
+			const Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
 
 			if (P.y == Q.y || (((double)y_cur - P.y) * ((double)y_cur - Q.y)) > 0) continue;
 
@@ -316,7 +316,7 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 
 			if (z_inv < zbuffer[x_cur][y_cur])
 			{
-				lib3d::Color pixelColor(ambientColor);
+				Color pixelColor(ambientColor);
 
 				Vector3D currentPixelTo3DPointReal = Vector3D().point(
 					((x_cur - dx) * -(1.0 / z_real)) / d, //((xE - dx) * zE) / d
@@ -324,7 +324,7 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 					(1.0 / z_real) //-zE
 				);
 
-				for (std::vector<lib3d::Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
+				for (std::vector<Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 				{
 					if (it_light->specialLight)
 					{
@@ -369,7 +369,7 @@ void img::EasyImage::draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A,
 }
 
 //added by Matthew
-void img::EasyImage::draw_zbuf_line(lib3d::ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color)
+void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, Color color)
 {
 	assert(x0 < this->width && y0 < this->height);
 	assert(x1 < this->width && y1 < this->height);
@@ -572,7 +572,7 @@ std::istream& img::operator>>(std::istream& in, EasyImage & image)
 	unsigned int line_padding = from_little_endian(header.pixel_size) / image.height - (3 * image.width);
 	//re-initialize the image bitmap
 	image.bitmap.clear();
-	image.bitmap.assign(image.height * image.width, lib3d::Color());
+	image.bitmap.assign(image.height * image.width, Color());
 	//okay let's read the pixels themselves:
 	//they are arranged left->right., bottom->top if height>0, top->bottom if height<0, b,g,r
 	for (unsigned int i = 0; i < image.get_height(); i++)

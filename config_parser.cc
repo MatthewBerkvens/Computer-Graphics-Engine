@@ -1,6 +1,6 @@
 #include "config_parser.h"
 
-void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, const ini::Configuration& conf)
+void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configuration& conf)
 {
 	for (int i = 0; i < conf["General"]["nrFigures"].as_int_or_die(); i++)
 	{
@@ -18,7 +18,8 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 
 		double reflectionCoefficient = conf[figureName]["reflectionCoefficient"].as_double_or_default(0);
 
-		lib3d::Figure newFigure(ambientReflectionVector, diffuseReflectionVector, specularReflectionVector, reflectionCoefficient);
+		Figure newFigure(ambientReflectionVector, diffuseReflectionVector, specularReflectionVector, reflectionCoefficient);
+		
 
 		std::vector<double> center = conf[figureName]["center"].as_double_tuple_or_die();
 
@@ -58,7 +59,7 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 		else if (type != "MengerSponge")
 			figures.push_back(newFigure);
 
-		for (std::vector<lib3d::Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+		for (std::vector<Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
 		{
 			lib3d::transformFigure(*it_figure, combinedMatrix);
 		}
@@ -66,7 +67,7 @@ void config_parser::generateFiguresFromConfig(std::vector<lib3d::Figure>& figure
 }
 
 
-void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, const ini::Configuration& conf)
+void generateLightsFromConfig(std::vector<Light>& lights, const ini::Configuration& conf)
 {
 	Vector3D zeroVector = Vector3D().vector(0, 0, 0);
 
@@ -74,7 +75,7 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 	{
 		std::vector<double> ambientLight({ 1, 1, 1 });
 		std::vector<double> zeroLight({ 0, 0, 0 });
-		lights.push_back(lib3d::Light(ambientLight, zeroLight, zeroLight, false, false, zeroVector, zeroVector));
+		lights.push_back(Light(ambientLight, zeroLight, zeroLight, false, false, zeroVector, zeroVector));
 
 		return;
 	}
@@ -104,16 +105,16 @@ void config_parser::generateLightsFromConfig(std::vector<lib3d::Light>& lights, 
 
 			direction.normalise();
 
-			lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, true, infinity, direction, location, lightAsEyeMatrix));
+			lights.push_back(Light(ambientLightVector, diffuseLightVector, specularLightVector, true, infinity, direction, location, lightAsEyeMatrix));
 		}
-		else lights.push_back(lib3d::Light(ambientLightVector, diffuseLightVector, specularLightVector, false, false, zeroVector, zeroVector));
+		else lights.push_back(Light(ambientLightVector, diffuseLightVector, specularLightVector, false, false, zeroVector, zeroVector));
 	}
 }
 
-void config_parser::parse3DLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name)
+void parse3DLineDrawing(Figure& figure, const ini::Configuration& conf, std::string& name)
 {
 	std::vector<Vector3D> points;
-	std::vector<lib3d::Face> faces;
+	std::vector<Face> faces;
 
 	std::vector<double> currentPoint;
 	std::vector<int> currentFacePoints;
@@ -131,7 +132,7 @@ void config_parser::parse3DLineDrawing(lib3d::Figure& figure, const ini::Configu
 	{
 		currentFacePoints = conf[name]["line" + std::to_string(i)].as_int_tuple_or_die();
 
-		lib3d::Face newFace;
+		Face newFace;
 
 		newFace.point_indexes.push_back(currentFacePoints[0]);
 		newFace.point_indexes.push_back(currentFacePoints[1]);

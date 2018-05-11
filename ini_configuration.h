@@ -25,8 +25,6 @@
 #include <string>
 #include <vector>
 
-
-
 /**
  * \brief The namespace of the INI configuration file parser.
  */

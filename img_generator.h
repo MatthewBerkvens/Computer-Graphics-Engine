@@ -10,14 +10,17 @@
 #include <map>
 #include <assert.h>
 #include <algorithm>
+#include "Point2D.h"
+#include "Line2D.h"
+#include "Light.h"
 
 namespace img_generator
 {
-	img::EasyImage imgFrom2DLines(std::vector<lib3d::Line2D>& lines, std::vector<lib3d::Point2D>& points, const double size, lib3d::Color& backgroundColor);
-	img::EasyImage imgFromFigures_Wireframe(std::vector<lib3d::Figure>& figures, const double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor);
-	img::EasyImage imgFromFigures_ZBufferWireframe(std::vector<lib3d::Figure>& figures, const double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor);
-	img::EasyImage imgFromFigures_Triangles(std::vector<lib3d::Figure>& figures, double size, Matrix& eyeMatrix, lib3d::Color& backgroundColor, std::vector<lib3d::Light>& lights, bool shadow = false, unsigned int shadowSize = 0);
+	img::EasyImage imgFrom2DLines(std::vector<Line2D>& lines, std::vector<Point2D>& points, const double size, Color& backgroundColor);
+	img::EasyImage imgFromFigures_Wireframe(std::vector<Figure>& figures, const double size, Matrix& eyeMatrix, Color& backgroundColor);
+	img::EasyImage imgFromFigures_ZBufferWireframe(std::vector<Figure>& figures, const double size, Matrix& eyeMatrix, Color& backgroundColor);
+	img::EasyImage imgFromFigures_Triangles(std::vector<Figure>& figures, double size, Matrix& eyeMatrix, Color& backgroundColor, std::vector<Light>& lights, bool shadow = false, unsigned int shadowSize = 0);
 
-	std::tuple<std::pair<int, int>, double, std::pair<double, double>> getImageFacts(std::vector<lib3d::Figure>& figures, double size, Matrix& eyeMatrix);
+	std::tuple<std::pair<int, int>, double, std::pair<double, double>> getImageFacts(std::vector<Figure>& figures, double size, Matrix& eyeMatrix);
 }
 #endif

@@ -17,6 +17,10 @@
  */
 #ifndef EASY_IMAGE_INCLUDED
 #define EASY_IMAGE_INCLUDED
+#include "vector3d.h"
+#include "Color.h"
+#include "Line2D.h"
+
 #include <iostream>
 #include <stdint.h>
 #include <vector>
@@ -25,62 +29,59 @@
 #include <math.h>
 #include <tuple>
 #include <limits>
-#include "vector3d.h"
-#include "mylibrary.h"
-#include "lib3d.h"
 
-/**
- * \brief The namespace of the EasyImage class
- */
+ /**
+  * \brief The namespace of the EasyImage class
+  */
 namespace img
 {
 	/**
 	 * \brief The exception that is thrown when an error occurs while trying to read an img::EasyImage from an input stream
 	 */
-	class UnsupportedFileTypeException: public std::exception
+	class UnsupportedFileTypeException : public std::exception
 	{
-		private:
+	private:
 
-			/**
-			 * \brief Message explaining what went wrong
-			 */
-			std::string message;
+		/**
+		 * \brief Message explaining what went wrong
+		 */
+		std::string message;
 
-		public:
-			/**
-			 * \brief Construct an exception with the given message
-			 *
-			 * \param msg	The message explaining what went wrong
-			 *
-			 */
-			UnsupportedFileTypeException(std::string const& msg);
+	public:
+		/**
+		 * \brief Construct an exception with the given message
+		 *
+		 * \param msg	The message explaining what went wrong
+		 *
+		 */
+		UnsupportedFileTypeException(std::string const& msg);
 
-                        /**
-                         * \brief Copy Constructor
-                         *
-                         * \param original	The exception to be copied into this object
-                         */
-			UnsupportedFileTypeException(const UnsupportedFileTypeException &original);
+		/**
+		 * \brief Copy Constructor
+		 *
+		 * \param original	The exception to be copied into this object
+		 */
+		UnsupportedFileTypeException(const UnsupportedFileTypeException &original);
 
 
-			/**
-			 * \brief Destructor
-			 */
-			virtual ~UnsupportedFileTypeException() throw ();
+		/**
+		 * \brief Destructor
+		 */
+		virtual ~UnsupportedFileTypeException() throw ();
 
-			/**
-			 * \brief Assignment operator
-			 *
-			 * \param original	The original exception to be assigned to this one
-			 */
-			UnsupportedFileTypeException& operator=(const UnsupportedFileTypeException &original);
+		/**
+		 * \brief Assignment operator
+		 *
+		 * \param original	The original exception to be assigned to this one
+		 */
+		UnsupportedFileTypeException& operator=(const UnsupportedFileTypeException &original);
 
-			/**
-                         * \brief Returns a description of the error hat occurred.
-                         *
-                         * \return A description of the error hat occurred.
-                         */
-			virtual const char *what() const throw ();
+		/**
+					 * \brief Returns a description of the error hat occurred.
+					 *
+					 * \return A description of the error hat occurred.
+					 */
+		virtual const char *what() const throw ();
 	};
 
 	/**
@@ -88,123 +89,123 @@ namespace img
 	 */
 	class EasyImage
 	{
-		public:
-			/**
-			 * \brief Default Constructor. Creates a zero-pixel image
-			 */
-			EasyImage();
+	public:
+		/**
+		 * \brief Default Constructor. Creates a zero-pixel image
+		 */
+		EasyImage();
 
-			/**
-			 * \brief Constructor: creates a new EasyImage of the specified width and height
-			 *
-			 * \param width		the width of the image
-			 * \param height	the height of the image
-			 * \param color		(optional) the background color of the image
-			 */
-			EasyImage(unsigned int width, unsigned int height, lib3d::Color color = lib3d::Color());
+		/**
+		 * \brief Constructor: creates a new EasyImage of the specified width and height
+		 *
+		 * \param width		the width of the image
+		 * \param height	the height of the image
+		 * \param color		(optional) the background color of the image
+		 */
+		EasyImage(unsigned int width, unsigned int height, Color color = Color());
 
-			/**
-			 * \brief Copy Constructor
-			 *
-			 * \param img		the image to be copied
-			 */
-			EasyImage(EasyImage const& img);
+		/**
+		 * \brief Copy Constructor
+		 *
+		 * \param img		the image to be copied
+		 */
+		EasyImage(EasyImage const& img);
 
-			/**
-			 * \brief Destructor
-			 */
-			virtual ~EasyImage();
+		/**
+		 * \brief Destructor
+		 */
+		virtual ~EasyImage();
 
-			/**
-			 * \brief Assignment operator. Allows an easyImage to be assigned to another easyImage
-			 *
-			 * \param img	The image to be assigned to this image
-			 */
-			EasyImage& operator=(EasyImage const& img);
+		/**
+		 * \brief Assignment operator. Allows an easyImage to be assigned to another easyImage
+		 *
+		 * \param img	The image to be assigned to this image
+		 */
+		EasyImage& operator=(EasyImage const& img);
 
-			/**
-			 * \brief Returns the width of the image
-			 *
-			 * \return the width of the image
-			 */
-			unsigned int get_width() const;
+		/**
+		 * \brief Returns the width of the image
+		 *
+		 * \return the width of the image
+		 */
+		unsigned int get_width() const;
 
-			/**
-			 * \brief Returns the height of the image
-			 * \return the height of the image
-			 */
-			unsigned int get_height() const;
+		/**
+		 * \brief Returns the height of the image
+		 * \return the height of the image
+		 */
+		unsigned int get_height() const;
 
-			/**
-			 * \brief Function operator. This operator returns a reference to a particular pixel of the image.
-			 *
-			 * \param x	the x coordinate of the pixel
-			 * \param y	the y coordinate of the pixel
-			 *
-			 * These assertions apply:
-			 * 	assert(x>=0 && x < getWidth())
-			 * 	assert(y>=0 && y < getHeight())
-			 */
-			lib3d::Color& operator()(unsigned int x, unsigned int y);
+		/**
+		 * \brief Function operator. This operator returns a reference to a particular pixel of the image.
+		 *
+		 * \param x	the x coordinate of the pixel
+		 * \param y	the y coordinate of the pixel
+		 *
+		 * These assertions apply:
+		 * 	assert(x>=0 && x < getWidth())
+		 * 	assert(y>=0 && y < getHeight())
+		 */
+		Color& operator()(unsigned int x, unsigned int y);
 
-			/**
-			 * \brief Function operator. This operator returns a const reference to a particular pixel of the image.
-			 *
-			 * \param x	the x coordinate of the pixel
-			 * \param y	the y coordinate of the pixel
-			 *
-			 * These assertions apply:
-			 * 	assert(x>=0 && x < getWidth())
-			 * 	assert(y>=0 && y < getHeight())
-			 */
-			lib3d::Color const& operator()(unsigned int x, unsigned int y) const;
+		/**
+		 * \brief Function operator. This operator returns a const reference to a particular pixel of the image.
+		 *
+		 * \param x	the x coordinate of the pixel
+		 * \param y	the y coordinate of the pixel
+		 *
+		 * These assertions apply:
+		 * 	assert(x>=0 && x < getWidth())
+		 * 	assert(y>=0 && y < getHeight())
+		 */
+		Color const& operator()(unsigned int x, unsigned int y) const;
 
-			/**
-			 * \brief Fills the image with a background of a specified color. Defaults to black
-			 *
-			 * \param color		The color to be assigned to each pixel
-			 */
-			void clear(lib3d::Color color = lib3d::Color());
+		/**
+		 * \brief Fills the image with a background of a specified color. Defaults to black
+		 *
+		 * \param color		The color to be assigned to each pixel
+		 */
+		void clear(Color color = Color());
 
-			/**
-			 * \brief Draws a line from pixel (x0,y0) to pixel (x1,y1) in the specified color
-			 *
-			 * \param x0	the x coordinate of the first pixel
-			 * \param y0	the y coordinate of the first pixel
-			 * \param x1	the x coordinate of the second pixel
-			 * \param y1	the y coordinate of the second pixel
-			 * \param color	the color of the line
-			 *
-			 * These assertions apply:
-			 *	assert(x0 < getWidth())
-			 * 	assert(y0 < getHeight())
-			 * 	assert(x1 < getWidth())
-			 * 	assert(y1 < getHeight())
-			 */
-			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, lib3d::Color color);
+		/**
+		 * \brief Draws a line from pixel (x0,y0) to pixel (x1,y1) in the specified color
+		 *
+		 * \param x0	the x coordinate of the first pixel
+		 * \param y0	the y coordinate of the first pixel
+		 * \param x1	the x coordinate of the second pixel
+		 * \param y1	the y coordinate of the second pixel
+		 * \param color	the color of the line
+		 *
+		 * These assertions apply:
+		 *	assert(x0 < getWidth())
+		 * 	assert(y0 < getHeight())
+		 * 	assert(x1 < getWidth())
+		 * 	assert(y1 < getHeight())
+		 */
+		void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
 
-			void draw_zbuf_line(lib3d::ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, lib3d::Color color);
+		void draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned int y0, double z0, unsigned int x1, unsigned int y1, double z1, Color color);
 
-			void draw_zbuf_triag(lib3d::ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
-				double d, double dx, double dy,
-				std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
-				std::vector<lib3d::Light>& lights,
-				bool shadow, Matrix& inversedEyeMatrix);
+		void draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
+			double d, double dx, double dy,
+			std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
+			std::vector<Light>& lights, bool shadow,
+			Matrix& inversedEyeMatrix);
 
-		private:
-			friend std::istream& operator>>(std::istream& in, EasyImage & image);
-			/**
-			 * \brief the width of the image
-			 */
-			unsigned int width;
-			/**
-			 * \brief the height of the image
-			 */
-			unsigned int height;
-			/**
-			 * \brief the vector containing all pixels
-			 */
-			std::vector<lib3d::Color> bitmap;
+	private:
+		friend std::istream& operator>>(std::istream& in, EasyImage & image);
+		/**
+		 * \brief the width of the image
+		 */
+		unsigned int width;
+		/**
+		 * \brief the height of the image
+		 */
+		unsigned int height;
+		/**
+		 * \brief the vector containing all pixels
+		 */
+		std::vector<Color> bitmap;
 	};
 
 	/**

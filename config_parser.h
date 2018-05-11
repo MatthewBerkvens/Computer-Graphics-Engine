@@ -9,13 +9,12 @@
 #include "fractals.h"
 #include "ini_configuration.h"
 #include "lib_lsystem.h"
+#include "Light.h"
 
-namespace config_parser {
-	void generateFiguresFromConfig(std::vector<lib3d::Figure>& figures, const ini::Configuration& conf);
+void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configuration& conf);
 
-	void generateLightsFromConfig(std::vector<lib3d::Light>& lights, const ini::Configuration& conf);
+void generateLightsFromConfig(std::vector<Light>& lights, const ini::Configuration& conf);
 
-	void parse3DLineDrawing(lib3d::Figure& figure, const ini::Configuration& conf, std::string& name);
-}
+void parse3DLineDrawing(Figure& figure, const ini::Configuration& conf, std::string& name);
 
 #endif

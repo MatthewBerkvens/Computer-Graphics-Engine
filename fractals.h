@@ -8,13 +8,13 @@
 #include "bodies.h"
 
 namespace fractals {
-	void createFractal(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const unsigned int nr_iterations, const double scale);
+	void createFractal(Figure& figure, std::vector<Figure>& fractal, const unsigned int nr_iterations, const double scale);
 
-	void recursiveFractal(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
+	void recursiveFractal(Figure& figure, std::vector<Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
 
-	void createMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const unsigned int nr_iterations);
+	void createMengerSponge(Figure& figure, std::vector<Figure>& fractal, const unsigned int nr_iterations);
 
-	void recursiveMengerSponge(lib3d::Figure& figure, std::vector<lib3d::Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
+	void recursiveMengerSponge(Figure& figure, std::vector<Figure>& fractal, const Matrix& scaleMatrix, const unsigned int iter, const unsigned int max_iter);
 }
 
 #endif

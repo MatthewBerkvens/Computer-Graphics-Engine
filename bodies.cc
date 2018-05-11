@@ -1,12 +1,6 @@
-//
-// Created by matthew.
-//
-
 #include "bodies.h"
-#include <algorithm>
-#include <assert.h>
 
-void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCube(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -20,16 +14,16 @@ void bodies::createCube(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 4, 2, 6 }),
-		lib3d::Face({ 4, 1, 7, 2 }),
-		lib3d::Face({ 1, 5, 3, 7 }),
-		lib3d::Face({ 5, 0, 6, 3 }),
-		lib3d::Face({ 6, 2, 7, 3 }),
-		lib3d::Face({ 0, 5, 1, 4 })
+		Face({ 0, 4, 2, 6 }),
+		Face({ 4, 1, 7, 2 }),
+		Face({ 1, 5, 3, 7 }),
+		Face({ 5, 0, 6, 3 }),
+		Face({ 6, 2, 7, 3 }),
+		Face({ 0, 5, 1, 4 })
 	};
 }
 
-void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createTetrahedron(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1, -1, -1),
@@ -39,14 +33,14 @@ void bodies::createTetrahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }),
-		lib3d::Face({ 1, 3, 2 }),
-		lib3d::Face({ 0, 3, 1 }),
-		lib3d::Face({ 0, 2, 3 })
+		Face({ 0, 1, 2 }),
+		Face({ 1, 3, 2 }),
+		Face({ 0, 3, 1 }),
+		Face({ 0, 2, 3 })
 	};
 }
 
-void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createOctahedron(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	figure.points = {
 		Vector3D().point(1,  0,  0),
@@ -58,18 +52,18 @@ void bodies::createOctahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	};
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 5 }),
-		lib3d::Face({ 1, 2, 5 }),
-		lib3d::Face({ 2, 3, 5 }),
-		lib3d::Face({ 3, 0, 5 }),
-		lib3d::Face({ 1, 0, 4 }),
-		lib3d::Face({ 2, 1, 4 }),
-		lib3d::Face({ 3, 2, 4 }),
-		lib3d::Face({ 0, 3, 4 })
+		Face({ 0, 1, 5 }),
+		Face({ 1, 2, 5 }),
+		Face({ 2, 3, 5 }),
+		Face({ 3, 0, 5 }),
+		Face({ 1, 0, 4 }),
+		Face({ 2, 1, 4 }),
+		Face({ 3, 2, 4 }),
+		Face({ 0, 3, 4 })
 	};
 }
 
-void bodies::createIcosahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createIcosahedron(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	std::vector<Vector3D> points;
 
@@ -94,36 +88,36 @@ void bodies::createIcosahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	figure.points = points;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2 }),
-		lib3d::Face({ 0, 2, 3 }),
-		lib3d::Face({ 0, 3, 4 }),
-		lib3d::Face({ 0, 4, 5 }),
-		lib3d::Face({ 0, 5, 1 }),
-		lib3d::Face({ 1, 6, 2 }),
-		lib3d::Face({ 2, 6, 7 }),
-		lib3d::Face({ 2, 7, 3 }),
-		lib3d::Face({ 3, 7, 8 }),
-		lib3d::Face({ 3, 8, 4 }),
-		lib3d::Face({ 4, 8, 9 }),
-		lib3d::Face({ 4, 9, 5 }),
-		lib3d::Face({ 5, 9, 10 }),
-		lib3d::Face({ 5, 10, 1 }),
-		lib3d::Face({ 1, 10, 6 }),
-		lib3d::Face({ 11, 7, 6 }),
-		lib3d::Face({ 11, 8, 7 }),
-		lib3d::Face({ 11, 9, 8 }),
-		lib3d::Face({ 11, 10, 9 }),
-		lib3d::Face({ 11, 6, 10 })
+		Face({ 0, 1, 2 }),
+		Face({ 0, 2, 3 }),
+		Face({ 0, 3, 4 }),
+		Face({ 0, 4, 5 }),
+		Face({ 0, 5, 1 }),
+		Face({ 1, 6, 2 }),
+		Face({ 2, 6, 7 }),
+		Face({ 2, 7, 3 }),
+		Face({ 3, 7, 8 }),
+		Face({ 3, 8, 4 }),
+		Face({ 4, 8, 9 }),
+		Face({ 4, 9, 5 }),
+		Face({ 5, 9, 10 }),
+		Face({ 5, 10, 1 }),
+		Face({ 1, 10, 6 }),
+		Face({ 11, 7, 6 }),
+		Face({ 11, 8, 7 }),
+		Face({ 11, 9, 8 }),
+		Face({ 11, 10, 9 }),
+		Face({ 11, 6, 10 })
 	};
 }
 
-void bodies::createDodecahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createDodecahedron(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 {
 	createIcosahedron(figure);
 
 	std::vector<Vector3D> newPoints;
 
-	for (std::vector<lib3d::Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); ++it_face)
+	for (std::vector<Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); ++it_face)
 	{
 		Vector3D pt1 = figure.points[it_face->point_indexes[0]];
 		Vector3D pt2 = figure.points[it_face->point_indexes[1]];
@@ -139,26 +133,26 @@ void bodies::createDodecahedron(lib3d::Figure& figure) //CONFIRMED ANTI-CLOCKWIS
 	figure.points = newPoints;
 
 	figure.faces = {
-		lib3d::Face({ 0, 1, 2, 3, 4 }),
-		lib3d::Face({ 0, 5, 6, 7, 1 }),
-		lib3d::Face({ 1, 7, 8, 9, 2 }),
-		lib3d::Face({ 2, 9, 10, 11, 3 }),
-		lib3d::Face({ 3, 11, 12, 13, 4 }),
-		lib3d::Face({ 4, 13, 14, 5, 0 }),
-		lib3d::Face({ 19, 18, 17, 16, 15 }),
-		lib3d::Face({ 19, 14, 13, 12, 18 }),
-		lib3d::Face({ 18, 12, 11, 10, 17 }),
-		lib3d::Face({ 17, 10, 9, 8, 16 }),
-		lib3d::Face({ 16, 8, 7, 6, 15 }),
-		lib3d::Face({ 15, 6, 5, 14, 19 }),
+		Face({ 0, 1, 2, 3, 4 }),
+		Face({ 0, 5, 6, 7, 1 }),
+		Face({ 1, 7, 8, 9, 2 }),
+		Face({ 2, 9, 10, 11, 3 }),
+		Face({ 3, 11, 12, 13, 4 }),
+		Face({ 4, 13, 14, 5, 0 }),
+		Face({ 19, 18, 17, 16, 15 }),
+		Face({ 19, 14, 13, 12, 18 }),
+		Face({ 18, 12, 11, 10, 17 }),
+		Face({ 17, 10, 9, 8, 16 }),
+		Face({ 16, 8, 7, 6, 15 }),
+		Face({ 15, 6, 5, 14, 19 }),
 	};
 }
 
-void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const double h)
+void bodies::createCone(Figure& figure, const unsigned int n, const double h)
 {
 	std::vector<Vector3D> points;
-	std::vector<lib3d::Face> faces;
-	lib3d::Face groundFace;
+	std::vector<Face> faces;
+	Face groundFace;
 
 	points.push_back(Vector3D().point(0, 0, h));
 
@@ -173,7 +167,7 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 
 	for (unsigned i = 1; i <= n; i++)
 	{
-		faces.push_back(lib3d::Face({ i, (i + 1), 0 }));
+		faces.push_back(Face({ i, (i + 1), 0 }));
 	}
 
 	for (unsigned int i = n; i > 0; i--)
@@ -187,13 +181,13 @@ void bodies::createCone(lib3d::Figure& figure, const unsigned int n, const doubl
 	figure.points = points;
 }
 
-void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const double h, bool surfaces) //CONFIRMED ANTI-CLOCKWISE
+void bodies::createCylinder(Figure& figure, const unsigned int n, const double h, bool surfaces) //CONFIRMED ANTI-CLOCKWISE
 {
 	std::vector<Vector3D> points;
-	std::vector<lib3d::Face> faces;
+	std::vector<Face> faces;
 
-	lib3d::Face groundFace;
-	lib3d::Face ceilingFace;
+	Face groundFace;
+	Face ceilingFace;
 
 	for (unsigned int i = 0; i < n; i++)
 	{
@@ -217,11 +211,11 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	{
 		if (i == n)
 		{
-			faces.push_back(lib3d::Face({ (2 * n) - 1, n - 1, 0, n }));
+			faces.push_back(Face({ (2 * n) - 1, n - 1, 0, n }));
 		}
 		else
 		{
-			faces.push_back(lib3d::Face({ n + i - 1, i - 1, i, n + i }));
+			faces.push_back(Face({ n + i - 1, i - 1, i, n + i }));
 		}
 
 		if (surfaces)
@@ -241,16 +235,16 @@ void bodies::createCylinder(lib3d::Figure& figure, const unsigned int n, const d
 	figure.points = points;
 }
 
-void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
+void bodies::createSphere(Figure& figure, const unsigned int n)
 {
 	createIcosahedron(figure);
 
 	for (unsigned int i = 0; i < n; i++)
 	{
 		std::vector<Vector3D> newPoints;
-		std::vector<lib3d::Face> newFaces;
+		std::vector<Face> newFaces;
 
-		for (std::vector<lib3d::Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); it_face++)
+		for (std::vector<Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); it_face++)
 		{
 			Vector3D A = figure.points[it_face->point_indexes[0]];
 
@@ -274,13 +268,13 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
 			newPoints.push_back(F); //size + 5
 
 
-			newFaces.push_back(lib3d::Face({ size + 4, size + 0, size + 3 })); //A - E - D
+			newFaces.push_back(Face({ size + 4, size + 0, size + 3 })); //A - E - D
 
-			newFaces.push_back(lib3d::Face({ size + 3, size + 1, size + 5 })); //B - D - F
+			newFaces.push_back(Face({ size + 3, size + 1, size + 5 })); //B - D - F
 
-			newFaces.push_back(lib3d::Face({ size + 5, size + 2, size + 4 })); //C - F - E
+			newFaces.push_back(Face({ size + 5, size + 2, size + 4 })); //C - F - E
 
-			newFaces.push_back(lib3d::Face({ size + 4, size + 3, size + 5 })); //D - E - F
+			newFaces.push_back(Face({ size + 4, size + 3, size + 5 })); //D - E - F
 		}
 
 		figure.points = newPoints;
@@ -293,10 +287,10 @@ void bodies::createSphere(lib3d::Figure& figure, const unsigned int n)
 	}
 }
 
-void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m)
+void bodies::createTorus(Figure& figure, const double r, const double R, const unsigned int n, const unsigned int m)
 {
 	std::vector<Vector3D> points;
-	std::vector<lib3d::Face> faces;
+	std::vector<Face> faces;
 
 	double v = 0;
 	double u = 0;
@@ -313,7 +307,7 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 				r * std::sin(v)
 			));
 
-			faces.push_back(lib3d::Face(
+			faces.push_back(Face(
 				{
 					((i + 1) % n)*m + j,
 					((i + 1) % n)*m + ((j + 1) % m),
@@ -327,23 +321,23 @@ void bodies::createTorus(lib3d::Figure& figure, const double r, const double R, 
 	figure.faces = faces;
 }
 
-void bodies::createBuckyBall(lib3d::Figure& figure)
+void bodies::createBuckyBall(Figure& figure)
 {
 	createIcosahedron(figure);
 
-	lib3d::Figure hexagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
-	lib3d::Figure triangles(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
-	lib3d::Figure pentagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+	Figure hexagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+	Figure triangles(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+	Figure pentagons(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
-	for (std::vector<lib3d::Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
+	for (std::vector<Face>::iterator it = figure.faces.begin(); it != figure.faces.end(); it++)
 	{
 		assert(it->point_indexes.size() == 3);
 
-		lib3d::Face newHexagon;
+		Face newHexagon;
 
 		for (size_t i = 0; i < 3; i++)
 		{
-			lib3d::Face newTriangle;
+			Face newTriangle;
 			newTriangle.point_indexes.push_back(triangles.points.size());
 			newTriangle.point_indexes.push_back(triangles.points.size() + 1);
 			newTriangle.point_indexes.push_back(triangles.points.size() + 2);
@@ -364,18 +358,18 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 		hexagons.faces.push_back(newHexagon);
 	}
 
-	for (std::vector<lib3d::Face>::iterator it_triangle_face = triangles.faces.begin(); it_triangle_face != triangles.faces.end(); it_triangle_face++)
+	for (std::vector<Face>::iterator it_triangle_face = triangles.faces.begin(); it_triangle_face != triangles.faces.end(); it_triangle_face++)
 	{
 		assert(it_triangle_face->point_indexes.size() == 3);
 
-		auto pentagon_face = std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const lib3d::Face face)
+		auto pentagon_face = std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const Face face)
 		{
 			return pentagons.points[face.point_indexes[0]] == triangles.points[it_triangle_face->point_indexes[0]];
 		}); //try to find a pentagon face where triangle_point[current_triangle_face_point_index[0]] equals to pentagons_points[the_pentagon_face_we_seek_point_index[0]] 
 
 		if (pentagon_face == pentagons.faces.end()) //if face was not found we need to make a new face with the current points, including point 0 as reference
 		{
-			pentagons.faces.push_back(lib3d::Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }));
+			pentagons.faces.push_back(Face({ (unsigned int)pentagons.points.size(), (unsigned int)pentagons.points.size() + (unsigned int)1, (unsigned int)pentagons.points.size() + (unsigned int)2 }));
 
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[0]]);
 			pentagons.points.push_back(triangles.points[it_triangle_face->point_indexes[1]]);
@@ -420,7 +414,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 	std::vector<Vector3D> newPoints; //remove useless point
 	for (std::vector<Vector3D>::iterator it_pentagon_pt = pentagons.points.begin(); it_pentagon_pt != pentagons.points.end(); it_pentagon_pt++)
 	{
-		if (std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const lib3d::Face face) {
+		if (std::find_if(pentagons.faces.begin(), pentagons.faces.end(), [&](const Face face) {
 			return (std::find_if(std::next(face.point_indexes.begin()), face.point_indexes.end(), [&](const unsigned int pt_index) {
 				return pentagons.points[pt_index] == *it_pentagon_pt;
 			}) != face.point_indexes.end());
@@ -428,10 +422,10 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 			newPoints.push_back(*it_pentagon_pt);
 	}
 
-	std::vector<lib3d::Face> newFaces; //remove point 0 from the faces we just generated
-	for (std::vector<lib3d::Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
+	std::vector<Face> newFaces; //remove point 0 from the faces we just generated
+	for (std::vector<Face>::iterator it_pentagon_face = pentagons.faces.begin(); it_pentagon_face != pentagons.faces.end(); it_pentagon_face++)
 	{
-		lib3d::Face newFace;
+		Face newFace;
 		for (std::vector<unsigned int>::iterator it_pt_index = std::next(it_pentagon_face->point_indexes.begin()); it_pt_index != it_pentagon_face->point_indexes.end(); it_pt_index++)
 		{
 			for (size_t i = 0; i < newPoints.size(); i++)
@@ -447,7 +441,7 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 	pentagons.points = newPoints;
 	pentagons.faces = newFaces;
 
-	std::vector<lib3d::Figure> combined;
+	std::vector<Figure> combined;
 	combined.push_back(pentagons);
 	combined.push_back(hexagons);
 	figure.points.clear();
@@ -456,20 +450,20 @@ void bodies::createBuckyBall(lib3d::Figure& figure)
 }
 
 
-void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figure>& figures, const double r, const int n, const int m)
+void bodies::generateThickFigure(Figure& figure, std::vector<Figure>& figures, const double r, const int n, const int m)
 {
 	std::vector<Vector3D> visitedPoints;
 
-	for (std::vector<lib3d::Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); it_face++)
+	for (std::vector<Face>::iterator it_face = figure.faces.begin(); it_face != figure.faces.end(); it_face++)
 	{
 		for (std::vector<unsigned int>::iterator it_pt_index = it_face->point_indexes.begin(); it_pt_index != it_face->point_indexes.end(); it_pt_index++)
 		{
-			lib3d::Figure newCyl(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+			Figure newCyl(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
 			Vector3D pt1 = figure.points[*it_pt_index];
 			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt1) == visitedPoints.end())
 			{
-				lib3d::Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+				Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
 				createSphere(newSphere, m);
 
@@ -482,7 +476,7 @@ void bodies::generateThickFigure(lib3d::Figure& figure, std::vector<lib3d::Figur
 			Vector3D pt2 = (std::next(it_pt_index) != it_face->point_indexes.end()) ? figure.points[*std::next(it_pt_index)] : figure.points[*it_face->point_indexes.begin()];
 			if (std::find(visitedPoints.begin(), visitedPoints.end(), pt2) == visitedPoints.end())
 			{
-				lib3d::Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
+				Figure newSphere(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
 				createSphere(newSphere, m);
 

@@ -12,43 +12,32 @@
 #include <string>
 #include <cmath>
 
-using namespace std;
-
 img::EasyImage generate_image(const ini::Configuration &configuration)
 {
-	string type = configuration["General"]["type"].as_string_or_die();
+	std::string type = configuration["General"]["type"].as_string_or_die();
 	double size = configuration["General"]["size"].as_double_or_die();
 
 	if (type == "2DLSystem") return lib_lsystem::generate_2DLSystem(configuration);
 
-	std::vector<lib3d::Light> lights;
-	config_parser::generateLightsFromConfig(lights, configuration);
+	std::vector<Light> lights;
+	generateLightsFromConfig(lights, configuration);
 
-	std::vector<lib3d::Figure> figures;
-	config_parser::generateFiguresFromConfig(figures, configuration);
+	std::vector<Figure> figures;
+	generateFiguresFromConfig(figures, configuration);
 
-	lib3d::Color backgroundColor = lib3d::colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
+	Color backgroundColor = colorFromNormalizedDoubleTuple(configuration["General"]["backgroundcolor"].as_double_tuple_or_die());
 
 	std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
 	Matrix eyeMatrix = lib3d::transformEyePointMatrix(Vector3D().point(eye[0], eye[1], eye[2]));
 
 	if (type == "Wireframe")
-	{
 		return img_generator::imgFromFigures_Wireframe(figures, size, eyeMatrix, backgroundColor);
-	}
 	else if (type == "ZBufferedWireframe")
-	{
 		return img_generator::imgFromFigures_ZBufferWireframe(figures, size, eyeMatrix, backgroundColor);
-	}
 	else if (type == "ZBuffering")
-	{
 		return img_generator::imgFromFigures_Triangles(figures, size, eyeMatrix, backgroundColor, lights);
-	}
 	else if (type == "LightedZBuffering")
-	{
-		std::vector<double> eye = configuration["General"]["eye"].as_double_tuple_or_die();
 		return img_generator::imgFromFigures_Triangles(figures, size, eyeMatrix, backgroundColor, lights, configuration["General"]["shadowEnabled"].as_bool_or_default(false), configuration["General"]["shadowMask"].as_int_or_default(0));
-	}
 
 	else return img::EasyImage();
 }
@@ -63,14 +52,14 @@ int main(int argc, char const* argv[])
 			ini::Configuration conf;
 			try
 			{
-				ifstream fin(argv[i]);
+				std::ifstream fin(argv[i]);
 				if (!fin) continue;
 				fin >> conf;
 				fin.close();
 			}
 			catch (ini::ParseException& ex)
 			{
-				cerr << "Error parsing file: " << argv[i] << ": " << ex.what() << endl;
+				std::cerr << "Error parsing file: " << argv[i] << ": " << ex.what() << std::endl;
 				retVal = 1;
 				continue;
 			}
@@ -78,9 +67,9 @@ int main(int argc, char const* argv[])
 			img::EasyImage image = generate_image(conf);
 			if (image.get_height() > 0 && image.get_width() > 0)
 			{
-				string fileName(argv[i]);
-				string::size_type pos = fileName.rfind('.');
-				if (pos == string::npos)
+				std::string fileName(argv[i]);
+				std::string::size_type pos = fileName.rfind('.');
+				if (pos == std::string::npos)
 				{
 					//filename does not contain a '.' --> append a '.bmp' suffix
 					fileName += ".bmp";
@@ -91,23 +80,23 @@ int main(int argc, char const* argv[])
 				}
 				try
 				{
-					ofstream f_out(fileName.c_str(), ios::trunc | ios::out | ios::binary);
+					std::ofstream f_out(fileName.c_str(), std::ios::trunc | std::ios::out | std::ios::binary);
 					f_out << image;
 
 				}
-				catch (exception& ex)
+				catch (std::exception& ex)
 				{
-					cerr << "Failed to write image to file: " << ex.what() << endl;
+					std::cerr << "Failed to write image to file: " << ex.what() << std::endl;
 					retVal = 1;
 				}
 			}
 			else
 			{
-				cout << "Could not generate image for " << argv[i] << endl;
+				std::cout << "Could not generate image for " << argv[i] << std::endl;
 			}
 		}
 	}
-	catch (const bad_alloc &exception)
+	catch (const std::bad_alloc &exception)
 	{
 		(void)exception; //pesky unused variable warnings
 		//When you run out of memory this exception is thrown. When this happens the return value of the program MUST be '100'.
@@ -115,7 +104,7 @@ int main(int argc, char const* argv[])
 		//(Unless of course you are already consuming the maximum allowed amount of memory)
 		//If your engine does NOT adhere to this requirement you risk losing points because then our scripts will
 		//mark the test as failed while in reality it just needed a bit more memory
-		cerr << "Error: insufficient memory" << endl;
+		std::cerr << "Error: insufficient memory" << std::endl;
 		retVal = 100;
 	}
 	return retVal;

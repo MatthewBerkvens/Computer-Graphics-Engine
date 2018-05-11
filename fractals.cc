@@ -69,7 +69,7 @@ void fractals::recursiveMengerSponge(Figure& figure, std::vector<Figure>& fracta
 
 	Figure combinedFigure(figure.ambientReflection, figure.diffuseReflection, figure.specularReflection, figure.reflectionCoefficient);
 
-	lib3d::combineFigures(combinedFigure, newFigures);
+	combineFigures(combinedFigure, newFigures);
 
 	fractals::recursiveMengerSponge(combinedFigure, fractal, scaleMatrix, iter + 1, max_iter);
 }

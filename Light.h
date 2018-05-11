@@ -6,8 +6,8 @@
 #define ENGINE_LIGHT_H
 
 #include "vector3d.h"
-#include "zbuffer.h"
-#include "point2d.h"
+#include "ZBuffer.h"
+#include "Point2D.h"
 #include "mylibrary.h"
 
 #include <algorithm>

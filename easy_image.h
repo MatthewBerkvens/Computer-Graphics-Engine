@@ -20,6 +20,7 @@
 #include "vector3d.h"
 #include "Color.h"
 #include "Line2D.h"
+#include "ZBuffer.h"
 
 #include <iostream>
 #include <stdint.h>

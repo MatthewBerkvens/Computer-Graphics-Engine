@@ -5,14 +5,16 @@
 #ifndef ENGINE_IMG_GENERATOR_H
 #define ENGINE_IMG_GENERATOR_H
 #include "easy_image.h"
+#include "Point2D.h"
+#include "Line2D.h"
+#include "Light.h"
 #include "lib3d.h"
+
 #include <cmath>
 #include <map>
 #include <assert.h>
 #include <algorithm>
-#include "Point2D.h"
-#include "Line2D.h"
-#include "Light.h"
+
 
 namespace img_generator
 {

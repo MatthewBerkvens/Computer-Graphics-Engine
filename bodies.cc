@@ -446,7 +446,7 @@ void bodies::createBuckyBall(Figure& figure)
 	combined.push_back(hexagons);
 	figure.points.clear();
 	figure.faces.clear();
-	lib3d::combineFigures(figure, combined);
+	combineFigures(figure, combined);
 }
 
 

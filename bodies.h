@@ -9,6 +9,7 @@
 #include "Figure.h"
 #include "Face.h"
 #include "lib3d.h"
+#include "Projecting.h"
 
 #include <algorithm>
 #include <assert.h>

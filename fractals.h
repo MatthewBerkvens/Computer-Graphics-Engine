@@ -6,6 +6,7 @@
 #define ENGINE_FRACTALS_H
 #include "lib3d.h"
 #include "bodies.h"
+#include "Projecting.h"
 
 namespace fractals {
 	void createFractal(Figure& figure, std::vector<Figure>& fractal, const unsigned int nr_iterations, const double scale);

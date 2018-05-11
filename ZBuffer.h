@@ -6,6 +6,7 @@
 #define ENGINE_ZBUFFER_H
 
 #include <vector>
+#include <limits>
 
 class ZBuffer
 {

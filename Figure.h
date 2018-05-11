@@ -7,7 +7,7 @@
 
 #include "vector3d.h"
 #include "Face.h"
-//#include "easy_image.h"
+#include "easy_image.h"
 
 #include <vector>
 #include <assert.h>
@@ -23,9 +23,9 @@ public:
 	std::vector<double> specularReflection;
 	double reflectionCoefficient;
 
-	//img::EasyImage texture;
+	img::EasyImage texture;
 
-	Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient/*, img::EasyImage texture = img::EasyImage()*/);
+	Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient, img::EasyImage texture = img::EasyImage());
 };
 
 #endif

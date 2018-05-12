@@ -16,10 +16,10 @@ void bodies::createCube(Figure& figure) //CONFIRMED ANTI-CLOCKWISE
 	figure.faces = {
 		Face({ 0, 4, 2, 6 }),
 		Face({ 4, 1, 7, 2 }),
-		Face({ 1, 5, 3, 7 }),
-		Face({ 5, 0, 6, 3 }),
+		Face({ 1, 5, 3, 7 }), //remove for texture debugging
+		Face({ 5, 0, 6, 3 }), //remove for texture debugging
 		Face({ 6, 2, 7, 3 }),
-		Face({ 0, 5, 1, 4 })
+		Face({ 0, 5, 1, 4 }) //remove for texture debugging
 	};
 }
 

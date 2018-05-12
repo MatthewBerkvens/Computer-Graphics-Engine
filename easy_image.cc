@@ -374,10 +374,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					double u;
 					double v;
 
-					double x_diff = currentPixelTo3DPointReal.x - p.x;
-					double y_diff = currentPixelTo3DPointReal.y - p.y;
-					double z_diff = currentPixelTo3DPointReal.z - p.z;
-					if (x_diff <= 0 || y_diff <= 0 || z_diff <= 0) continue;
+					double x_diff = std::abs(currentPixelTo3DPointReal.x - p.x);
+					double y_diff = std::abs(currentPixelTo3DPointReal.y - p.y);
+					double z_diff = std::abs(currentPixelTo3DPointReal.z - p.z);
 					if (det_x1 != 0)
 					{
 						Matrix x1_inv;
@@ -413,7 +412,10 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					}
 					else assert(false);
 
-					(*this)(x_cur, y_cur) = texture(std::floor(texture.get_width() * u), std::floor(texture.get_height() * v));
+					u = std::abs(u);
+					v = std::abs(v);
+					if (u > 1 || v > 1) return;
+					(*this)(x_cur, y_cur) = texture((unsigned int)std::floor((double)texture.get_width() * u), (unsigned int)std::floor((double)texture.get_height() * v));
 				}
 				else
 					(*this)(x_cur, y_cur) = pixelColor;

@@ -2,12 +2,12 @@
 
 void lib_lsystem::generate_3DLSystem(Figure& figure, const ini::Configuration &conf, std::string figurename)
 {
-	std::string inputfile = EXTRA_PATH_IF_WINDOWS + conf[figurename]["inputfile"].as_string_or_die();
+	std::string inputfile = conf[figurename]["inputfile"].as_string_or_die();
 
 	LParser::LSystem3D l_system;
 	std::ifstream l3dfilestream;
 	l3dfilestream.open(inputfile.c_str());
-	if (!l3dfilestream) l3dfilestream.open(conf[figurename]["inputfile"].as_string_or_die().c_str());
+	if (!l3dfilestream) l3dfilestream.open((EXTRA_PATH_IF_WINDOWS + conf[figurename]["inputfile"].as_string_or_die()).c_str());
 	assert(l3dfilestream);
 	l3dfilestream >> l_system;
 	l3dfilestream.close();

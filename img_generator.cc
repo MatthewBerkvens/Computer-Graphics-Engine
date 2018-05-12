@@ -152,6 +152,8 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<Figure>& figu
 	{
 		for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); ++it_face)
 		{
+			unsigned int surfaceIndex = std::distance(it_figure->faces.begin(), it_face);
+			std::vector<Vector3D> surfaceInformation = it_figure->surfaceInformation.size() > 0 ? it_figure->surfaceInformation[surfaceIndex] : std::vector<Vector3D>();
 			for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
 			{
 				image.draw_zbuf_triag(
@@ -168,7 +170,10 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<Figure>& figu
 					it_figure->reflectionCoefficient,
 					lights,
 					shadow,
-					invertedEyeMatrix);
+					invertedEyeMatrix,
+					it_figure->texture,
+					surfaceInformation,
+					eyeMatrix);
 			}
 		}
 	}

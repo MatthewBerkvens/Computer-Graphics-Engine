@@ -10,6 +10,7 @@
 #include "ini_configuration.h"
 #include "lib_lsystem.h"
 #include "Light.h"
+#include <iostream>
 
 void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configuration& conf);
 

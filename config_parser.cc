@@ -19,7 +19,18 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 		double reflectionCoefficient = conf[figureName]["reflectionCoefficient"].as_double_or_default(0);
 
 		Figure newFigure(ambientReflectionVector, diffuseReflectionVector, specularReflectionVector, reflectionCoefficient);
-		
+
+		std::string textureFile;
+		if (conf[figureName]["texture"].as_string_if_exists(textureFile))
+		{
+			std::ifstream ftexture;
+			ftexture.open(textureFile.c_str());
+			if (!ftexture) ftexture.open((EXTRA_PATH_IF_WINDOWS + textureFile).c_str());
+			assert(ftexture);
+			ftexture >> newFigure.texture;
+			ftexture.close();
+		}
+		else newFigure.texture = img::EasyImage();
 
 		std::vector<double> center = conf[figureName]["center"].as_double_tuple_or_die();
 
@@ -62,6 +73,20 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 		for (std::vector<Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
 		{
 			lib3d::transformFigure(*it_figure, combinedMatrix);
+
+			if (it_figure->texture.get_height() != 0)
+			{
+				for (std::vector<Face>::iterator it = it_figure->faces.begin(); it != it_figure->faces.end(); it++)
+				{
+					it_figure->surfaceInformation.push_back(
+						{
+							it_figure->points[it->point_indexes[0]],
+							Vector3D().vector(it_figure->points[it->point_indexes[1]] - it_figure->points[it->point_indexes[0]]),
+							Vector3D().vector(it_figure->points[it->point_indexes[3]] - it_figure->points[it->point_indexes[0]]),
+						}
+					);
+				}
+			}
 		}
 	}
 }

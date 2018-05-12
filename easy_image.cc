@@ -245,8 +245,8 @@ void img::EasyImage::draw_line(unsigned int x0, unsigned int y0, unsigned int x1
 void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const Vector3D& B, const Vector3D& C,
 	double d, double dx, double dy,
 	std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
-	std::vector<Light>& lights, bool shadow,
-	Matrix& inversedEyeMatrix)
+	std::vector<Light>& lights, bool shadow, Matrix& inversedEyeMatrix,
+	EasyImage& texture, const std::vector<Vector3D>& surfaceInformation, Matrix& originalEyeMatrix)
 {
 	assert(zbuffer.zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
@@ -361,7 +361,62 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					}
 				}
 
-				(*this)(x_cur, y_cur) = pixelColor;
+				if (texture.get_height() != 0)
+				{
+					Vector3D p = surfaceInformation[0] * originalEyeMatrix;
+					Vector3D a = surfaceInformation[1] * originalEyeMatrix;
+					Vector3D b = surfaceInformation[2] * originalEyeMatrix;
+
+					double det_x1 = (a.x * b.y) - (a.y * b.x);
+					double det_x2 = (a.y * b.z) - (a.z * b.y);
+					double det_x3 = (a.x * b.z) - (a.z * b.x);
+
+					double u;
+					double v;
+
+					double x_diff = currentPixelTo3DPointReal.x - p.x;
+					double y_diff = currentPixelTo3DPointReal.y - p.y;
+					double z_diff = currentPixelTo3DPointReal.z - p.z;
+					if (x_diff <= 0 || y_diff <= 0 || z_diff <= 0) continue;
+					if (det_x1 != 0)
+					{
+						Matrix x1_inv;
+						x1_inv(1, 1) = b.y / det_x1;
+						x1_inv(1, 2) = -a.y / det_x1;
+						x1_inv(2, 1) = -b.x / det_x1;
+						x1_inv(2, 2) = a.x / det_x1;
+
+						u = x_diff * x1_inv(1, 1) + y_diff * x1_inv(2, 1);
+						v = x_diff * x1_inv(1, 2) + y_diff * x1_inv(2, 2);
+					}
+					else if (det_x2 != 0)
+					{
+						Matrix x2_inv;
+						x2_inv(1, 1) = b.z / det_x2;
+						x2_inv(1, 2) = -a.z / det_x2;
+						x2_inv(2, 1) = -b.y / det_x2;
+						x2_inv(2, 2) = a.y / det_x2;
+
+						u = y_diff * x2_inv(1, 1) + z_diff * x2_inv(2, 1);
+						v = y_diff * x2_inv(1, 2) + z_diff * x2_inv(2, 2);
+					}
+					else if (det_x3 != 0)
+					{
+						Matrix x3_inv;
+						x3_inv(1, 1) = b.z / det_x3;
+						x3_inv(1, 2) = -a.z / det_x3;
+						x3_inv(2, 1) = -b.x / det_x3;
+						x3_inv(2, 2) = a.x / det_x3;
+
+						u = x_diff * x3_inv(1, 1) + z_diff * x3_inv(2, 1);
+						v = x_diff * x3_inv(1, 2) + z_diff * x3_inv(2, 2);
+					}
+					else assert(false);
+
+					(*this)(x_cur, y_cur) = texture(std::floor(texture.get_width() * u), std::floor(texture.get_height() * v));
+				}
+				else
+					(*this)(x_cur, y_cur) = pixelColor;
 				zbuffer[x_cur][y_cur] = z_inv;
 			}
 		}

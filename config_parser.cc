@@ -120,11 +120,36 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 							return a.z < b.z;
 						});
 
-						Vector3D p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+						std::string textureDirection = conf[figureName]["textureDirection"].as_string_or_default("top");
 
-						Vector3D a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+						Vector3D p;
+						Vector3D a;
+						Vector3D b;
 
-						Vector3D b = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+						if (textureDirection == "left" || textureDirection == "right")
+						{
+							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+							a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+
+							b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
+						}
+						else if (textureDirection == "front" || textureDirection == "back")
+						{
+							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+							a = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+
+							b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
+						}
+						else
+						{
+							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+							a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+
+							b = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+						}
 
 						it_figure->surfaceInformation.push_back({ p, a, b });
 					}

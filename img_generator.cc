@@ -122,6 +122,8 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<Figure>& figu
 	{
 		for (std::vector<Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 		{
+			if (!it_light->specialLight || it_light->infinity) continue;
+
 			std::tuple<std::pair<int, int>, double, std::pair<double, double>> shadowFacts = getImageFacts(figures, shadowSize, it_light->lightAsEyeMatrix);
 			std::pair<int, int> shadowSize = std::get<0>(shadowFacts);
 			double shadowD = std::get<1>(shadowFacts);
@@ -152,7 +154,7 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<Figure>& figu
 	{
 		for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); ++it_face)
 		{
-			unsigned int surfaceIndex = std::distance(it_figure->faces.begin(), it_face);
+			unsigned int surfaceIndex = it_figure->textureMethod == 0 ? std::distance(it_figure->faces.begin(), it_face) : 0;
 			std::vector<Vector3D> surfaceInformation = it_figure->surfaceInformation.size() > 0 ? it_figure->surfaceInformation[surfaceIndex] : std::vector<Vector3D>();
 			for (std::vector<unsigned int>::iterator it_face_pt_index = std::next(it_face->point_indexes.begin()); it_face_pt_index != std::prev(it_face->point_indexes.end()); it_face_pt_index++)
 			{
@@ -172,8 +174,8 @@ img::EasyImage img_generator::imgFromFigures_Triangles(std::vector<Figure>& figu
 					shadow,
 					invertedEyeMatrix,
 					it_figure->texture,
-					surfaceInformation,
-					eyeMatrix);
+					it_figure->textureMethod,
+					surfaceInformation);
 			}
 		}
 	}

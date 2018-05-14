@@ -192,7 +192,7 @@ namespace img
 			double d, double dx, double dy,
 			std::vector<double>& ambientReflection, std::vector<double>& diffuseReflection, std::vector<double>& specularReflection, const double reflectionCoeff,
 			std::vector<Light>& lights, bool shadow, Matrix& inversedEyeMatrix,
-			EasyImage& texture, const std::vector<Vector3D>& surfaceInformation, Matrix& originalEyeMatrix);
+			EasyImage& texture, unsigned int textureMethod, const std::vector<Vector3D>& surfaceInformation);
 
 	private:
 		friend std::istream& operator>>(std::istream& in, EasyImage & image);

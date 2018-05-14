@@ -76,15 +76,58 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 
 			if (it_figure->texture.get_height() != 0)
 			{
-				for (std::vector<Face>::iterator it = it_figure->faces.begin(); it != it_figure->faces.end(); it++)
+				it_figure->textureMethod = conf[figureName]["textureMethod"].as_int_or_die();
+
+				if (it_figure->textureMethod == 0)
 				{
-					it_figure->surfaceInformation.push_back(
-						{
-							it_figure->points[it->point_indexes[0]],
-							Vector3D().vector(it_figure->points[it->point_indexes[1]] - it_figure->points[it->point_indexes[0]]),
-							Vector3D().vector(it_figure->points[it->point_indexes[3]] - it_figure->points[it->point_indexes[0]]),
-						}
-					);
+					for (std::vector<Face>::iterator it = it_figure->faces.begin(); it != it_figure->faces.end(); it++)
+					{
+						it_figure->surfaceInformation.push_back(
+							{
+								it_figure->points[it->point_indexes[0]],
+								Vector3D().vector(it_figure->points[it->point_indexes[1]] - it_figure->points[it->point_indexes[0]]),
+								Vector3D().vector(it_figure->points[it->point_indexes[3]] - it_figure->points[it->point_indexes[0]]),
+							}
+						);
+					}
+				}
+				else if (it_figure->textureMethod == 1)
+				{
+					if (conf[figureName]["p"].exists())
+					{
+						std::vector<double> p = conf[figureName]["p"].as_double_tuple_or_die();
+						std::vector<double> a = conf[figureName]["a"].as_double_tuple_or_die();
+						std::vector<double> b = conf[figureName]["b"].as_double_tuple_or_die();
+
+						it_figure->surfaceInformation.push_back(
+							{
+								Vector3D().point(p[0], p[1], p[2]),
+								Vector3D().vector(a[0], a[1], a[2]),
+								Vector3D().vector(b[0], b[1], b[2])
+							});
+					}
+					else
+					{
+						auto minmax_x = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
+							return a.x < b.x;
+						});
+
+						auto minmax_y = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
+							return a.y < b.y;
+						});
+
+						auto minmax_z = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
+							return a.z < b.z;
+						});
+
+						Vector3D p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+						Vector3D a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+
+						Vector3D b = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+
+						it_figure->surfaceInformation.push_back({ p, a, b });
+					}
 				}
 			}
 		}

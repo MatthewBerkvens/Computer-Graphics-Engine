@@ -12,6 +12,7 @@
 #include <vector>
 #include <assert.h>
 
+
 class Figure
 {
 public:
@@ -24,9 +25,10 @@ public:
 	double reflectionCoefficient;
 
 	img::EasyImage texture;
+	unsigned int textureMethod;
 	std::vector<std::vector<Vector3D>> surfaceInformation;
 
-	Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient, img::EasyImage texture = img::EasyImage());
+	Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient);
 };
 
 #endif

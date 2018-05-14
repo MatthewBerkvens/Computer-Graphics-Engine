@@ -7,6 +7,7 @@
 
 #include "mylibrary.h"
 
+#include <stdexcept>
 #include <iomanip>
 #include <vector>
 

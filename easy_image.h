@@ -22,6 +22,7 @@
 #include "Line2D.h"
 #include "ZBuffer.h"
 #include "Light.h"
+#include "Projecting.h"
 
 #include <iostream>
 #include <stdint.h>

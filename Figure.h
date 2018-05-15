@@ -31,4 +31,7 @@ public:
 	Figure(std::vector<double>& _ambientReflection, std::vector<double>& _diffuseReflection, std::vector<double>& _specularReflection, double _reflectionCoefficient);
 };
 
+std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<Figure>& figures, const double d);
+
+void combineFigures(Figure& out, std::vector<Figure>& figures);
 #endif

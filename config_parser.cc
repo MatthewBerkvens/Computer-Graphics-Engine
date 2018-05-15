@@ -80,15 +80,38 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 
 				if (it_figure->textureMethod == 0)
 				{
-					for (std::vector<Face>::iterator it = it_figure->faces.begin(); it != it_figure->faces.end(); it++)
+					for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); it_face++)
 					{
-						it_figure->surfaceInformation.push_back(
-							{
-								it_figure->points[it->point_indexes[0]],
-								Vector3D().vector(it_figure->points[it->point_indexes[1]] - it_figure->points[it->point_indexes[0]]),
-								Vector3D().vector(it_figure->points[it->point_indexes[3]] - it_figure->points[it->point_indexes[0]]),
-							}
-						);
+						if (type == "Cube")
+						{
+							it_figure->surfaceInformation.push_back(
+								{
+									it_figure->points[it_face->point_indexes[0]],
+									Vector3D().vector(it_figure->points[it_face->point_indexes[1]] - it_figure->points[it_face->point_indexes[0]]),
+									Vector3D().vector(it_figure->points[it_face->point_indexes[3]] - it_figure->points[it_face->point_indexes[0]]),
+								});
+						}
+
+						/*auto minmax_x = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+							return it_figure->points[a].x < it_figure->points[b].x;
+						});
+
+						auto minmax_y = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+							return it_figure->points[a].y < it_figure->points[b].y;
+						});
+
+						auto minmax_z = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+							return it_figure->points[a].z < it_figure->points[b].z;
+						});
+
+						Vector3D p = Vector3D().point(it_figure->points[*minmax_x.first].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.first].z);
+
+						Vector3D a = Vector3D().vector(Vector3D().point(it_figure->points[*minmax_x.second].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.first].z) - p);
+
+						Vector3D b = Vector3D().vector(Vector3D().point(it_figure->points[*minmax_x.first].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.second].z) - p);
+
+
+						it_figure->surfaceInformation.push_back({ p, a, b });*/
 					}
 				}
 				else if (it_figure->textureMethod == 1)

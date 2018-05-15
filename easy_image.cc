@@ -250,9 +250,9 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 {
 	assert(zbuffer.zbuffer.size() == this->width);
 	assert(zbuffer[0].size() == this->height);
-	Point2D projected_A = Point2D(((d * A.x) / -A.z) + dx, ((d * A.y) / -A.z) + dy);
-	Point2D projected_B = Point2D(((d * B.x) / -B.z) + dx, ((d * B.y) / -B.z) + dy);
-	Point2D projected_C = Point2D(((d * C.x) / -C.z) + dx, ((d * C.y) / -C.z) + dy);
+	Point2D projected_A = projectPoint(A, d, dx, dy);
+	Point2D projected_B = projectPoint(B, d, dx, dy);
+	Point2D projected_C = projectPoint(C, d, dx, dy);
 
 	Vector3D grav = Vector3D().point(
 		((projected_A.x + projected_B.x + projected_C.x) / 3), //xg
@@ -277,13 +277,20 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 	Vector3D normal = Vector3D().vector(w1, w2, w3);
 	normal.normalise();
 
-	Color ambientColor;
+	std::vector<double> ambientColorMultiplier(3);
 
-	for (std::vector<Light>::iterator it = lights.begin(); it != lights.end(); it++)
+	//Color ambientColor;
+	for (std::vector<Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 	{
-		ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + (unsigned int)roundToInt(it->ambientLight[0] * ambientReflection[0] * 255));
+		for (size_t i = 0; i < 3; i++)
+		{
+			ambientColorMultiplier[i] += it_light->ambientLight[i] * ambientReflection[i];
+		}
+
+
+		/*ambientColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.red + (unsigned int)roundToInt(it->ambientLight[0] * ambientReflection[0] * 255));
 		ambientColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.green + (unsigned int)roundToInt(it->ambientLight[1] * ambientReflection[1] * 255));
-		ambientColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.blue + (unsigned int)roundToInt(it->ambientLight[2] * ambientReflection[2] * 255));
+		ambientColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)ambientColor.blue + (unsigned int)roundToInt(it->ambientLight[2] * ambientReflection[2] * 255));*/
 	}
 
 	for (unsigned int y_cur = y_min; y_cur <= y_max; y_cur++)
@@ -296,7 +303,8 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 			const Point2D& P = i < 2 ? (i < 1 ? projected_A : projected_B) : projected_C;
 			const Point2D& Q = (i + 1) % 3 < 2 ? ((i + 1) % 3 < 1 ? projected_A : projected_B) : projected_C;
 
-			if (P.y == Q.y || (((double)y_cur - P.y) * ((double)y_cur - Q.y)) > 0) continue;
+			if (P.y == Q.y || (((double)y_cur - P.y) * ((double)y_cur - Q.y)) > 0)
+				continue;
 
 			x_min = std::min(x_min, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
 			x_max = std::max(x_max, Q.x + ((P.x - Q.x) * (((double)y_cur - Q.y) / (P.y - Q.y))));
@@ -316,7 +324,8 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 			if (z_inv < zbuffer[x_cur][y_cur])
 			{
-				Color pixelColor(ambientColor);
+				//Color pixelColor(ambientColor);
+				std::vector<double> colorMultiplier(ambientColorMultiplier);
 
 				Vector3D currentPixelTo3DPointReal = Vector3D().point(
 					((x_cur - dx) * -(1.0 / z_real)) / d, //((xE - dx) * zE) / d
@@ -324,12 +333,14 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					(1.0 / z_real) //-zE
 				);
 
+				Vector3D realWorldPoint = currentPixelTo3DPointReal * inversedEyeMatrix;
+
 				for (std::vector<Light>::iterator it_light = lights.begin(); it_light != lights.end(); it_light++)
 				{
 					if (it_light->specialLight)
 					{
-						Vector3D realWorldPoint = currentPixelTo3DPointReal * inversedEyeMatrix;
-						if (shadow && !it_light->isInSight(realWorldPoint)) continue;
+						if (shadow && !it_light->isInSight(realWorldPoint))
+							continue;
 
 						Vector3D currentPixelVector_FromLight;
 						Vector3D currentPixelVector_FromEye = Vector3D().vector(currentPixelTo3DPointReal);
@@ -343,9 +354,13 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_alpha = (normal.x * -currentPixelVector_FromLight.x) + (normal.y * -currentPixelVector_FromLight.y) + (normal.z * -currentPixelVector_FromLight.z);
 						if (scalar_cos_alpha > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->diffuseLight[0] * diffuseReflection[0] * 255 * scalar_cos_alpha));
+							for (size_t i = 0; i < 3; i++)
+							{
+								colorMultiplier[i] += it_light->diffuseLight[i] * diffuseReflection[i] * scalar_cos_alpha;
+							}
+							/*pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->diffuseLight[0] * diffuseReflection[0] * 255 * scalar_cos_alpha));
 							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it_light->diffuseLight[1] * diffuseReflection[1] * 255 * scalar_cos_alpha));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->diffuseLight[2] * diffuseReflection[2] * 255 * scalar_cos_alpha));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->diffuseLight[2] * diffuseReflection[2] * 255 * scalar_cos_alpha));*/
 						}
 
 						Vector3D r = ((2 * scalar_cos_alpha) * normal) + currentPixelVector_FromLight;
@@ -354,9 +369,13 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						double scalar_cos_beta = (r.x * -currentPixelVector_FromEye.x) + (r.y * -currentPixelVector_FromEye.y) + (r.z * -currentPixelVector_FromEye.z);
 						if (scalar_cos_beta > 0)
 						{
-							pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->specularLight[0] * specularReflection[0] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							for (size_t i = 0; i < 3; i++)
+							{
+								colorMultiplier[i] += it_light->specularLight[i] * specularReflection[i] * std::pow(scalar_cos_beta, reflectionCoeff);
+							}
+							/*pixelColor.red = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.red + (unsigned int)roundToInt(it_light->specularLight[0] * specularReflection[0] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
 							pixelColor.green = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.green + (unsigned int)roundToInt(it_light->specularLight[1] * specularReflection[1] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
-							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->specularLight[2] * specularReflection[2] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));
+							pixelColor.blue = (uint8_t)std::min((unsigned int)255, (unsigned int)pixelColor.blue + (unsigned int)roundToInt(it_light->specularLight[2] * specularReflection[2] * 255 * std::pow(scalar_cos_beta, reflectionCoeff)));*/
 						}
 					}
 				}
@@ -367,7 +386,6 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					Vector3D a = surfaceInformation[1];
 					Vector3D b = surfaceInformation[2];
 
-					Vector3D realWorldPoint = currentPixelTo3DPointReal * inversedEyeMatrix;
 					double x_diff = std::abs(realWorldPoint.x - p.x);
 					double y_diff = std::abs(realWorldPoint.y - p.y);
 					double z_diff = std::abs(realWorldPoint.z - p.z);
@@ -418,10 +436,6 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 					}
 					else if (textureMethod == 1)
 					{
-						Vector3D p = surfaceInformation[0];
-						Vector3D a = surfaceInformation[1];
-						Vector3D b = surfaceInformation[2];
-
 						Vector3D c = Vector3D().cross(a, b);
 
 						Matrix x;
@@ -447,15 +461,17 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 						u = result.x;
 						v = result.y;
 					}
+					else continue;
 
 					u = u - std::floor(u);
 					v = v - std::floor(v);
 
-					Color& texel = texture((unsigned int)std::floor((double)(texture.get_width() - 1) * u), (unsigned int)std::floor((double)(texture.get_height() - 1) * v));
-					(*this)(x_cur, y_cur) = texel;
+					Color& texel = texture(roundToInt((double)(texture.get_width() - 1) * u), roundToInt((double)(texture.get_height() - 1) * v));
+
+					(*this)(x_cur, y_cur) = Color(std::max(1.0, colorMultiplier[0]) * texel.red, std::max(1.0, colorMultiplier[1]) * texel.green, std::max(1.0, colorMultiplier[2]) * texel.blue);
 				}
 				else
-					(*this)(x_cur, y_cur) = pixelColor;
+					(*this)(x_cur, y_cur) = Color(std::max(1.0, colorMultiplier[0]) * 255, std::max(1.0, colorMultiplier[1]) * 255, std::max(1.0, colorMultiplier[2]) * 255);
 				zbuffer[x_cur][y_cur] = z_inv;
 			}
 		}

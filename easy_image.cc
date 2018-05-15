@@ -468,10 +468,10 @@ void img::EasyImage::draw_zbuf_triag(ZBuffer& zbuffer, const Vector3D& A, const 
 
 					Color& texel = texture(roundToInt((double)(texture.get_width() - 1) * u), roundToInt((double)(texture.get_height() - 1) * v));
 
-					(*this)(x_cur, y_cur) = Color(std::max(1.0, colorMultiplier[0]) * texel.red, std::max(1.0, colorMultiplier[1]) * texel.green, std::max(1.0, colorMultiplier[2]) * texel.blue);
+					(*this)(x_cur, y_cur) = Color(std::min(1.0, colorMultiplier[0]) * texel.red, std::min(1.0, colorMultiplier[1]) * texel.green, std::min(1.0, colorMultiplier[2]) * texel.blue);
 				}
 				else
-					(*this)(x_cur, y_cur) = Color(std::max(1.0, colorMultiplier[0]) * 255, std::max(1.0, colorMultiplier[1]) * 255, std::max(1.0, colorMultiplier[2]) * 255);
+					(*this)(x_cur, y_cur) = Color(std::min(1.0, colorMultiplier[0]) * 255, std::min(1.0, colorMultiplier[1]) * 255, std::min(1.0, colorMultiplier[2]) * 255);
 				zbuffer[x_cur][y_cur] = z_inv;
 			}
 		}
@@ -487,10 +487,11 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 	assert(zbuffer[0].size() == this->height);
 	if (x0 == x1)
 	{
-		unsigned int pixelcount = std::max(y0, y1) - std::min(y0, y1) + 1;
-		unsigned int pixel = pixelcount;
+		unsigned int pixelcount = std::max(y0, y1) - std::min(y0, y1);
+		unsigned int pixel = pixelcount + 1;
 		for (unsigned int i = std::min(y0, y1); i <= std::max(y0, y1); i++)
 		{
+			pixel--;
 			double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 			if (newz < zbuffer[x0][i])
@@ -498,16 +499,16 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 				zbuffer[x0][i] = newz;
 				(*this)(x0, i) = color;
 			}
-			pixel--;
 		}
 		assert(pixel == 0);
 	}
 	else if (y0 == y1)
 	{
-		unsigned int pixelcount = std::max(x0, x1) - std::min(x0, x1) + 1;
-		unsigned int pixel = pixelcount;
+		unsigned int pixelcount = std::max(x0, x1) - std::min(x0, x1);
+		unsigned int pixel = pixelcount + 1;
 		for (unsigned int i = std::min(x0, x1); i <= std::max(x0, x1); i++)
 		{
+			pixel--;
 			double newz = (((double)pixel / (double)pixelcount) / z0) + ((1.0 - ((double)pixel / (double)pixelcount)) / z1);
 
 			if (newz < zbuffer[i][y0])
@@ -515,7 +516,6 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 				zbuffer[i][y0] = newz;
 				(*this)(i, y0) = color;
 			}
-			pixel--;
 		}
 		assert(pixel == 0);
 	}
@@ -531,10 +531,11 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 		double m = ((double)y1 - (double)y0) / ((double)x1 - (double)x0);
 		if (-1.0 <= m && m <= 1.0)
 		{
-			unsigned int pixelcount = (x1 - x0) + 1;
-			unsigned int pixel = pixelcount;
+			unsigned int pixelcount = (x1 - x0);
+			unsigned int pixel = pixelcount + 1;
 			for (unsigned int i = 0; i <= (x1 - x0); i++)
 			{
+				pixel--;
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[x0 + i][(unsigned int)roundToInt(y0 + m * i)])
@@ -542,16 +543,16 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 					zbuffer[x0 + i][(unsigned int)roundToInt(y0 + m * i)] = newz;
 					(*this)(x0 + i, (unsigned int)roundToInt(y0 + m * i)) = color;
 				}
-				pixel--;
 			}
 			assert(pixel == 0);
 		}
 		else if (m > 1.0)
 		{
-			unsigned int pixelcount = (y1 - y0) + 1;
-			unsigned int pixel = pixelcount;
+			unsigned int pixelcount = (y1 - y0);
+			unsigned int pixel = pixelcount + 1;
 			for (unsigned int i = 0; i <= (y1 - y0); i++)
 			{
+				pixel--;
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[(unsigned int)roundToInt(x0 + (i / m))][y0 + i])
@@ -559,16 +560,16 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 					zbuffer[(unsigned int)roundToInt(x0 + (i / m))][y0 + i] = newz;
 					(*this)((unsigned int)roundToInt(x0 + (i / m)), y0 + i) = color;
 				}
-				pixel--;
 			}
 			assert(pixel == 0);
 		}
 		else if (m < -1.0)
 		{
-			unsigned int pixelcount = (y0 - y1) + 1;
-			unsigned int pixel = pixelcount;
+			unsigned int pixelcount = (y0 - y1);
+			unsigned int pixel = pixelcount + 1;
 			for (unsigned int i = 0; i <= (y0 - y1); i++)
 			{
+				pixel--;
 				double newz = (((double)pixel / (double)pixelcount) / z0) + ((1 - ((double)pixel / (double)pixelcount)) / z1);
 
 				if (newz < zbuffer[(unsigned int)roundToInt(x0 - (i / m))][y0 - i])
@@ -576,7 +577,6 @@ void img::EasyImage::draw_zbuf_line(ZBuffer& zbuffer, unsigned int x0, unsigned 
 					zbuffer[(unsigned int)roundToInt(x0 - (i / m))][y0 - i] = newz;
 					(*this)((unsigned int)roundToInt(x0 - (i / m)), y0 - i) = color;
 				}
-				pixel--;
 			}
 			assert(pixel == 0);
 		}

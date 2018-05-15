@@ -82,5 +82,5 @@ bool Light::isInSight(Vector3D& realWorldPoint)
 
 	double z_projected = ((1.0 - a_y) / z_e) + (a_y / z_f);
 
-	return std::abs(z_projected - (1 / pointFromLightAsEye.z)) < 1E-5;
+	return std::abs(z_projected - (1 / pointFromLightAsEye.z)) < 1E-4;
 }

@@ -55,28 +55,13 @@ Matrix lib3d::translateMatrix(const Vector3D& vector)
 
 Matrix lib3d::eyePointMatrix(const Vector3D& eyepoint)
 {
-	Matrix matrix;
-
 	std::tuple<double, double, double> polar = lib3d::toPolar(eyepoint);
 
 	double r = std::get<0>(polar);
 	double theta = std::get<1>(polar);
 	double phi = std::get<2>(polar);
 
-	matrix(1, 1) = -std::sin(theta);
-	matrix(1, 2) = -std::cos(theta) * std::cos(phi);
-	matrix(1, 3) = std::cos(theta) * std::sin(phi);
-
-	matrix(2, 1) = std::cos(theta);
-	matrix(2, 2) = -std::sin(theta) * std::cos(phi);
-	matrix(2, 3) = std::sin(theta) * std::sin(phi);
-
-	matrix(3, 2) = std::sin(phi);
-	matrix(3, 3) = std::cos(phi);
-
-	matrix(4, 3) = -r;
-
-	return matrix;
+	return rotateZMatrix(-(theta + (MY_PI / 2.0))) * rotateXMatrix(-phi) * translateMatrix(Vector3D().vector(0, 0, -r));
 }
 
 std::tuple<double, double, double> lib3d::toPolar(const Vector3D& point)

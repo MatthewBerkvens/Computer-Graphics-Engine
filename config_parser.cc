@@ -41,8 +41,6 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 			* lib3d::scaleMatrix(conf[figureName]["scale"].as_double_or_die())
 			* lib3d::translateMatrix(Vector3D().vector(center[0], center[1], center[2]));
 
-		unsigned int figureSize = figures.size();
-
 		std::vector<Figure> newFigureList;
 
 		if (type == "LineDrawing" || type == "ThickLineDrawing") parse3DLineDrawing(newFigure, conf, figureName);

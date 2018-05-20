@@ -43,6 +43,8 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 
 		unsigned int figureSize = figures.size();
 
+		std::vector<Figure> newFigureList;
+
 		if (type == "LineDrawing" || type == "ThickLineDrawing") parse3DLineDrawing(newFigure, conf, figureName);
 		else if (type == "3DLSystem" || type == "Thick3DLSystem") lib_lsystem::generate_3DLSystem(newFigure, conf, figureName);
 		else if (type == "Cube" || type == "ThickCube" || type == "FractalCube") bodies::createCube(newFigure);
@@ -59,126 +61,128 @@ void generateFiguresFromConfig(std::vector<Figure>& figures, const ini::Configur
 		{
 			bodies::createCube(newFigure);
 
-			fractals::createMengerSponge(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die());
+			fractals::createMengerSponge(newFigure, newFigureList, conf[figureName]["nrIterations"].as_int_or_die());
 		}
 
-
 		if (type.length() > 7 && type.substr(0, 7) == "Fractal")
-			fractals::createFractal(newFigure, figures, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
+			fractals::createFractal(newFigure, newFigureList, conf[figureName]["nrIterations"].as_int_or_die(), conf[figureName]["fractalScale"].as_double_or_die());
 		else if (type.length() > 5 && type.substr(0, 5) == "Thick")
-			bodies::generateThickFigure(newFigure, figures, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
+			bodies::generateThickFigure(newFigure, newFigureList, conf[figureName]["radius"].as_double_or_die(), conf[figureName]["n"].as_int_or_die(), conf[figureName]["m"].as_int_or_die());
 		else if (type != "MengerSponge")
-			figures.push_back(newFigure);
+			newFigureList.push_back(newFigure);
 
-		for (std::vector<Figure>::iterator it_figure = std::next(figures.begin(), figureSize); it_figure != figures.end(); it_figure++)
+		combineFigures(newFigure, newFigureList);
+
+		lib3d::transformFigure(newFigure, combinedMatrix);
+
+		if (newFigure.texture.get_height() != 0)
 		{
-			lib3d::transformFigure(*it_figure, combinedMatrix);
+			newFigure.textureMethod = conf[figureName]["textureMethod"].as_int_or_die();
 
-			if (it_figure->texture.get_height() != 0)
+			if (newFigure.textureMethod == 0)
 			{
-				it_figure->textureMethod = conf[figureName]["textureMethod"].as_int_or_die();
-
-				if (it_figure->textureMethod == 0)
+				for (std::vector<Face>::iterator it_face = newFigure.faces.begin(); it_face != newFigure.faces.end(); it_face++)
 				{
-					for (std::vector<Face>::iterator it_face = it_figure->faces.begin(); it_face != it_figure->faces.end(); it_face++)
+					if (type == "Cube")
 					{
-						if (type == "Cube")
-						{
-							it_figure->surfaceInformation.push_back(
-								{
-									it_figure->points[it_face->point_indexes[0]],
-									Vector3D().vector(it_figure->points[it_face->point_indexes[1]] - it_figure->points[it_face->point_indexes[0]]),
-									Vector3D().vector(it_figure->points[it_face->point_indexes[3]] - it_figure->points[it_face->point_indexes[0]]),
-								});
-						}
-
-						/*auto minmax_x = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
-							return it_figure->points[a].x < it_figure->points[b].x;
-						});
-
-						auto minmax_y = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
-							return it_figure->points[a].y < it_figure->points[b].y;
-						});
-
-						auto minmax_z = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
-							return it_figure->points[a].z < it_figure->points[b].z;
-						});
-
-						Vector3D p = Vector3D().point(it_figure->points[*minmax_x.first].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.first].z);
-
-						Vector3D a = Vector3D().vector(Vector3D().point(it_figure->points[*minmax_x.second].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.first].z) - p);
-
-						Vector3D b = Vector3D().vector(Vector3D().point(it_figure->points[*minmax_x.first].x, it_figure->points[*minmax_y.first].y, it_figure->points[*minmax_z.second].z) - p);
-
-
-						it_figure->surfaceInformation.push_back({ p, a, b });*/
-					}
-				}
-				else if (it_figure->textureMethod == 1)
-				{
-					if (conf[figureName]["p"].exists())
-					{
-						std::vector<double> p = conf[figureName]["p"].as_double_tuple_or_die();
-						std::vector<double> a = conf[figureName]["a"].as_double_tuple_or_die();
-						std::vector<double> b = conf[figureName]["b"].as_double_tuple_or_die();
-
-						it_figure->surfaceInformation.push_back(
+						newFigure.surfaceInformation.push_back(
 							{
-								Vector3D().point(p[0], p[1], p[2]),
-								Vector3D().vector(a[0], a[1], a[2]),
-								Vector3D().vector(b[0], b[1], b[2])
+								newFigure.points[it_face->point_indexes[0]],
+								Vector3D().vector(newFigure.points[it_face->point_indexes[1]] - newFigure.points[it_face->point_indexes[0]]),
+								Vector3D().vector(newFigure.points[it_face->point_indexes[3]] - newFigure.points[it_face->point_indexes[0]]),
 							});
 					}
 					else
 					{
-						auto minmax_x = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
-							return a.x < b.x;
+						return;
+						/*auto minmax_x = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+						return newFigure.points[a].x < newFigure.points[b].x;
 						});
 
-						auto minmax_y = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
-							return a.y < b.y;
+						auto minmax_y = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+						return newFigure.points[a].y < newFigure.points[b].y;
 						});
 
-						auto minmax_z = std::minmax_element(it_figure->points.begin(), it_figure->points.end(), [&](const Vector3D& a, const Vector3D& b) {
-							return a.z < b.z;
+						auto minmax_z = std::minmax_element(it_face->point_indexes.begin(), it_face->point_indexes.end(), [&](const unsigned int a, const unsigned int b) {
+						return newFigure.points[a].z < newFigure.points[b].z;
 						});
 
-						std::string textureDirection = conf[figureName]["textureDirection"].as_string_or_default("top");
+						Vector3D p = Vector3D().point(newFigure.points[*minmax_x.first].x, newFigure.points[*minmax_y.first].y, newFigure.points[*minmax_z.first].z);
 
-						Vector3D p;
-						Vector3D a;
-						Vector3D b;
+						Vector3D a = Vector3D().vector(Vector3D().point(newFigure.points[*minmax_x.second].x, newFigure.points[*minmax_y.first].y, newFigure.points[*minmax_z.first].z) - p);
 
-						if (textureDirection == "left" || textureDirection == "right")
-						{
-							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+						Vector3D b = Vector3D().vector(Vector3D().point(newFigure.points[*minmax_x.first].x, newFigure.points[*minmax_y.first].y, newFigure.points[*minmax_z.second].z) - p);
 
-							a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
-
-							b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
-						}
-						else if (textureDirection == "front" || textureDirection == "back")
-						{
-							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
-
-							a = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
-
-							b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
-						}
-						else
-						{
-							p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
-
-							a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
-
-							b = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
-						}
-
-						it_figure->surfaceInformation.push_back({ p, a, b });
+						newFigure.surfaceInformation.push_back({ p, a, b });*/
 					}
 				}
 			}
+			else if (newFigure.textureMethod == 1)
+			{
+				if (conf[figureName]["p"].exists())
+				{
+					std::vector<double> p = conf[figureName]["p"].as_double_tuple_or_die();
+					std::vector<double> a = conf[figureName]["a"].as_double_tuple_or_die();
+					std::vector<double> b = conf[figureName]["b"].as_double_tuple_or_die();
+
+					newFigure.surfaceInformation.push_back(
+						{
+							Vector3D().point(p[0], p[1], p[2]),
+							Vector3D().vector(a[0], a[1], a[2]),
+							Vector3D().vector(b[0], b[1], b[2])
+						});
+				}
+				else
+				{
+					auto minmax_x = std::minmax_element(newFigure.points.begin(), newFigure.points.end(), [&](const Vector3D& a, const Vector3D& b) {
+						return a.x < b.x;
+					});
+
+					auto minmax_y = std::minmax_element(newFigure.points.begin(), newFigure.points.end(), [&](const Vector3D& a, const Vector3D& b) {
+						return a.y < b.y;
+					});
+
+					auto minmax_z = std::minmax_element(newFigure.points.begin(), newFigure.points.end(), [&](const Vector3D& a, const Vector3D& b) {
+						return a.z < b.z;
+					});
+
+					std::string textureDirection = conf[figureName]["textureDirection"].as_string_or_default("top");
+
+					Vector3D p;
+					Vector3D a;
+					Vector3D b;
+
+					if (textureDirection == "left" || textureDirection == "right")
+					{
+						p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+						a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+
+						b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
+					}
+					else if (textureDirection == "front" || textureDirection == "back")
+					{
+						p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+						a = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+
+						b = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.second->z) - p);
+					}
+					else
+					{
+						p = Vector3D().point(minmax_x.first->x, minmax_y.first->y, minmax_z.first->z);
+
+						a = Vector3D().vector(Vector3D().point(minmax_x.first->x, minmax_y.second->y, minmax_z.first->z) - p);
+
+						b = Vector3D().vector(Vector3D().point(minmax_x.second->x, minmax_y.first->y, minmax_z.first->z) - p);
+					}
+
+					newFigure.surfaceInformation.push_back({ p, a, b });
+				}
+			}
 		}
+
+		figures.push_back(newFigure);
 	}
 }
 

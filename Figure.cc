@@ -55,6 +55,9 @@ std::pair<std::vector<Point2D>, std::vector<Line2D>> projectFigures(std::vector<
 
 void combineFigures(Figure& out, std::vector<Figure>& figures)
 {
+	out.points = {};
+	out.faces = {};
+
 	for (std::vector<Figure>::iterator it_figure = figures.begin(); it_figure != figures.end(); it_figure++)
 	{
 		unsigned int offset = out.points.size();
